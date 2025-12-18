@@ -1,0 +1,1 @@
+# detailhq.app
