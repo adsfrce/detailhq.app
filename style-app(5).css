@@ -1,0 +1,1850 @@
+:root {
+  /* DARK MODE DEFAULTS */
+  --bg: #000000;
+  --bg-elevated: #050509;
+  --bg-elevated-soft: #101018;
+  --border-subtle: rgba(255, 255, 255, 0.08);
+  --accent: #4f8cff;
+  --accent-soft: rgba(79, 140, 255, 0.18);
+  --accent-strong: #2563eb;
+  --text: #f9fafb;
+  --text-soft: #9ca3af;
+  --danger: #ef4444;
+  --shadow-soft: 0 18px 40px rgba(0, 0, 0, 0.7);
+  --radius-lg: 20px;
+  --radius-xl: 28px;
+  --blur: 3px;
+
+  /* NAV-GLASS für DARK MODE */
+  --nav-glass-bg: rgba(15, 23, 42, 0.35);
+  --nav-glass-border: rgba(148, 163, 184, 0.35);
+}
+
+/* LIGHT THEME OVERRIDES */
+body.theme-light {
+  --bg: #ffffff;
+  --bg-elevated: #f9fafb;
+  --bg-elevated-soft: #f3f4f6;
+  --border-subtle: rgba(15, 23, 42, 0.08);
+  --accent: #2563eb;
+  --accent-soft: rgba(37, 99, 235, 0.12);
+  --accent-strong: #1d4ed8;
+  --text: #0b1120;
+  --text-soft: #6b7280;
+  --shadow-soft: 0 18px 35px rgba(15, 23, 42, 0.12);
+
+  /* NAV-GLASS für LIGHT MODE */
+  --nav-glass-bg: rgba(255, 255, 255, 0.35);
+  --nav-glass-border: rgba(148, 163, 184, 0.35);
+}
+
+/* System: wird durch JS auf light/dark gesetzt */
+body.theme-system {
+  /* JS setzt später theme-light oder theme-dark zusätzlich */
+}
+
+*,
+*::before,
+*::after {
+  box-sizing: border-box;
+}
+
+body {
+  margin: 0;
+  font-family: system-ui, -apple-system, BlinkMacSystemFont, "SF Pro Text",
+    "Segoe UI", sans-serif;
+  background-color: var(--bg);
+  color: var(--text);
+}
+
+/* Center app, mobile-first */
+
+#app-root {
+  min-height: 100vh;
+  display: flex;
+  justify-content: center;
+  align-items: stretch;
+}
+
+.view {
+  display: none;
+  width: 100%;
+  max-width: 480px;
+  margin: 0 auto;
+  padding: 16px 16px 72px;
+}
+
+.view.active {
+  display: block;
+}
+
+/* GLASS */
+
+.glass {
+  background: var(--bg-elevated);
+  backdrop-filter: blur(var(--blur));
+  -webkit-backdrop-filter: blur(var(--blur));
+  border-radius: var(--radius-xl);
+  border: 1px solid var(--border-subtle);
+  box-shadow: var(--shadow-soft);
+}
+
+/* AUTH */
+
+.auth-card {
+  margin-top: 18vh;
+  padding: 26px 22px 22px;
+  text-align: left;
+}
+
+.app-title {
+  margin: 0 0 4px;
+  font-size: 26px;
+  letter-spacing: 0.02em;
+}
+
+.app-subtitle {
+  margin: 0 0 18px;
+  font-size: 13px;
+  color: var(--text-soft);
+}
+
+.form {
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+  margin-top: 6px;
+}
+
+.hidden {
+  display: none !important;
+}
+
+.field-label {
+  font-size: 12px;
+  color: var(--text-soft);
+}
+
+.field-input {
+  width: 100%;
+  padding: 10px 11px;
+  border-radius: 999px;
+  border: 1px solid var(--border-subtle);
+  background: var(--bg-elevated-soft);
+  color: var(--text);
+  font-size: 14px;
+  outline: none;
+}
+
+.field-input:focus {
+  border-color: var(--accent);
+  box-shadow: 0 0 0 1px var(--accent-soft);
+}
+
+/* PASSWORD TOGGLE */
+
+.password-wrap {
+  position: relative;
+  width: 100%;
+}
+
+.password-wrap .field-input {
+  padding-right: 92px; /* Platz für Button */
+}
+
+.password-toggle {
+  position: absolute;
+  right: 8px;
+  top: 50%;
+  transform: translateY(-50%);
+
+  height: 28px;
+  padding: 0 10px;
+  border-radius: 999px;
+
+  border: 1px solid var(--border-subtle);
+  background: var(--bg-elevated-soft);
+  color: var(--text-soft);
+
+  font-size: 12px;
+  line-height: 1;
+  cursor: pointer;
+  user-select: none;
+}
+
+.password-toggle:active {
+  transform: translateY(-50%) scale(0.98);
+}
+
+/* Datum + Uhrzeit in einer gemeinsamen Pill */
+
+.booking-datetime-row {
+  display: flex;
+  align-items: stretch;
+  width: 100%;
+  margin-top: 4px;
+
+  border-radius: 999px;
+  border: 1px solid var(--border-subtle);
+  background: var(--bg-elevated-soft);
+  overflow: hidden; /* runde Ecken auch innen */
+}
+
+/* beide Hälften teilen sich die Breite */
+.booking-datetime-row > div {
+  flex: 1 1 0;
+  min-width: 0;
+  display: flex;
+  align-items: center;
+}
+
+/* Trennlinie in der Mitte */
+.booking-datetime-row > div + div {
+  border-left: 1px solid var(--border-subtle);
+}
+
+/* Inputs in der Pill: keine eigene Border, kein eigener Shadow */
+.booking-datetime-row input.field-input {
+  border: none;
+  border-radius: 0;
+  background: transparent;
+  box-shadow: none;
+  padding: 10px 14px;
+  width: 100%;
+}
+
+/* Datum + Uhrzeit nebeneinander in einer Zeile */
+.booking-datetime-row {
+  display: flex;
+  gap: 8px;
+  margin-top: 4px;
+}
+
+.booking-datetime-row > div {
+  flex: 1 1 0;
+  min-width: 0;
+}
+
+/* BUTTONS */
+
+.btn {
+  border-radius: 999px;
+  border: none;
+  font-size: 14px;
+  padding: 10px 16px;
+  cursor: pointer;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 6px;
+  transition: transform 0.08s ease, box-shadow 0.12s ease,
+    background 0.12s ease;
+}
+
+.btn-primary {
+  background: linear-gradient(135deg, var(--accent), var(--accent-strong));
+  color: white;
+  box-shadow: 0 12px 30px rgba(37, 99, 235, 0.35);
+  margin-top: 4px;
+}
+
+.btn-primary:active {
+  transform: translateY(1px) scale(0.98);
+  box-shadow: 0 6px 18px rgba(37, 99, 235, 0.4);
+}
+
+.btn-secondary {
+  background: var(--accent-soft);
+  color: var(--accent-strong);
+}
+
+.btn-ghost {
+  background: transparent;
+  color: var(--text-soft);
+  border-radius: var(--radius-lg);
+  border: 1px solid var(--border-subtle);
+}
+
+.btn-small {
+  padding: 7px 14px;
+  font-size: 13px;
+}
+
+.btn-block {
+  width: 100%;
+}
+
+.settings-group .btn-block + .btn-block {
+  margin-top: 8px;
+}
+
+.link-button {
+  border: none;
+  background: none;
+  padding: 0;
+  margin: 0;
+  font-size: 13px;
+  color: var(--accent);
+  cursor: pointer;
+}
+
+/* ICON BUTTON */
+
+.icon-button {
+  border-radius: 999px;
+  border: 1px solid var(--border-subtle);
+  background: var(--bg-elevated-soft);
+  color: var(--text-soft);
+  width: 32px;
+  height: 32px;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  cursor: pointer;
+}
+
+/* FORM HINT & ERROR */
+
+.form-hint {
+  font-size: 12px;
+  color: var(--text-soft);
+  margin-top: 10px;
+}
+
+.error-text {
+  min-height: 18px;
+  margin-top: 6px;
+  font-size: 12px;
+  color: var(--danger);
+}
+
+/* APP VIEW */
+
+#app-view {
+  padding-inline: 12px;
+  padding-bottom: 76px; /* für Bottom Nav */
+}
+
+.app-header {
+  position: sticky;
+  top: 10px;
+  z-index: 10;
+  padding: 10px 14px;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  margin-bottom: 10px;
+}
+
+.app-header h2 {
+  margin: 0;
+  font-size: 20px;
+}
+
+.header-subtitle {
+  margin: 2px 0 0;
+  font-size: 12px;
+  color: var(--text-soft);
+}
+
+.app-main {
+  padding-bottom: 16px;
+}
+
+/* TABS */
+
+.tab-section {
+  display: none;
+}
+
+.tab-section.active {
+  display: block;
+}
+
+/* CARDS GRID */
+
+.cards-grid {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 10px;
+  margin-bottom: 16px;
+}
+
+.card {
+  padding: 10px 12px;
+}
+
+.card-label {
+  margin: 0;
+  font-size: 11px;
+  color: var(--text-soft);
+}
+
+.card-value {
+  margin: 4px 0 0;
+  font-size: 18px;
+  font-weight: 600;
+}
+
+/* SECTIONS */
+
+.section-header {
+  margin: 16px 2px 6px;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+}
+
+.section-header h3 {
+  margin: 0;
+  font-size: 15px;
+}
+
+.list-container {
+  border-radius: var(--radius-lg);
+  border: 1px solid var(--border-subtle);
+  background: var(--bg-elevated-soft);
+  padding: 10px 12px;
+  font-size: 13px;
+}
+
+.empty-state {
+  color: var(--text-soft);
+}
+
+/* SETTINGS */
+
+.settings-group {
+  padding: 12px 14px;
+  margin-bottom: 12px;
+}
+
+.settings-group h3 {
+  margin: 0 0 4px;
+  font-size: 15px;
+}
+
+.settings-help {
+  margin: 0 0 10px;
+  font-size: 12px;
+  color: var(--text-soft);
+}
+
+.settings-options {
+  display: flex;
+  gap: 10px;
+}
+
+.radio-option {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  font-size: 13px;
+  padding: 6px 10px;
+  border-radius: 999px;
+  border: 1px solid var(--border-subtle);
+  background: var(--bg-elevated-soft);
+}
+
+/* BOTTOM NAV */
+
+.bottom-nav {
+  position: fixed;
+  bottom: 20px;
+  left: 50%;
+  transform: translateX(-50%);
+
+  /* gleiche Breite wie der App-Content (16px Padding je Seite) */
+  width: calc(100% - 32px);
+  max-width: 480px;
+
+  padding: 6px 8px;
+  display: flex;
+  justify-content: space-between;
+  gap: 4px;
+  border-radius: 999px;
+
+  /* Optik kommt über .bottom-nav.glass */
+  background: transparent;
+  border: none;
+}
+
+/* Apple-Liquid-Glass für Header, Bottom-Nav und Modals */
+.app-header.glass,
+.bottom-nav.glass,
+.profile-modal-card.glass {
+  background: var(--nav-glass-bg);
+  border: 0.5px solid var(--nav-glass-border);
+  backdrop-filter: blur(var(--blur));
+  -webkit-backdrop-filter: blur(var(--blur));
+}
+
+.nav-item {
+  flex: 1;
+  border-radius: 999px;
+  border: none;
+  background: transparent;
+  color: var(--text-soft);
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  padding: 6px 4px;
+  font-size: 11px;
+  gap: 2px;
+  cursor: pointer;
+}
+
+.nav-item.active {
+  background: var(--accent-soft);
+  color: var(--accent-strong);
+  font-weight: 600;
+  box-shadow: 0 8px 18px rgba(37, 99, 235, 0.3);
+}
+
+.nav-icon {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.nav-icon img {
+  width: 18px;
+  height: 18px;
+  display: block;
+}
+
+.nav-item.nav-item-locked {
+  opacity: 0.4;
+  cursor: not-allowed;
+  pointer-events: none;
+}
+
+/* RESPONSIVE */
+
+@media (min-width: 600px) {
+  .view {
+    padding-top: 24px;
+  }
+
+  .auth-card {
+    margin-top: 18vh;
+  }
+}
+/* PROFILE DROPDOWN & MODAL */
+
+.profile-wrapper {
+  position: relative;
+}
+
+.profile-avatar {
+  width: 34px;
+  height: 34px;
+  padding: 0;
+  font-size: 14px;
+  font-weight: 600;
+}
+
+.profile-avatar span {
+  pointer-events: none;
+}
+
+.profile-menu {
+  position: absolute;
+  right: 0;
+  top: 42px;
+  min-width: 160px;
+  background: var(--bg-elevated);
+  border-radius: 14px;
+  border: 1px solid var(--border-subtle);
+  box-shadow: var(--shadow-soft);
+  padding: 4px;
+  display: flex;
+  flex-direction: column;
+  z-index: 20;
+}
+
+.profile-menu-item {
+  border: none;
+  background: transparent;
+  color: var(--text);
+  text-align: left;
+  font-size: 13px;
+  padding: 8px 10px;
+  border-radius: 10px;
+  cursor: pointer;
+}
+
+.profile-menu-item:hover {
+  background: var(--accent-soft);
+}
+
+.profile-menu-item.danger {
+  color: var(--danger);
+}
+
+/* Modal */
+
+.profile-modal {
+  position: fixed;
+  inset: 0;
+  z-index: 30;
+
+  /* Zentrierung + Padding für große Screens */
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 16px;
+}
+
+.profile-modal-backdrop {
+  position: absolute;
+  inset: 0;
+  background: rgba(0, 0, 0, 0.45);
+  
+  backdrop-filter: blur(14px);
+  -webkit-backdrop-filter: blur(14px);
+}
+
+.profile-modal {
+  isolation: isolate; /* extrem wichtig für sauberen Blur */
+}
+
+.profile-modal-backdrop {
+  z-index: 0;
+}
+
+.profile-modal-card {
+  z-index: 1;
+}
+
+.profile-modal-card {
+  position: relative;
+  width: 100%;
+  max-width: 440px;
+  border-radius: 24px;
+  background: var(--bg-elevated);
+  box-shadow: var(--shadow-strong);
+  padding: 18px 18px 16px;
+
+  /* Scroll-Limit im Modal */
+  max-height: 90vh;
+  overflow-y: auto;
+}
+
+.profile-modal-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  margin-bottom: 8px;
+}
+
+.profile-modal-header h3 {
+  margin: 0;
+  font-size: 16px;
+}
+
+.icon-button.small {
+  width: 26px;
+  height: 26px;
+  font-size: 13px;
+}
+
+/* Kalender-URL Row */
+
+.calendar-url-row {
+  display: flex;
+  gap: 8px;
+  align-items: center;
+}
+
+.calendar-url-row .field-input {
+  flex: 1;
+}
+
+.settings-help.small {
+  font-size: 11px;
+}
+
+.profile-avatar {
+  position: relative;
+  overflow: hidden;
+  background: var(--bg-elevated-soft);
+}
+
+.profile-avatar.has-image {
+  background-size: cover;
+  background-position: center;
+  color: transparent;
+}
+
+.auth-logo-row {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  margin-bottom: 18px;
+}
+
+.app-logo {
+  width: 40px;
+  height: 40px;
+  border-radius: 12px;
+}
+
+.header-left {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+}
+
+.header-logo {
+  width: 26px;
+  height: 26px;
+  border-radius: 8px;
+}
+
+.profile-avatar-image {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  display: block;
+  border-radius: 999px;
+}
+
+.profile-avatar span {
+  display: none;
+}
+
+.trial-banner {
+  margin: 10px 0; /* gleich oben + unten */
+  padding: 6px 10px;
+  border-radius: 999px;
+  background: rgba(251, 191, 36, 0.1);
+  border: 1px solid rgba(251, 191, 36, 0.4);
+  color: var(--text);
+  font-size: 12px;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 8px;
+}
+
+.trial-banner.hidden {
+  display: none;
+}
+
+.trial-banner-button {
+  border: none;
+  border-radius: 999px;
+  padding: 4px 10px;
+  font-size: 12px;
+  background: #fbbf24;
+  color: #111827;
+  cursor: pointer;
+  font-weight: 600;
+  white-space: nowrap;
+}
+
+.auth-info-banner {
+  margin-bottom: 12px;
+  padding: 8px 10px;
+  border-radius: 12px;
+  background: rgba(16, 185, 129, 0.08);
+  border: 1px solid rgba(16, 185, 129, 0.35);
+  font-size: 12px;
+  line-height: 1.3;
+}
+
+/* Buchungslisten (Dashboard + Zeitplan) */
+.list-container {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+
+.list-item {
+  padding: 10px 12px;
+  border-radius: 14px;
+  background: rgba(15, 23, 42, 0.04);
+  border: 1px solid rgba(148, 163, 184, 0.35);
+  cursor: pointer;
+  transition:
+    transform 0.08s ease,
+    box-shadow 0.08s ease,
+    background 0.1s ease;
+}
+
+.theme-dark .list-item {
+  background: rgba(15, 23, 42, 0.85);
+  border-color: rgba(148, 163, 184, 0.4);
+}
+
+.list-item:hover {
+  transform: translateY(-1px);
+  box-shadow: 0 6px 18px rgba(15, 23, 42, 0.12);
+}
+
+.list-item-title {
+  font-weight: 600;
+  margin-bottom: 4px;
+}
+
+.list-item-meta {
+  font-size: 0.85rem;
+  color: #64748b;
+}
+
+.booking-detail-body {
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+  font-size: 13px;
+}
+
+.booking-detail-meta {
+  font-size: 12px;
+  color: var(--text-soft);
+}
+
+.booking-detail-price {
+  font-size: 16px;
+  font-weight: 600;
+  margin: 0;
+}
+
+.booking-detail-body details {
+  border-radius: var(--radius-lg);
+  border: 1px solid var(--border-subtle);
+  padding: 8px 10px;
+  background: var(--bg-elevated-soft);
+}
+
+.booking-detail-body summary {
+  cursor: pointer;
+  font-weight: 600;
+  font-size: 13px;
+  list-style: none;
+}
+
+.booking-detail-body summary::-webkit-details-marker {
+  display: none;
+}
+
+.booking-detail-body details > div {
+  margin-top: 6px;
+  font-size: 12px;
+  color: var(--text-soft);
+}
+
+.booking-detail-actions {
+  margin-top: 16px;
+  display: flex;
+  justify-content: space-between;
+  gap: 8px;
+}
+
+.btn.danger {
+  color: var(--danger);
+  border: 1px solid var(--danger);
+}
+
+.theme-dark .list-item-meta {
+  color: #cbd5f5;
+}
+
+.booking-amount {
+  margin-top: 2px;
+  font-weight: 500;
+}
+
+#booking-detail-modal.modal {
+  position: fixed;
+  inset: 0;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  z-index: 9999;
+}
+
+#booking-detail-modal .modal-backdrop {
+  position: absolute;
+  inset: 0;
+  background: rgba(0,0,0,0.55);
+  backdrop-filter: blur(4px);
+}
+
+#booking-detail-modal .modal-card {
+  position: relative;
+  width: 90%;
+  max-width: 420px;
+  padding: 20px;
+  border-radius: 14px;
+  background: var(--bg-glass);
+  z-index: 2;
+}
+
+.modal-section {
+  margin: 12px 0;
+}
+
+.modal-section summary {
+  cursor: pointer;
+  font-weight: 600;
+}
+
+.modal-buttons {
+  margin-top: 16px;
+  display: flex;
+  justify-content: space-between;
+}
+
+.price {
+  font-size: 1.3rem;
+  font-weight: bold;
+}
+
+/* DASHBOARD: Zeitraum-Toggle oben als Pill */
+
+.dashboard-period-row {
+  margin: 10px 2px 8px;
+}
+
+.dashboard-period-toggle {
+  display: flex;
+  align-items: center;
+  gap: 4px;
+  padding: 4px;
+  border-radius: 999px;
+  background: var(--bg-elevated-soft);
+  border: 1px solid var(--border-subtle);
+  box-shadow: var(--shadow-soft);
+}
+
+.period-chip {
+  flex: 1;
+  border: none;
+  border-radius: 999px;
+  background: transparent;
+  padding: 6px 0;
+  font-size: 12px;
+  color: var(--text-soft);
+  cursor: pointer;
+}
+
+.period-chip.active {
+  background: var(--accent-soft);
+  color: var(--accent-strong);
+  font-weight: 600;
+  box-shadow: 0 8px 18px rgba(37, 99, 235, 0.3);
+}
+
+.period-chip:focus-visible {
+  outline: 2px solid var(--accent-soft);
+  outline-offset: 1px;
+}
+
+/* explizit 2 Spalten für das Umsatz / Volumen Grid */
+.cards-grid.cards-grid-2 {
+  grid-template-columns: 1fr 1fr;
+}
+
+/* BUCHUNGS-STEPS: Indikator oben */
+
+.booking-steps-indicator {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+
+  padding: 4px;
+  width: 100%;
+  box-sizing: border-box;
+
+  border-radius: 999px;
+  background: var(--bg-elevated-soft);
+  border: 1px solid var(--border-subtle);
+}
+
+.booking-step-indicator {
+  flex: 1;
+  min-width: 0;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+
+  height: 20px;
+  padding: 0 6px;
+  border-radius: 999px;
+
+  font-size: 9px;
+  line-height: 1;
+  font-weight: 500;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.booking-step-indicator.active {
+  background: var(--accent-soft);
+  color: var(--accent-strong);
+  font-weight: 700;
+
+  height: 20px;
+  padding: 0 6px;
+  line-height: 1;
+}
+
+@media (max-width: 480px) {
+  .booking-step-indicator {
+    height: 18px;
+    font-size: 9px;
+    padding: 0 6px;
+    line-height: 1;
+  }
+}
+
+
+/* SETTINGS: Custom-Dropdowns für Fahrzeugklassen & Services */
+
+.settings-dropdown {
+  margin-top: 6px;
+  margin-bottom: 6px;
+}
+
+.settings-dropdown-toggle {
+  width: 100%;
+  border-radius: 999px;
+  border: 1px solid var(--border-subtle);
+  background: var(--bg-elevated-soft);
+  padding: 8px 11px;
+  font-size: 13px;
+  color: var(--text);
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  cursor: pointer;
+}
+
+.settings-dropdown-toggle:hover {
+  background: var(--bg-elevated);
+}
+
+.settings-dropdown-chevron {
+  font-size: 11px;
+  opacity: 0.8;
+}
+
+/* Menü – aktuell immer sichtbar, später machen wir es per JS auf/zu */
+.settings-dropdown-menu {
+  margin-top: 6px;
+  border-radius: var(--radius-lg);
+  border: 1px solid var(--border-subtle);
+  background: var(--bg-elevated-soft);
+  padding: 6px 8px;
+  font-size: 13px;
+  max-height: 260px;
+  overflow: auto;
+}
+.settings-list {
+  margin-top: 6px;
+  border-radius: var(--radius-lg);
+  border: 1px solid var(--border-subtle);
+  background: var(--bg-elevated-soft);
+  padding: 6px 8px;
+  font-size: 13px;
+  max-height: 260px;
+  overflow: auto;
+  display: block;
+}
+
+.settings-dropdown-menu p.form-hint {
+  margin: 0;
+}
+
+.payment-partial-row,
+.payment-paid-override-row {
+  display: none;
+}
+
+.settings-dropdown-menu {
+  display: none; /* <--- NEU: standardmäßig zu */
+  margin-top: 6px;
+  border-radius: var(--radius-lg);
+  border: 1px solid var(--border-subtle);
+  background: var(--bg-elevated-soft);
+  padding: 6px 8px;
+  font-size: 13px;
+  max-height: 260px;
+  overflow: auto;
+}
+
+/* Wenn Dropdown geöffnet ist */
+.settings-dropdown.open .settings-dropdown-menu {
+  display: block;
+}
+
+/* Zeitplan: Header mit Zahlungsstatus-Pill */
+.booking-row-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 8px;
+}
+
+.payment-pill {
+  padding: 3px 8px;
+  border-radius: 999px;
+  font-size: 11px;
+  font-weight: 500;
+  border: 1px solid transparent;
+  white-space: nowrap;
+}
+
+.payment-pill--paid {
+  background: rgba(22, 163, 74, 0.12);
+  border-color: rgba(22, 163, 74, 0.6);
+  color: #16a34a;
+}
+
+.payment-pill--partial {
+  background: rgba(245, 158, 11, 0.12);
+  border-color: rgba(245, 158, 11, 0.6);
+  color: #f59e0b;
+}
+
+.payment-pill--open {
+  background: rgba(239, 68, 68, 0.12);
+  border-color: rgba(239, 68, 68, 0.6);
+  color: #ef4444;
+}
+
+/* Einzelleistungen-Dropdown mit Checkboxen */
+.booking-singles-dropdown .settings-dropdown-menu {
+  padding: 4px 6px;
+}
+
+.booking-singles-item {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 8px;
+  padding: 6px 8px;
+  border-radius: 10px;
+  cursor: pointer;
+}
+
+.booking-singles-category {
+  margin: 4px 2px 2px;
+  font-size: 11px;
+  font-weight: 600;
+  opacity: 0.8;
+}
+
+.booking-singles-item:hover {
+  background: var(--bg-elevated);
+}
+
+.booking-singles-item.selected {
+  background: var(--accent-soft);
+  color: var(--accent-strong);
+}
+
+.booking-singles-item-label {
+  font-size: 13px;
+}
+
+.booking-singles-item-checkbox {
+  width: 16px;
+  height: 16px;
+  border-radius: 4px;
+  border: 1px solid var(--border-subtle);
+  background: var(--bg-elevated-soft);
+  flex-shrink: 0;
+}
+
+.settings-dropdown-item.selected .booking-singles-item-checkbox {
+  background: var(--accent-strong);
+  border-color: var(--accent-strong);
+}
+
+/* Textareas etwas eckiger als Inputs */
+textarea.field-input {
+  border-radius: var(--radius-lg);
+  min-height: 80px;
+  resize: vertical;
+}
+
+.schedule-group-headline {
+  margin: 20px 0 8px;
+  font-size: 15px;
+  font-weight: 600;
+  opacity: 0.8;
+}
+
+.settings-icon {
+  display: inline-block;
+  width: 14px;
+  height: 14px;
+  border-radius: 4px;
+  border: 1px solid rgba(148, 163, 184, 0.9);
+  position: relative;
+}
+
+.settings-icon-edit::before {
+  content: "";
+  position: absolute;
+  inset: 3px 2px 3px 4px;
+  border-radius: 999px;
+  border-bottom: 2px solid rgba(55, 65, 81, 0.95);
+  transform: rotate(-35deg);
+  transform-origin: center;
+}
+
+.settings-icon-delete::before {
+  content: "";
+  position: absolute;
+  left: 3px;
+  right: 3px;
+  top: 4px;
+  bottom: 4px;
+  border-radius: 3px;
+  border: 1px solid rgba(239, 68, 68, 0.8);
+}
+
+.settings-icon-delete::after {
+  content: "";
+  position: absolute;
+  left: 4px;
+  right: 4px;
+  top: 6px;
+  height: 1px;
+  background: rgba(239, 68, 68, 0.9);
+}
+
+.icon {
+  display: inline-block;
+  width: 18px;
+  height: 18px;
+  background-size: contain;
+  background-repeat: no-repeat;
+  background-position: center;
+}
+
+/* Beispiel: Edit & Trash */
+.icon-edit {
+  background-image: url("icons/edit.svg");
+}
+
+.icon-delete {
+  background-image: url("icons/trash.svg");
+}
+
+/* Settings-Listen: Fahrzeugklassen & Services */
+.settings-row {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 10px;
+  padding: 8px 0;
+  border-bottom: 1px solid rgba(148, 163, 184, 0.18);
+}
+
+.settings-row:last-child {
+  border-bottom: none;
+}
+
+.settings-row-main {
+  flex: 1;
+  min-width: 0;
+}
+
+.settings-row-title {
+  font-size: 13px;
+  font-weight: 600;
+}
+
+.settings-row-meta {
+  font-size: 11px;
+  color: var(--text-soft);
+}
+
+.settings-row-actions {
+  flex-shrink: 0;
+  display: flex;
+  justify-content: flex-end;
+}
+
+/* Bearbeiten | Löschen Pill */
+.action-pill {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  padding: 4px 10px;
+  border-radius: 999px;
+  border: 1px solid var(--border-subtle);
+  background: var(--bg-elevated-soft);
+  font-size: 11px;
+  white-space: nowrap;
+}
+
+.action-pill-btn {
+  border: none;
+  background: transparent;
+  padding: 0;
+  margin: 0;
+  cursor: pointer;
+  font-size: 11px;
+  color: var(--accent-strong);
+}
+
+.action-pill-btn.delete {
+  color: var(--danger);
+}
+
+.action-pill-separator {
+  font-size: 11px;
+  opacity: 0.7;
+}
+
+/* === REMOVE GLASS EFFECT ON BOOKING MODALS ONLY === */
+
+.profile-modal-card.glass {
+  background: var(--bg-elevated) !important;
+  border: none !important;
+  backdrop-filter: none !important;
+  -webkit-backdrop-filter: none !important;
+  box-shadow: var(--shadow-soft) !important;
+}
+
+/* ================================
+   SERVICE: Empfohlener Preisrahmen
+   ================================ */
+
+.service-price-reco {
+  margin-top: 6px;
+}
+
+.service-price-reco-head {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 10px;
+  margin-top: 2px;
+}
+
+.service-price-reco-title {
+  font-size: 12px;
+  color: var(--text-soft);
+}
+
+.service-price-reco-pill {
+  position: relative;
+  width: 100%;
+  height: 14px;
+  border-radius: 999px;
+  overflow: hidden;
+
+  /* premium glass base */
+  background: rgba(255, 255, 255, 0.04);
+  border: 1px solid rgba(255, 255, 255, 0.10);
+  backdrop-filter: blur(calc(var(--blur) * 4)) saturate(1.2);
+
+  /* depth + inner polish */
+  box-shadow:
+    inset 0 1px 0 rgba(255, 255, 255, 0.10),
+    inset 0 -10px 18px rgba(0, 0, 0, 0.35),
+    0 14px 35px rgba(0, 0, 0, 0.55);
+}
+
+/* glossy highlight */
+.service-price-reco-pill::before {
+  content: "";
+  position: absolute;
+  inset: 1px;
+  border-radius: 999px;
+  pointer-events: none;
+
+  background: linear-gradient(
+    180deg,
+    rgba(255, 255, 255, 0.14) 0%,
+    rgba(255, 255, 255, 0.06) 35%,
+    rgba(255, 255, 255, 0.00) 70%
+  );
+  opacity: 0.9;
+}
+
+.service-price-reco-pill-fill {
+  position: absolute;
+  inset: 0;
+  border-radius: 999px;
+
+  /* Farbebene: links rot/orange -> rechts grün */
+  background: linear-gradient(
+    90deg,
+    rgba(255, 81, 0, 0.92) 0%,
+    rgba(34, 197, 94, 0.92) 100%
+  );
+
+  /* X-Achse: Mitte unsichtbar, zu den Rändern sichtbar */
+-webkit-mask-image: linear-gradient(
+  90deg,
+  rgba(0,0,0,1) 0%,
+  rgba(0,0,0,1) 20%,
+  rgba(0,0,0,0) 50%,
+  rgba(0,0,0,1) 80%,
+  rgba(0,0,0,1) 100%
+);
+mask-image: linear-gradient(
+  90deg,
+  rgba(0,0,0,1) 0%,
+  rgba(0,0,0,1) 20%,
+  rgba(0,0,0,0) 50%,
+  rgba(0,0,0,1) 80%,
+  rgba(0,0,0,1) 100%
+);
+
+
+  /* Premium softening */
+  opacity: 0.75;
+  filter: saturate(1.12) blur(0.25px);
+
+  box-shadow:
+    inset 0 0 0 1px rgba(255, 255, 255, 0.06),
+    inset 0 10px 20px rgba(255, 255, 255, 0.06),
+    inset 0 -12px 22px rgba(0, 0, 0, 0.22);
+}
+
+.service-price-reco-values {
+  margin-top: 6px;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 12px;
+}
+
+.service-price-reco-value {
+  font-size: 12px;
+  color: var(--text);
+  opacity: 0.9;
+}
+
+#loadingView{
+  position: fixed;
+  inset: 0;
+  z-index: 9999;
+}
+
+#loadingView{
+  position: fixed;
+  inset: 0;
+  z-index: 9999;
+  background: rgba(255,255,255,0.85);
+  backdrop-filter: blur(16px);
+}
+
+/* ================================
+   BOOKING: Service Description Accordion
+   ================================ */
+
+.service-desc-wrap {
+  margin-top: 8px;
+}
+
+.service-desc-toggle {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  padding: 0;
+  border: none;
+  background: none;
+  color: var(--text-soft);
+  font-weight: 400;        /* nicht fett */
+  font-size: 12px;
+  cursor: pointer;
+}
+
+.service-desc-toggle:hover {
+  color: var(--text);
+}
+
+.service-desc-toggle:active {
+  transform: translateY(1px) scale(0.99);
+}
+
+.service-desc-chevron {
+  font-size: 11px;
+  opacity: 0.75;
+  transition: transform 0.16s ease;
+}
+
+.service-desc-toggle[aria-expanded="true"] .service-desc-chevron {
+  transform: rotate(180deg);
+}
+
+.service-desc-panel {
+  margin-top: 0;
+  padding: 0;
+  border: none;
+  background: none;
+}
+
+.service-desc-text {
+  font-size: 12px;
+  color: var(--text-soft);
+  line-height: 1.35;
+  white-space: pre-wrap;
+}
+
+/* Service header: Name links, Details rechts */
+.service-header-row {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 12px;
+}
+
+/* Service name */
+.booking-singles-item-label {
+  flex: 1;
+  font-size: 13px;
+}
+
+/* Details Button rechts */
+.service-desc-toggle {
+  flex-shrink: 0;
+  white-space: nowrap;
+}
+
+/* Beschreibung unter dem Namen, linksbündig */
+.service-desc-panel {
+  margin-top: 4px;
+  padding-left: 0;
+}
+
+/* Dropdown-Items: Checkbox links, Text rechts (eine Zeile) */
+.settings-dropdown-menu .settings-dropdown-item{
+  display: flex;
+  align-items: flex-start;
+  gap: 10px;
+  padding: 6px 8px;
+  border-radius: 10px;
+}
+
+.settings-dropdown-menu .settings-dropdown-item:hover{
+  background: var(--bg-elevated);
+}
+
+/* Checkbox/Radio Box darf nicht "wandern" */
+.settings-dropdown-menu .booking-singles-item-checkbox{
+  flex: 0 0 16px;
+  margin-top: 2px; /* optisch bündig zur Textzeile */
+}
+
+/* Der Textblock nimmt den Rest */
+.settings-dropdown-menu .service-col{
+  flex: 1;
+  min-width: 0;
+}
+
+/* ================================
+   ÖFFNUNGSZEITEN (Settings)
+================================ */
+.opening-hours-list {
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+  margin-top: 10px;
+}
+
+.opening-hours-row {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 12px;
+}
+
+.opening-hours-day {
+  font-size: 13px;
+  opacity: 0.85;
+  min-width: 92px;
+}
+
+.opening-hours-pill {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  padding: 8px 10px;
+  border-radius: 999px;
+  border: 1px solid rgba(255, 255, 255, 0.10);
+  background: rgba(255, 255, 255, 0.06);
+  backdrop-filter: blur(10px);
+  -webkit-backdrop-filter: blur(10px);
+}
+
+.opening-hours-sep {
+  opacity: 0.7;
+  font-size: 13px;
+  user-select: none;
+}
+
+.opening-hours-input {
+  border: none;
+  outline: none;
+  background: transparent;
+  color: inherit;
+  font-size: 13px;
+  padding: 0;
+  width: 92px;
+}
+
+/* iOS/Chrome picker icon optisch runterdrehen */
+.opening-hours-input::-webkit-calendar-picker-indicator {
+  opacity: 0.65;
+}
+
+/* ================================
+   REQUIRED / INVALID STATE (global)
+================================ */
+
+.field-input.is-invalid {
+  border-color: rgba(239, 68, 68, 0.85) !important;
+  box-shadow: 0 0 0 1px rgba(239, 68, 68, 0.22) !important;
+}
+
+/* Pill-Wrapper (z.B. Datum/Uhrzeit, Öffnungszeiten) */
+.booking-datetime-row.is-invalid,
+.opening-hours-pill.is-invalid {
+  border: 1px solid rgba(239, 68, 68, 0.85) !important;
+  box-shadow: 0 0 0 1px rgba(239, 68, 68, 0.18) !important;
+}
+
+/* Custom dropdown toggle (Pakete/Einzelleistungen etc.) */
+.settings-dropdown-toggle.is-invalid {
+  border-color: rgba(239, 68, 68, 0.85) !important;
+  box-shadow: 0 0 0 1px rgba(239, 68, 68, 0.18) !important;
+}
+
+.settings-subhead{
+  display:flex;
+  align-items:center;
+  gap:12px;
+  margin: 6px 0 14px;
+}
+.settings-subtitle{
+  margin:0;
+  font-size: 14px;
+  font-weight: 600;
+  opacity: .9;
+}
+
+/* ================================
+   Settings Subnav (Service / Business)
+   ================================ */
+
+#settings-subnav {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 12px;
+  margin-bottom: 14px;
+}
+
+.settings-subnav-btn {
+  appearance: none;
+  border: 1px solid rgba(0, 0, 0, 0.08);
+  background: rgba(255, 255, 255, 0.7);
+  backdrop-filter: blur(10px);
+  -webkit-backdrop-filter: blur(10px);
+  border-radius: 16px;
+  padding: 14px 14px;
+  text-align: left;
+  cursor: pointer;
+  transition: transform 120ms ease, border-color 120ms ease, background 120ms ease;
+}
+
+.settings-subnav-btn:hover {
+  transform: translateY(-1px);
+  border-color: rgba(0, 0, 0, 0.12);
+  background: rgba(255, 255, 255, 0.85);
+}
+
+.settings-subnav-btn:active {
+  transform: translateY(0px);
+}
+
+.settings-subnav-title {
+  font-size: 14px;
+  font-weight: 600;
+  line-height: 1.2;
+}
+
+.settings-subnav-subtitle {
+  margin-top: 4px;
+  font-size: 12px;
+  opacity: 0.7;
+}
+
+/* SETTINGS: Hub Switch (Service / Business) */
+.settings-switch {
+  display: grid;
+  gap: 10px;
+  margin-bottom: 12px;
+}
+
+.settings-switch-btn {
+  width: 100%;
+  text-align: left;
+  padding: 14px 14px;
+  border-radius: var(--radius-lg);
+  border: 1px solid var(--border-subtle);
+  background: var(--bg-elevated-soft);
+  cursor: pointer;
+  transition: transform 0.08s ease, box-shadow 0.12s ease, background 0.12s ease;
+}
+
+.settings-switch-btn:hover {
+  background: rgba(255, 255, 255, 0.55);
+}
+
+.settings-switch-btn:active {
+  transform: translateY(1px) scale(0.995);
+}
+
+.settings-switch-title {
+  font-size: 15px;
+  font-weight: 600;
+  margin-bottom: 2px;
+}
+
+.settings-switch-sub {
+  font-size: 12px;
+  color: var(--text-soft);
+}
+
+/* BOOK: split date/time als eine gemeinsame Pill (scoped, ohne Side-Effects) */
+.booking-datetime-row.booking-datetime-pill {
+  display: flex;
+  align-items: stretch;
+  width: 100%;
+  margin-top: 4px;
+
+  border-radius: 999px;
+  border: 1px solid var(--border-subtle);
+  background: var(--bg-elevated-soft);
+  overflow: hidden;
+  gap: 0;
+}
+
+.booking-datetime-row.booking-datetime-pill > .dt-cell {
+  flex: 1 1 0;
+  min-width: 0;
+  display: flex;
+  align-items: center;
+}
+
+.booking-datetime-row.booking-datetime-pill > .dt-cell + .dt-cell {
+  border-left: 1px solid var(--border-subtle);
+}
+
+/* Wichtig: Input UND Select dürfen keine eigene Pill/Borders haben */
+.booking-datetime-row.booking-datetime-pill input.field-input,
+.booking-datetime-row.booking-datetime-pill select.field-input {
+  border: none;
+  border-radius: 0;
+  background: transparent;
+  box-shadow: none;
+  width: 100%;
+  padding: 10px 14px 10px 38px; /* Platz für Icon links */
+}
+
+/* Icons (Calendar / Clock) */
+.booking-datetime-row.booking-datetime-pill .dt-cell {
+  position: relative;
+}
+
+.booking-datetime-row.booking-datetime-pill .dt-cell::before {
+  content: "";
+  position: absolute;
+  left: 14px;
+  top: 50%;
+  transform: translateY(-50%);
+  width: 16px;
+  height: 16px;
+  opacity: 0.75;
+  background-repeat: no-repeat;
+  background-size: 16px 16px;
+  pointer-events: none;
+}
+
+/* Kalender */
+.booking-datetime-row.booking-datetime-pill .dt-date::before {
+  background-image: url("data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' width='16' height='16' viewBox='0 0 24 24' fill='none' stroke='%236b7280' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'><rect x='3' y='4' width='18' height='18' rx='2' ry='2'/><line x1='16' y1='2' x2='16' y2='6'/><line x1='8' y1='2' x2='8' y2='6'/><line x1='3' y1='10' x2='21' y2='10'/></svg>");
+}
+
+/* Uhr */
+.booking-datetime-row.booking-datetime-pill .dt-time::before {
+  background-image: url("data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' width='16' height='16' viewBox='0 0 24 24' fill='none' stroke='%236b7280' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'><circle cx='12' cy='12' r='9'/><path d='M12 7v5l3 2'/></svg>");
+}
+
+.settings-dropdown > summary {
+  list-style: none;
+}
+.settings-dropdown > summary::-webkit-details-marker {
+  display: none;
+}
+
+.settings-dropdown-toggle {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 10px;
+  padding: 10px 12px;
+  border: 1px solid rgba(0,0,0,0.08);
+  border-radius: 14px;
+  background: rgba(255,255,255,0.6);
+  cursor: pointer;
+  font-weight: 500;
+}
+
+.settings-dropdown[open] .settings-dropdown-toggle {
+  box-shadow: 0 6px 18px rgba(0,0,0,0.06);
+}
+
+/* DETAILS-DROPDOWNS: Menü anzeigen wenn open */
+.settings-dropdown[open] .settings-dropdown-menu{
+  display: block !important;
+}
+
+/* Promo: Date icon (works on iOS because it's not relying on native picker indicator) */
+.date-wrap{
+  position: relative;
+}
+
+/* Mobile: save button goes to next line (no weird overlap) */
+@media (max-width: 520px){
+  .promo-row-2{
+    align-items: stretch !important;
+  }
+  .promo-save-btn{
+    width: 100%;
+  }
+}
+
+@media (max-width: 520px){
+  .promo-row-2{
+    width: 100%;
+    max-width: 100%;
+    overflow: hidden;
+  }
+
+  .promo-row-2 > *{
+    max-width: 100%;
+  }
+
+  .date-wrap{
+    min-width: 0 !important;
+    flex: 1 1 220px; /* wächst, aber bricht sauber */
+  }
+
+  .date-wrap .date-input{
+    width: 100% !important;
+    max-width: 100% !important;
+  }
+}
