@@ -1,5 +1,5 @@
 <!doctype html>
-<html lang="de">
+<html lang="en">
 <head>
   <meta charset="UTF-8" />
   <title>Support – DetailHQ</title>
@@ -20,10 +20,10 @@
       <!-- Header -->
       <header class="app-header glass">
         <div style="display:flex; align-items:center; gap:10px;">
-          <button id="support-back" class="icon-button small" type="button" title="Zurück">←</button>
+          <button id="support-back" class="icon-button small" type="button" title="Back">←</button>
           <div>
             <h2 style="margin:0;">Support</h2>
-            <p class="header-subtitle" style="margin:2px 0 0;">Ticket erstellen</p>
+            <p class="header-subtitle" style="margin:2px 0 0;">Create ticket</p>
           </div>
         </div>
 
@@ -34,48 +34,48 @@
 
       <main class="app-main">
         <div class="settings-group glass">
-          <h3>Worum geht es?</h3>
+          <h3>What is this about?</h3>
           <p class="settings-help">
-            Wähle eine Kategorie und beschreibe dein Anliegen. Wir melden uns schnellstmöglich.
+            Choose a category and describe your issue. We’ll get back to you as soon as possible.
           </p>
 
-          <label class="field-label" for="support-topic">Thema</label>
+          <label class="field-label" for="support-topic">Topic</label>
           <select id="support-topic" class="field-input" style="appearance:auto;">
-            <option value="problem_mit_zahlung">Problem mit Zahlung</option>
-            <option value="abo_verwalten">Abo verwalten</option>
-            <option value="app_fehler">App-Fehler</option>
-            <option value="login_probleme">Login-Probleme</option>
-            <option value="fragen">Fragen</option>
-            <option value="sonstiges">Sonstiges</option>
+            <option value="problem_mit_zahlung">Payment issue</option>
+            <option value="abo_verwalten">Manage subscription</option>
+            <option value="app_fehler">App bug</option>
+            <option value="login_probleme">Login issues</option>
+            <option value="fragen">Questions</option>
+            <option value="sonstiges">Other</option>
           </select>
 
-          <label class="field-label" for="support-message" style="margin-top:12px;">Nachricht</label>
+          <label class="field-label" for="support-message" style="margin-top:12px;">Message</label>
           <textarea
             id="support-message"
             class="field-input"
             rows="6"
-            placeholder="Beschreibe kurz, was genau passiert. Wenn möglich: Was du erwartet hast vs. was passiert."
+            placeholder="Briefly describe what is happening. If possible: what you expected vs. what actually happened."
             style="resize:none;"
           ></textarea>
 
           <div id="support-error" class="error-text"></div>
 
           <button id="support-submit" class="btn btn-primary" type="button" style="margin-top:10px;">
-            Absenden
+            Submit
           </button>
 
           <div id="support-success" class="form-hint" style="display:none; margin-top:12px;">
-            Support-Ticket eingegangen. Wir melden uns schnellstmöglich.
+            Support ticket received. We’ll get back to you as soon as possible.
           </div>
         </div>
 
         <div class="settings-group glass">
-          <h3>Direktkontakt</h3>
+          <h3>Direct contact</h3>
           <p class="settings-help">
           </p>
 
           <div class="list-container" style="display:flex; flex-direction:column; gap:8px;">
-            <a class="link-button" href="mailto:support@detailhq.de">support@detailhq.de</a>
+            <a class="link-button" href="mailto:support@detailhq.app">support@detailhq.app</a>
           </div>
         </div>
       </main>
