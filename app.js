@@ -4,7 +4,7 @@
 const SUPABASE_URL = "https://qcilpodwbtbsxoabjfzc.supabase.co";
 const SUPABASE_ANON_KEY =
   "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InFjaWxwb2R3YnRic3hvYWJqZnpjIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NjUyNzAzNTQsImV4cCI6MjA4MDg0NjM1NH0.RZ4M0bMSVhNpYZnktEyKCuJDFEpSJoyCmLFQhQLXs_w";
-const WORKER_API_BASE = "https://api.detailhq.de";
+const WORKER_API_BASE = "https://api.detailhq.app";
 
 function normCode(s) {
   return String(s || "").trim().toUpperCase();
@@ -1832,7 +1832,7 @@ try {
       }
 
       const { error } = await supabaseClient.auth.resetPasswordForEmail(email, {
-  redirectTo: "https://detailhq.de/reset-password.html",
+  redirectTo: "https://detailhq.app/reset-password.html",
 });
 
       if (error) {
@@ -2164,7 +2164,7 @@ function applyDevAccountHides() {
   const billingSection = document.getElementById("settings-billing");
   if (!billingSection) return;
 
-  if (email === "dev@detailhq.de") {
+  if (email === "dev@detailhq.app") {
     billingSection.style.display = "none";
   } else {
     billingSection.style.display = "";
@@ -2424,7 +2424,7 @@ function closeProfileModal() {
 // BILLING (Stripe)
 // ================================
 function setupBillingHandlers() {
-  const apiBase = "https://api.detailhq.de"; 
+  const apiBase = "https://api.detailhq.app"; 
 
   // Open Checkout Page 
   if (billingOpenCheckoutButton) {
@@ -2451,7 +2451,7 @@ function updateBillingUI() {
 function updateBookingLinkUI() {
   if (!currentUser) return;
 
-  const link = `https://detailhq.de/book.html?user=${encodeURIComponent(currentUser.id)}`;
+  const link = `https://detailhq.app/book.html?user=${encodeURIComponent(currentUser.id)}`;
 
   if (settingsBookingLinkInput) settingsBookingLinkInput.value = link;
 
@@ -4169,7 +4169,7 @@ function formatBookingTitle(booking) {
 async function confirmBookingRequest(bookingId) {
   const session = (await supabaseClient.auth.getSession())?.data?.session;
   const token = session?.access_token || "";
-  const res = await fetch("https://api.detailhq.de/booking/confirm", {
+  const res = await fetch("https://api.detailhq.app/booking/confirm", {
     method: "POST",
     headers: {
       "Content-Type": "application/json",
@@ -4183,7 +4183,7 @@ async function confirmBookingRequest(bookingId) {
 async function proposeBookingAlternative(bookingId, proposedStartAtIso) {
   const session = (await supabaseClient.auth.getSession())?.data?.session;
   const token = session?.access_token || "";
-  const res = await fetch("https://api.detailhq.de/booking/propose", {
+  const res = await fetch("https://api.detailhq.app/booking/propose", {
     method: "POST",
     headers: {
       "Content-Type": "application/json",
@@ -7180,6 +7180,6 @@ function setupPullToRefresh() {
 // ================================
 function setupCalendarUrlForUser() {
   if (!currentUser) return;
-  const apiBase = "https://api.detailhq.de";
+  const apiBase = "https://api.detailhq.app";
   currentCalendarUrl = `${apiBase}/cal/${currentUser.id}.ics`;
 }
