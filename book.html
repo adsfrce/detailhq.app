@@ -16,8 +16,8 @@
         <div class="auth-logo-row" style="margin-bottom:14px;">
           <img src="logo_icon.PNG" alt="DetailHQ Logo" class="app-logo" />
           <div>
-            <h1 class="app-title" id="public-title">Termin buchen</h1>
-            <p class="app-subtitle" id="public-subtitle">Wähle Leistungen und buche deinen Termin.</p>
+            <h1 class="app-title" id="public-title">Book appointment</h1>
+            <p class="app-subtitle" id="public-subtitle">Choose services and book your appointment.</p>
           </div>
         </div>
 
@@ -26,31 +26,31 @@
 
         <!-- Schritt-Indikator -->
         <div class="booking-steps-indicator" style="margin-top:10px;">
-          <span id="booking-step-indicator-1" class="booking-step-indicator active">1. Fahrzeug</span>
-          <span id="booking-step-indicator-2" class="booking-step-indicator">2. Leistungen</span>
-          <span id="booking-step-indicator-3" class="booking-step-indicator">3. Termin</span>
-          <span id="booking-step-indicator-4" class="booking-step-indicator">4. Kontakt</span>
+          <span id="booking-step-indicator-1" class="booking-step-indicator active">1. Vehicle</span>
+          <span id="booking-step-indicator-2" class="booking-step-indicator">2. Services</span>
+          <span id="booking-step-indicator-3" class="booking-step-indicator">3. Appointment</span>
+          <span id="booking-step-indicator-4" class="booking-step-indicator">4. Contact</span>
         </div>
 
         <form id="booking-form" class="form" style="margin-top:10px;">
           <!-- STEP 1: Fahrzeug -->
           <div class="booking-step" id="booking-step-1" data-step="1">
-            <label class="field-label" for="booking-car">Fahrzeug</label>
+            <label class="field-label" for="booking-car">Vehicle</label>
             <input id="booking-car" type="text" class="field-input" placeholder="Marke & Modell" required />
 
-            <label class="field-label" for="booking-vehicle-class">Fahrzeugklasse</label>
+            <label class="field-label" for="booking-vehicle-class">Type of Vehicle</label>
             <select id="booking-vehicle-class" class="field-input" required>
-              <option value="">Bitte wählen</option>
+              <option value="">Please select</option>
             </select>
 
             <button type="button" class="btn btn-primary" id="booking-next-1" style="margin-top:12px;">
-              Weiter
+              Next
             </button>
           </div>
 
           <!-- STEP 2: Leistungen -->
           <div class="booking-step hidden" id="booking-step-2" data-step="2">
-<label class="field-label">Paket (optional)</label>
+<label class="field-label">Package (optional)</label>
 
 <div class="settings-dropdown booking-package-dropdown">
   <button
@@ -59,35 +59,35 @@
     id="booking-package-toggle"
     aria-expanded="false"
   >
-    <span id="booking-package-label">Paket wählen</span>
+    <span id="booking-package-label">Please select</span>
     <span class="settings-dropdown-chevron">▾</span>
   </button>
 
   <div id="booking-package-menu" class="settings-dropdown-menu">
-    <p class="form-hint">Lädt...</p>
+    <p class="form-hint">Loading...</p>
   </div>
 </div>
 
 <!-- Hidden select bleibt für Validation/Submit/Existing Logic -->
 <select id="booking-main-service" class="field-input hidden">
-  <option value="">Kein Paket</option>
+  <option value="">No Package</option>
 </select>
 
             <div class="form-hint" style="margin-top:6px;">
-              Mindestens Paket oder Einzelleistung wählen.
+              Select at least one package or single service.
             </div>
 
             <div class="booking-services-group" style="margin-top:10px;">
-              <h4 class="settings-subtitle">Einzelleistungen</h4>
+              <h4 class="settings-subtitle">Single services</h4>
 
               <div class="settings-dropdown booking-singles-dropdown">
                 <button type="button" class="settings-dropdown-toggle" id="booking-singles-toggle">
-                  Einzelleistungen wählen
+                  Choose single services
                   <span class="settings-dropdown-chevron">▾</span>
                 </button>
 
                 <div id="booking-singles-menu" class="settings-dropdown-menu">
-                  <p class="form-hint">Lädt...</p>
+                  <p class="form-hint">Loading...</p>
                 </div>
               </div>
 
@@ -97,14 +97,14 @@
             <p id="booking-error" class="form-hint" style="margin-top:10px; color:var(--danger);"></p>
 
             <div style="display:flex; gap:10px; margin-top:12px;">
-              <button type="button" class="btn btn-secondary" id="booking-back-2">Zurück</button>
-              <button type="button" class="btn btn-primary" id="booking-next-2">Weiter</button>
+              <button type="button" class="btn btn-secondary" id="booking-back-2">Back</button>
+              <button type="button" class="btn btn-primary" id="booking-next-2">Next</button>
             </div>
           </div>
 
 <!-- STEP 3: Termin -->
 <div class="booking-step hidden" id="booking-step-3" data-step="3">
-  <label class="field-label">Wunschtermin</label>
+  <label class="field-label">Preferred date</label>
 
 <div class="booking-datetime-row booking-datetime-pill">
   <div class="dt-cell dt-date">
@@ -112,7 +112,7 @@
   </div>
   <div class="dt-cell dt-time">
     <select id="booking-time" class="field-input" required>
-      <option value="">Bitte wählen</option>
+      <option value="">Please select</option>
     </select>
   </div>
 </div>
@@ -120,8 +120,8 @@
   <p id="booking-time-hint" class="form-hint" style="margin-top:6px;"></p>
 
   <div style="display:flex; gap:10px; margin-top:12px;">
-    <button type="button" class="btn btn-secondary" id="booking-back-3">Zurück</button>
-    <button type="button" class="btn btn-primary" id="booking-next-3">Weiter</button>
+    <button type="button" class="btn btn-secondary" id="booking-back-3">Back</button>
+    <button type="button" class="btn btn-primary" id="booking-next-3">Next</button>
   </div>
 </div>
  
@@ -130,35 +130,35 @@
             <label class="field-label" for="booking-customer-name">Name</label>
             <input id="booking-customer-name" type="text" class="field-input" required />
 
-            <label class="field-label" for="booking-customer-phone">Telefon</label>
+            <label class="field-label" for="booking-customer-phone">Phone</label>
             <input id="booking-customer-phone" type="tel" class="field-input" required />
 
             <label class="field-label" for="booking-customer-email">E-Mail</label>
             <input id="booking-customer-email" type="email" class="field-input" required />
 
-            <label class="field-label" for="booking-customer-address">Adresse (optional)</label>
+            <label class="field-label" for="booking-customer-address">Adress</label>
             <input id="booking-customer-address" type="text" class="field-input" />
 
-            <label class="field-label" for="booking-notes">Anmerkungen (optional)</label>
+            <label class="field-label" for="booking-notes">Notes (optional)</label>
             <textarea id="booking-notes" class="field-input" rows="4" placeholder="Sonderwünsche, worauf geachtet werden soll..."></textarea>
 
-            <label class="field-label" for="booking-discount-code" style="margin-top:12px;">Gutscheincode (optional)</label>
+            <label class="field-label" for="booking-discount-code" style="margin-top:12px;">Voucher code (optional)</label>
 <div style="display:flex; gap:10px; align-items:center;">
   <input id="booking-discount-code" type="text" class="field-input" placeholder="CODE" style="text-transform:uppercase;" />
-  <button id="booking-discount-apply" type="button" class="btn btn-secondary" style="white-space:nowrap;">Anwenden</button>
+  <button id="booking-discount-apply" type="button" class="btn btn-secondary" style="white-space:nowrap;">Apply</button>
 </div>
 <p id="booking-discount-status" class="form-hint"></p>
 
             <button type="submit" class="btn btn-primary" id="public-submit" style="margin-top:12px;">
-              Termin buchen
+              Book appointment
             </button>
 
           </div>
         </form>
 <section id="booking-thankyou" class="hidden" style="margin-top:10px;">
-  <h2 style="margin:0 0 6px 0;">Vielen Dank für deine Buchung.</h2>
+  <h2 style="margin:0 0 6px 0;">Thank you for your booking.</h2>
   <p class="form-hint" style="margin:0 0 14px 0;">
-    Dein Termin wurde erfolgreich eingetragen.
+    Your appointment has been successfully scheduled.
   </p>
 
   <div id="booking-thankyou-content"></div>
@@ -171,13 +171,3 @@
   <script src="book.js?v1.0.3"></script>
 </body>
 </html>
-
-
-
-
-
-
-
-
-
-
