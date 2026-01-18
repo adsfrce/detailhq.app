@@ -97,19 +97,19 @@ function showThankYouPage(summary) {
 
     thankYouContent.innerHTML = `
 
-      <div class="success-line"><strong>Fahrzeug:</strong> ${summary.car}</div>
-      <div class="success-line"><strong>Fahrzeugklasse:</strong> ${summary.vehicleClassName || "—"}</div>
-      <div class="success-line"><strong>Termin:</strong> ${summary.dateStr} · ${summary.timeStr}</div>
-      <div class="success-line"><strong>Dauer:</strong> ${minutesToHoursText(summary.durationMinutes)}</div>
-      <div class="success-line"><strong>Preis:</strong> ${euro(summary.totalPriceCents)}</div>
+      <div class="success-line"><strong>Vehicle:</strong> ${summary.car}</div>
+      <div class="success-line"><strong>Vehicle Class:</strong> ${summary.vehicleClassName || "—"}</div>
+      <div class="success-line"><strong>Appointment:</strong> ${summary.dateStr} · ${summary.timeStr}</div>
+      <div class="success-line"><strong>Duration:</strong> ${minutesToHoursText(summary.durationMinutes)}</div>
+      <div class="success-line"><strong>Price:</strong> ${euro(summary.totalPriceCents)}</div>
 
       <div class="success-line" style="margin-top:12px;">
-        <strong>Leistungen:</strong><br>
+        <strong>Services:</strong><br>
         ${servicesLine || "—"}
       </div>
 
       <div style="margin-top:16px;">
-        <button type="button" id="add-to-calendar" class="btn btn-primary" style="width:100%;">Zum Kalender hinzufügen</button>
+        <button type="button" id="add-to-calendar" class="btn btn-primary" style="width:100%;">Add to calendar</button>
       </div>
     `;
 
@@ -167,8 +167,8 @@ async function rebuildTimeOptionsForDay(detailerId, day, durationMinutes) {
   const hint = document.getElementById("booking-time-hint");
   if (!timeSelect) return;
 
-  timeSelect.innerHTML = `<option value="">Bitte wählen</option>`;
-  if (hint) hint.textContent = "Lädt verfügbare Zeiten...";
+  timeSelect.innerHTML = `<option value="">Please select</option>`;
+  if (hint) hint.textContent = "Loading available times...";
 
     // Blockierte Zeiten laden (bereits gebuchte Slots etc.)
   let blocked = [];
@@ -179,7 +179,7 @@ async function rebuildTimeOptionsForDay(detailerId, day, durationMinutes) {
       end: new Date(b.end_at),
     }));
   } catch (e) {
-    console.warn("DetailHQ: availability konnte nicht geladen werden, fallback ohne blocking");
+    console.warn("DetailHQ: Availability could not be loaded, fallback without blocking.");
     blocked = [];
   }
 
@@ -192,7 +192,7 @@ const opening = providerSettings?.opening_hours?.[dayKey] || null;
 const isOpen = opening ? (opening.open === true || (!!opening.start && !!opening.end)) : true;
 
 if (!isOpen) {
-  if (hint) hint.textContent = "An diesem Tag geschlossen.";
+  if (hint) hint.textContent = "Closed on this day.";
   return;
 }
 
@@ -225,7 +225,7 @@ const STEP = 15;
     timeSelect.appendChild(opt);
   }
 
-  if (hint) hint.textContent = options.length ? "" : "Keine freien Zeiten an diesem Tag.";
+  if (hint) hint.textContent = options.length ? "" : "No available times on this day.";
 }
 
 const bookingCustomerNameInput = $("booking-customer-name");
@@ -345,7 +345,7 @@ async function applyDiscountCode(detailerId, subtotalCents) {
     return;
   }
 
-  if (discountStatus) discountStatus.textContent = "Prüfe Code...";
+  if (discountStatus) discountStatus.textContent = "Checking Codee...";
 
   try {
     const res = await apiPost(`/public/discount/validate`, {
@@ -364,7 +364,7 @@ async function applyDiscountCode(detailerId, subtotalCents) {
 
     const net = Math.max(0, Number(subtotalCents || 0) - Number(appliedDiscount.discount_cents || 0));
     if (discountStatus) {
-      discountStatus.textContent = `Rabatt: ${euro(appliedDiscount.discount_cents)} · Neu: ${euro(net)}`;
+      discountStatus.textContent = `Discount: ${usd(appliedDiscount.discount_cents)} · Now: ${usd(net)}`;
     }
   } catch (e) {
     appliedDiscount = {
@@ -374,13 +374,13 @@ async function applyDiscountCode(detailerId, subtotalCents) {
       discount_type: null,
       discount_value: null,
     };
-    if (discountStatus) discountStatus.textContent = "Code ungültig.";
+    if (discountStatus) discountStatus.textContent = "Invalid code.";
   }
 }
 
 function euro(cents) {
   const v = (Number(cents || 0) / 100);
-  return v.toLocaleString("de-DE", { style: "currency", currency: "EUR" });
+  return v.toLocaleString("de-DE", { style: "currency", currency: "USD" });
 }
 
 function safeText(s) {
@@ -416,7 +416,7 @@ async function apiPost(path, body) {
 }
 
 function renderVehicleClasses() {
-  bookingVehicleClassSelect.innerHTML = `<option value="">Bitte wählen</option>`;
+  bookingVehicleClassSelect.innerHTML = `<option value="">Please select</option>`;
   vehicleClasses.forEach((vc) => {
     const opt = document.createElement("option");
     opt.value = vc.id; // vehicle_classes.id
@@ -444,8 +444,8 @@ const packages = services.filter((s) =>
   bookingMainServiceSelect.appendChild(ph);
 
   if (!packages.length) {
-    bookingPackageMenu.innerHTML = `<p class="form-hint">Keine Pakete verfügbar.</p>`;
-    bookingPackageLabel.textContent = "Paket wählen";
+    bookingPackageMenu.innerHTML = `<p class="form-hint">No packages available.</p>`;
+    bookingPackageLabel.textContent = "Choose package.";
     return;
   }
 
@@ -684,7 +684,7 @@ if (descWrap) {
 function renderSelectedSinglesList() {
   const singles = services.filter(s => selectedSingles.has(s.id));
   if (singles.length === 0) {
-    bookingSinglesList.textContent = "Keine Einzelleistungen gewählt.";
+    bookingSinglesList.textContent = "No services selected.";
     return;
   }
   bookingSinglesList.textContent = singles.map(s => s.name).join(", ");
@@ -737,7 +737,7 @@ function validateStep2() {
   bookingSinglesToggle.classList.toggle("is-invalid", bad);
 
   if (bad) {
-    bookingError.textContent = "Bitte mindestens ein Paket oder eine Einzelleistung auswählen.";
+    bookingError.textContent = "Please select at least one package or service.";
     return false;
   }
 
@@ -806,7 +806,7 @@ async function fetchProviderSettings(detailerId) {
     const res = await apiGet(`/public/provider?user=${encodeURIComponent(detailerId)}`);
     return res || null;
   } catch (e) {
-    console.warn("DetailHQ: provider settings konnten nicht geladen werden (fallback 07-19).");
+    console.warn("DetailHQ: provider settings could not be loaded (fallback 07–19).");
     return null;
   }
 }
@@ -815,7 +815,7 @@ async function init() {
   detailerId = getPathDetailerId();
   if (!detailerId) {
     publicError.style.display = "block";
-    publicError.textContent = "Ungültiger Link.";
+    publicError.textContent = "Invalid Link.";
     showStep(1);
     return;
   }
@@ -844,7 +844,7 @@ clearInvalid(bookingTimeInput);
     showStep(1);
   } catch (err) {
     publicError.style.display = "block";
-    publicError.textContent = "Konnte Daten nicht laden. Bitte später erneut versuchen.";
+    publicError.textContent = "Could not load data. Please try again later.";
     console.error(err);
   }
 }
@@ -869,7 +869,7 @@ next1.addEventListener("click", () => {
         const subtotalCents = getCurrentSubtotalCents();
         await applyDiscountCode(detailerId, subtotalCents);
       } catch (e) {
-        if (discountStatus) discountStatus.textContent = "Code konnte nicht geprüft werden.";
+        if (discountStatus) discountStatus.textContent = "Code could not be verified.";
       }
     });
   }
@@ -962,7 +962,7 @@ bookingForm.addEventListener("submit", async (e) => {
     return;
   }
   if (!packageId && singles.length === 0) {
-    bookingError.textContent = "Please select at least one package or single service.";
+    bookingError.textContent = "Please select at least one package or service.";
     showStep(2);
     return;
   }
@@ -991,7 +991,7 @@ if (!customerName || !customerEmail || !customerPhone) {
 
   const startAt = new Date(`${bookingDateInput.value}T${bookingTimeInput.value}:00`);
   if (isNaN(startAt.getTime())) {
-    bookingError.textContent = "Ungültiger Termin.";
+    bookingError.textContent = "Invalid appointment.";
     return;
   }
 
@@ -1088,4 +1088,5 @@ showThankYouPage({
 });
 
 init();
+
 
