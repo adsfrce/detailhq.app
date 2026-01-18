@@ -7,7 +7,7 @@ const SUPABASE_ANON_KEY =
 let supabaseClient = null;
 let currentUser = null;
 
-const apiBase = "https://api.detailhq.de";
+const apiBase = "https://api.detailhq.app";
 
 function $(id) {
   return document.getElementById(id);
