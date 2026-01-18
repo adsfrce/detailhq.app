@@ -1088,16 +1088,3 @@ showThankYouPage({
 });
 
 init();
-
-
-
-
-
-
-
-
-
-
-
-
-
