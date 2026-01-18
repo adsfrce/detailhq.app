@@ -1,0 +1,261 @@
+<!doctype html>
+<html lang="de">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>DetailHQ – Zahlung & Abo</title>
+
+    <link rel="icon" type="image/png" href="app_icon.PNG" />
+    <link rel="apple-touch-icon" href="app_icon.PNG" />
+    <link rel="stylesheet" href="style-app.css" />
+  </head>
+
+  <body class="theme-light">
+    <div id="app-root">
+      <div class="view active" id="checkout-view" style="padding-bottom: 16px;">
+<header class="app-header glass">
+  <div class="header-left">
+    <img src="logo_icon.PNG" alt="DetailHQ Logo" class="header-logo" />
+    <div>
+      <h2 id="header-title">Zahlung & Abo</h2>
+      <p id="header-subtitle" class="header-subtitle">
+        Wähle deinen Plan oder verwalte dein Abo.
+      </p>
+    </div>
+  </div>
+
+  <div style="display:flex; align-items:center; gap:10px;">
+    <a class="btn btn-ghost btn-small" id="checkout-back-to-app" href="/app">Zur App</a>
+
+    <div class="profile-wrapper">
+      <button id="profile-button" class="icon-button profile-avatar" title="Profil">
+        <img
+          id="profile-avatar-image"
+          src="pfp.png"
+          alt="Profilbild"
+          class="profile-avatar-image"
+        />
+      </button>
+
+      <div id="profile-menu" class="profile-menu hidden">
+        <button id="profile-manage-button" class="profile-menu-item">
+          Profil verwalten
+        </button>
+        <button id="profile-logout-button" class="profile-menu-item danger">
+          Abmelden
+        </button>
+      </div>
+    </div>
+  </div>
+</header>
+
+      <main class="app-main">
+        <div class="app-content">
+          <div class="cards-grid" style="grid-template-columns: 1fr;">
+            <div class="card">
+              <div class="card-header">
+                <div class="card-title"></div>
+                <div class="card-subtitle" id="checkout-status-text">
+                </div>
+              </div>
+
+              <div class="card-content">
+                <div class="list-container" style="padding: 14px;">
+                  <div style="display:flex; align-items:center; justify-content:space-between; gap:12px;">
+                    <div style="display:flex; flex-direction:column; gap:4px;">
+                      <div style="font-weight:600;" id="checkout-plan-title">Plan</div>
+                      <div class="muted" id="checkout-plan-detail">—</div>
+                    </div>
+
+                    <span class="payment-pill payment-pill--partial" id="checkout-status-pill">—</span>
+                  </div>
+                </div>
+
+                <div style="height: 14px;"></div>
+
+                <div class="cards-grid checkout-plans-grid">
+                  <div class="card checkout-plan-card">
+                    <div class="card-header">
+                      <div class="card-title">Monatlich</div>
+                      <div class="card-subtitle">Flexibel, kündbar jederzeit</div>
+                    </div>
+
+                    <div class="card-content">
+                      <div class="checkout-price-line">
+                        <span class="checkout-price" id="checkout-price-monthly">39€</span>
+                        <span class="muted">/ Monat</span>
+                      </div>
+
+                      <ul class="checkout-ul">
+                        <li>Alle Kernfunktionen freigeschaltet</li>
+                        <li>Buchungslink für Kunden</li>
+                        <li>Kalender, Aufträge, Pakete, Fahrzeuge</li>
+                        <li>Support & Updates</li>
+                      </ul>
+
+                      <button class="btn btn-secondary btn-block" id="checkout-start-monthly">
+                        Monatlich starten
+                      </button>
+                    </div>
+                  </div>
+
+                  <div class="card checkout-plan-card checkout-plan-card--featured">
+                    <div class="card-header">
+                      <div class="card-title">Jährlich</div>
+                      <div class="card-subtitle">Beste Wahl für Profis</div>
+                    </div>
+
+                    <div class="card-content">
+                      <div class="checkout-price-line">
+  <span class="checkout-price" id="checkout-price-yearly">249€</span>
+  <span class="muted">/ Jahr</span>
+  <span class="checkout-savings-pill">47% sparen</span>
+</div>
+
+                      <ul class="checkout-ul">
+                        <li>Planbar, keine Monats-Entscheidung</li>
+                        <li>Priorisierte Weiterentwicklung</li>
+                        <li>Bestes Preis-Leistungs-Verhältnis</li>
+                      </ul>
+
+                      <button class="btn btn-primary btn-block" id="checkout-start-yearly">
+                        Jährlich starten
+                      </button>
+                    </div>
+                  </div>
+                </div>
+
+                <div style="height: 18px;"></div>
+
+                <div class="list-container" style="padding: 14px;">
+                  <div style="display:flex; flex-direction:column; gap:10px;">
+                    <div style="font-weight:600;">Zahlung & Abo verwalten</div>
+                    <div class="muted">
+                      Hier kannst du Zahlungsmethode ändern, Rechnungen ansehen, kündigen oder upgraden.
+                    </div>
+                    <button class="btn btn-ghost btn-block" id="checkout-manage-portal">
+                      Abo & Zahlung verwalten (Stripe)
+                    </button>
+                  </div>
+                </div>
+
+                <div style="height: 10px;"></div>
+
+                <div class="muted" id="checkout-auth-hint" style="display:none;">
+                  Du bist nicht eingeloggt. Bitte öffne die App und logge dich ein.
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </main>
+    </div>
+
+    <div class="app-loading-overlay" id="checkout-loading">
+      <div class="app-loading-card glass">
+        <div class="app-loading-title">Lade…</div>
+        <div class="app-loading-subtitle">Session wird geprüft</div>
+      </div>
+    </div>
+
+    <style>
+      .checkout-plans-grid {
+        grid-template-columns: repeat(2, minmax(0, 1fr));
+      }
+      @media (max-width: 900px) {
+        .checkout-plans-grid {
+          grid-template-columns: 1fr;
+        }
+      }
+      .checkout-price-line {
+        display: flex;
+        align-items: baseline;
+        gap: 10px;
+        margin: 4px 0 10px;
+      }
+      .checkout-price {
+        font-size: 34px;
+        font-weight: 700;
+        letter-spacing: -0.02em;
+      }
+      .checkout-ul {
+        margin: 0 0 14px;
+        padding-left: 18px;
+        display: grid;
+        gap: 8px;
+      }
+      .checkout-note {
+        margin-top: 10px;
+        font-size: 12px;
+        line-height: 1.35;
+      }
+.checkout-savings-pill {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  padding: 3px 8px;
+  border-radius: 999px;
+  font-size: 11px;
+  font-weight: 500;
+  border: 1px solid rgba(22, 163, 74, 0.6);
+  background: rgba(22, 163, 74, 0.12);
+  color: #16a34a;
+  white-space: nowrap;
+  margin-left: -12px;
+  margin-top: -10px;
+}
+      .checkout-pill-row {
+        display: flex;
+        justify-content: flex-start;
+        margin-bottom: 10px;
+      }
+      .checkout-plan-card--featured {
+        box-shadow:
+          0 0 0 1px rgba(255, 255, 255, 0.10),
+          0 10px 40px rgba(0, 0, 0, 0.30);
+      }
+      .app-loading-overlay {
+        position: fixed;
+        inset: 0;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        background: rgba(0, 0, 0, 0.55);
+        backdrop-filter: blur(14px);
+        -webkit-backdrop-filter: blur(14px);
+        z-index: 9999;
+      }
+      .app-loading-card {
+        padding: 18px 18px;
+        border-radius: 18px;
+        border: 1px solid rgba(255, 255, 255, 0.12);
+        min-width: 260px;
+        text-align: center;
+      }
+      .app-loading-title {
+        font-weight: 700;
+      }
+      .app-loading-subtitle {
+        margin-top: 6px;
+        opacity: 0.8;
+        font-size: 13px;
+      }
+
+      .btn.is-striked {
+  opacity: 0.45;
+  text-decoration: line-through;
+  pointer-events: none;
+}
+
+.checkout-plan-card,
+.checkout-plan-card--featured {
+  border-radius: 18px;
+  overflow: hidden;
+}
+
+    </style>
+
+    <script src="https://unpkg.com/@supabase/supabase-js@2.48.0/dist/umd/supabase.js"></script>
+    <script src="checkout.js?v1.00"></script>
+  </body>
+</html>
