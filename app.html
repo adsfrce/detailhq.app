@@ -127,7 +127,7 @@
           <div>
             <h2 id="header-title">Dashboard</h2>
             <p id="header-subtitle" class="header-subtitle">
-              Overview of your orders and revenue.
+              Overview of your jobs and revenue.
             </p>
           </div>
         </div>
@@ -177,7 +177,7 @@
         </div>
 
         <div class="card glass">
-          <p class="card-label">Order Volume</p>
+          <p class="card-label">Job Volume</p>
           <p class="card-value" id="volume-today">$ 0</p>
         </div>
       </div>
@@ -189,13 +189,13 @@
       </div>
 
           <div class="section-header">
-            <h3>Today's Orders</h3>
+            <h3>Today's Jobs</h3>
             <button id="new-booking-button" class="btn btn-secondary btn-small">
-              New Order
+              New Job
             </button>
           </div>
           <div id="today-bookings" class="list-container empty-state">
-            <p>No orders for today yet.</p>
+            <p>No Jobs for today yet.</p>
           </div>
 
           <div class="section-header">
@@ -213,10 +213,10 @@
 
   <div id="intake-start-panel" class="glass" style="padding:12px; margin-bottom:12px;">
     <p class="form-hint" style="margin:0 0 10px;">
-      Select an order and start the intake protocol.
+      Select a Job and start the protocol.
     </p>
 
-    <label class="field-label" for="intake-booking-select">Order</label>
+    <label class="field-label" for="intake-booking-select">Job</label>
     <select id="intake-booking-select" class="field-input">
       <option value="">Please select…</option>
     </select>
@@ -242,11 +242,11 @@
           <div class="section-header">
             <h3>Schedule</h3>
             <button id="new-booking-button-2" class="btn btn-secondary btn-small">
-              New Order
+              New Job
             </button>
           </div>
           <div id="schedule-list" class="list-container empty-state">
-            <p>No scheduled orders yet.</p>
+            <p>No scheduled Jobs yet.</p>
           </div>
         </section>
 
@@ -272,7 +272,7 @@
     <div class="settings-group glass">
       <h3>Services & Prices</h3>
       <p class="settings-help">
-        Define vehicle classes and services. You will use these later when creating orders.
+        Define vehicle classes and services. You will use these later when creating Jobs.
       </p>
 
       <h4 class="settings-subtitle">Vehicle Classes</h4>
@@ -528,7 +528,7 @@
           <option value="10">10</option>
         </select>
         <p class="form-hint" style="margin-top: 6px;">
-          Only applies to bookings via your booking link. Internal orders remain unlimited.
+          Only applies to bookings via your booking link. Internal Jobs remain unlimited.
         </p>
       </div>
 
@@ -578,7 +578,7 @@
     <div class="settings-group glass">
       <h3>Reviews</h3>
       <p class="settings-help">
-        Enter your Google profile or review link for reminders after orders.
+        Enter your Google profile or review link for reminders after Jobs.
       </p>
       <label class="field-label" for="settings-review-link">Google Profile URL</label>
       <input id="settings-review-link" type="url" class="field-input" placeholder="https://www.google.com/maps/place/..." />
@@ -758,7 +758,7 @@
         <div class="profile-modal-backdrop"></div>
         <div class="profile-modal-card glass">
           <div class="profile-modal-header">
-            <h3>New Order</h3>
+            <h3>New Job</h3>
             <button id="booking-close-button" class="icon-button small" title="Close">✕</button>
           </div>
 
@@ -911,7 +911,7 @@
                   Back
                 </button>
                 <button type="submit" class="btn btn-primary btn-small" style="float:right;">
-                  Create Order
+                  Create Job
                 </button>
               </div>
             </div>
@@ -929,7 +929,7 @@
         <div class="profile-modal-backdrop"></div>
         <div class="profile-modal-card glass">
           <div class="profile-modal-header">
-            <h3 id="booking-detail-title">Order</h3>
+            <h3 id="booking-detail-title">Job</h3>
             <button
               id="booking-detail-close"
               class="icon-button small"
@@ -1007,7 +1007,7 @@
   <div id="booking-detail-package-menu" class="settings-dropdown-menu"></div>
 </div>
     <p class="form-hint">
-      Optional main package for this order.
+      Optional main package for this Job.
     </p>
   </div>
 
@@ -1113,7 +1113,7 @@
                 id="booking-detail-notes"
                 class="field-input"
                 rows="4"
-                placeholder="Internal notes for the order"
+                placeholder="Internal notes for the Job"
               ></textarea>
             </div>
 
@@ -1121,7 +1121,7 @@
               <h4 class="settings-subtitle">Status</h4>
 
               <label class="field-label" for="booking-detail-job-status">
-                Order Status
+                Job Status
               </label>
               <select
                 id="booking-detail-job-status"
@@ -1180,7 +1180,7 @@
                   placeholder="e.g., 299"
                 />
                 <p class="form-hint">
-                  Only fill in if the paid amount differs from the order volume.
+                  Only fill in if the paid amount differs from the Job volume.
                 </p>
               </div>
 
@@ -1190,7 +1190,7 @@
                 id="booking-detail-delete-button"
                 class="btn btn-danger"
               >
-                Delete Order
+                Delete Job
               </button>
               <button
                 type="button"
@@ -1213,7 +1213,7 @@
     </div>
 
     <div class="booking-steps-indicator">
-      <span id="intake-step-indicator-1" class="booking-step-indicator active">1. Order</span>
+      <span id="intake-step-indicator-1" class="booking-step-indicator active">1. Job</span>
       <span id="intake-step-indicator-2" class="booking-step-indicator">2. Vehicle</span>
       <span id="intake-step-indicator-3" class="booking-step-indicator">3. Check</span>
       <span id="intake-step-indicator-4" class="booking-step-indicator">4. Exterior</span>
@@ -1226,7 +1226,7 @@
       <div class="booking-step" id="intake-step-1" data-step="1">
         <div class="glass" style="padding:12px;">
           <p class="form-hint" style="margin:0 0 10px;">
-            Order has been selected. You can adjust the date.
+            Job has been selected. You can adjust the date.
           </p>
 
           <div class="booking-datetime-row">
@@ -1450,7 +1450,7 @@
           </span>
           <span class="nav-label">Schedule</span>
         </button>
-<button class="nav-item" data-tab="orders">
+<button class="nav-item" data-tab="Jobs">
   <span class="nav-icon">
     <img src="auftragsannahme.png" alt="Intake Protocol" />
   </span>
