@@ -47,7 +47,7 @@ function setStatusPill(kind, text) {
 }
 
 async function initSupabase() {
-  if (!window.supabase) throw new Error("Supabase SDK nicht geladen.");
+  if (!window.supabase) throw new Error("Supabase SDK not loaded.");
   supabaseClient = window.supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY, {
     auth: {
       persistSession: true,
@@ -68,7 +68,7 @@ async function loadProfile() {
     .maybeSingle();
 
   if (error) {
-    console.error("Checkout: Profil konnte nicht geladen werden:", error);
+    console.error("Checkout: Profile could not be loaded.", error);
     return null;
   }
 
@@ -123,7 +123,7 @@ function setupProfileMenu() {
       try {
         await supabaseClient.auth.signOut();
       } catch (e) {
-        console.error("Checkout: Logout Fehler:", e);
+        console.error("Checkout: Logout error.", e);
       } finally {
         window.location.href = "/app";
       }
@@ -171,7 +171,7 @@ function renderStatus(profile) {
 
   if (!profile) {
     if (planTitle) planTitle.textContent = "—";
-    if (planDetail) planDetail.textContent = "Bitte in der App einloggen.";
+    if (planDetail) planDetail.textContent = "Please log in to the app.";
     setStatusPill("open", "Login");
     return;
   }
@@ -183,9 +183,9 @@ function renderStatus(profile) {
   if (yearlyBtn) yearlyBtn.disabled = false;
 
   if (status === "active") {
-    if (planTitle) planTitle.textContent = "Monatlich aktiv";
-    if (planDetail) planDetail.textContent = "Du kannst jederzeit im Stripe-Portal kündigen oder wechseln.";
-    setStatusPill("paid", "Aktiv");
+    if (planTitle) planTitle.textContent = "Active monthly";
+    if (planDetail) planDetail.textContent = "You can cancel or change anytime in the Stripe portal.";
+    setStatusPill("paid", "Active");
 
     if (monthlyBtn) {
   monthlyBtn.disabled = true;
@@ -193,9 +193,9 @@ function renderStatus(profile) {
 }
 if (yearlyBtn) yearlyBtn.classList.remove("is-striked");
   } else if (status === "active_yearly") {
-    if (planTitle) planTitle.textContent = "Jährlich aktiv";
-    if (planDetail) planDetail.textContent = "Du kannst jederzeit im Stripe-Portal kündigen oder wechseln.";
-    setStatusPill("paid", "Aktiv");
+    if (planTitle) planTitle.textContent = "Active yearly";
+    if (planDetail) planDetail.textContent = "You can cancel or change anytime in the Stripe portal.";
+    setStatusPill("paid", "active");
 
     if (yearlyBtn) {
   yearlyBtn.disabled = true;
@@ -204,13 +204,13 @@ if (yearlyBtn) yearlyBtn.classList.remove("is-striked");
 if (monthlyBtn) monthlyBtn.classList.remove("is-striked");
   } else if (status === "trial") {
     const endText = formatDateTime(trialEndsAt);
-    if (planTitle) planTitle.textContent = "Testphase aktiv";
-    if (planDetail) planDetail.textContent = endText ? `Endet am ${endText}` : "Testphase aktiv.";
+    if (planTitle) planTitle.textContent = "Trial active";
+    if (planDetail) planDetail.textContent = endText ? `Ends on ${endText}` : "Trial active.";
     setStatusPill("partial", "Trial");
   } else {
-    if (planTitle) planTitle.textContent = "Kein Abo aktiv";
-    if (planDetail) planDetail.textContent = "Wähle einen Plan und starte direkt.";
-    setStatusPill("open", "Inaktiv");
+    if (planTitle) planTitle.textContent = "No active subscription";
+    if (planDetail) planDetail.textContent = "Choose a plan and get started.";
+    setStatusPill("open", "Inactive");
   }
 }
 
@@ -246,9 +246,9 @@ if (avatarImg && (!avatarImg.getAttribute("src") || avatarImg.getAttribute("src"
 
 document.addEventListener("DOMContentLoaded", () => {
   bootstrap().catch((e) => {
-    console.error("Checkout Bootstrap Fehler:", e);
+    console.error("Checkout bootstrap error:", e);
     setLoading(false);
-    if (statusText) statusText.textContent = "Fehler beim Laden";
-    setStatusPill("open", "Fehler");
+    if (statusText) statusText.textContent = "Error while loading";
+    setStatusPill("open", "Error");
   });
 });
