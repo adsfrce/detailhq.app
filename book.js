@@ -1,7 +1,7 @@
 // Public Booking (detailhq.com/<detailer_uuid>)
 // Loads Services + Vehicle Classes via Worker API and writes "requested" booking.
 
-const API_BASE = "https://api.detailhq.de";
+const API_BASE = "https://api.detailhq.app";
 
 function $(id) { return document.getElementById(id); }
 
@@ -55,7 +55,7 @@ function downloadIcs(summary) {
     "CALSCALE:GREGORIAN",
     "METHOD:PUBLISH",
     "BEGIN:VEVENT",
-    `UID:${crypto.randomUUID()}@detailhq.de`,
+    `UID:${crypto.randomUUID()}@detailhq.app`,
     `DTSTAMP:${formatIcsDateUtc(new Date())}`,
     `DTSTART:${formatIcsDateUtc(start)}`,
     `DTEND:${formatIcsDateUtc(end)}`,
@@ -1057,3 +1057,4 @@ bookingForm.addEventListener("submit", async (e) => {
 });
 
 init();
+
