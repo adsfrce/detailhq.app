@@ -48,11 +48,11 @@ function normalizeTopic(value) {
     problem_mit_zahlung: "Payment issue",
     abo_verwalten: "Manage subscription",
     app_fehler: "App Issue",
-    login_probleme: "Login-Error",
+    login_probleme: "Login issue",
     fragen: "Questions",
     sonstiges: "Other",
   };
-  return map[value] || "Sonstiges";
+  return map[value] || "Other";
 }
 
 async function requireSessionOrRedirect() {
@@ -98,7 +98,7 @@ async function sendSupportTicket(session) {
   setError("");
   setSuccess(false);
   submitBtn.disabled = true;
-  submitBtn.textContent = "Sende...";
+  submitBtn.textContent = "Sening...";
 
   try {
     const API_BASE = "https://api.detailhq.app";
@@ -127,7 +127,7 @@ const res = await fetch(`${API_BASE}/support/ticket`, {
     setError("Could not send ticket. Please try again later.");
   } finally {
     submitBtn.disabled = false;
-    submitBtn.textContent = "Absenden";
+    submitBtn.textContent = "Submit";
   }
 }
 
