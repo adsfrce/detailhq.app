@@ -6,7 +6,7 @@ const SUPABASE_URL = "https://qcilpodwbtbsxoabjfzc.supabase.co";
 const SUPABASE_ANON_KEY =
   "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InFjaWxwb2R3YnRic3hvYWJqZnpjIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NjUyNzAzNTQsImV4cCI6MjA4MDg0NjM1NH0.RZ4M0bMSVhNpYZnktEyKCuJDFEpSJoyCmLFQhQLXs_w";
 
-const APP_URL = "/app"; // Zurück zur App (dein Setup)
+const APP_URL = "/app";
 
 let supabaseClient = null;
 try {
@@ -45,12 +45,12 @@ function setSuccess(visible) {
 
 function normalizeTopic(value) {
   const map = {
-    problem_mit_zahlung: "Problem mit Zahlung",
-    abo_verwalten: "Abo verwalten",
-    app_fehler: "App-Fehler",
-    login_probleme: "Login-Probleme",
-    fragen: "Fragen",
-    sonstiges: "Sonstiges",
+    problem_mit_zahlung: "Payment issue",
+    abo_verwalten: "Manage subscription",
+    app_fehler: "App-Error",
+    login_probleme: "Login-Error",
+    fragen: "Questions",
+    sonstiges: "Additional",
   };
   return map[value] || "Sonstiges";
 }
@@ -91,7 +91,7 @@ async function sendSupportTicket(session) {
   const message = (msgEl?.value || "").trim();
 
   if (!message || message.length < 8) {
-    setError("Bitte beschreibe dein Anliegen (mindestens 8 Zeichen).");
+    setError("Please describe your request (at least 8 characters).");
     return;
   }
 
@@ -107,7 +107,6 @@ const res = await fetch(`${API_BASE}/support/ticket`, {
       method: "POST",
       headers: {
         "Content-Type": "application/json",
-        // wichtig: Worker prüft Supabase JWT über /auth/v1/user
         "Authorization": `Bearer ${session.access_token}`
       },
       body: JSON.stringify({
@@ -125,7 +124,7 @@ const res = await fetch(`${API_BASE}/support/ticket`, {
     setSuccess(true);
   } catch (e) {
     console.error(e);
-    setError("Konnte Ticket nicht senden. Bitte später erneut versuchen.");
+    setError("Could not send ticket. Please try again later.");
   } finally {
     submitBtn.disabled = false;
     submitBtn.textContent = "Absenden";
@@ -147,11 +146,6 @@ async function init() {
     if (!s) return;
     await sendSupportTicket(s);
   });
-
-  // Optional: Enter verhindern im textarea (falls du das willst)
-  // msgEl?.addEventListener("keydown", (e) => {
-  //   if (e.key === "Enter" && (e.ctrlKey || e.metaKey)) submitBtn.click();
-  // });
 }
 
 init();
