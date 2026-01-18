@@ -1,0 +1,1542 @@
+<!doctype html>
+<html lang="de">
+<head>
+  <meta charset="UTF-8" />
+  <title>DetailHQ</title>
+  <link rel="icon" type="image/png" href="app_icon.PNG" />
+  <link rel="apple-touch-icon" href="app_icon.PNG" />
+  <meta name="theme-color" content="#000000" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+
+  <!-- Styles -->
+  <link rel="stylesheet" href="style-app.css" />
+
+  <!-- Supabase JS -->
+  <script src="https://unpkg.com/@supabase/supabase-js@2.48.0/dist/umd/supabase.js"></script>
+</head>
+<body class="theme-system">
+  <div id="loadingView" style="display:none; height:100vh; align-items:center; justify-content:center;">
+  Loading...
+</div>
+
+  <div id="app-root">
+    <!-- AUTH VIEW -->
+    <div id="auth-view" class="view">
+      <div class="auth-card glass">
+        <div class="auth-logo-row">
+          <img src="logo_icon.PNG" alt="DetailHQ Logo" class="app-logo" />
+          <div>
+            <h1 class="app-title">DetailHQ</h1>
+            <p class="app-subtitle">
+              Backoffice für Aufbereiter & Folierer.
+            </p>
+          </div>
+        </div>
+
+        <form id="login-form" class="form">
+          <label class="field-label" for="login-email">E-Mail</label>
+          <input id="login-email" type="email" class="field-input" autocomplete="email" required />
+
+<label class="field-label" for="login-password">Passwort</label>
+<div class="password-wrap">
+  <input id="login-password" type="password" class="field-input" autocomplete="current-password" required />
+  <button type="button" class="password-toggle" data-target="login-password">Anzeigen</button>
+</div>
+
+          <button type="submit" class="btn btn-primary" id="login-button">
+            Anmelden
+          </button>
+
+          <button type="button" class="link-button" id="password-reset-button">
+            Passwort vergessen?
+          </button>
+
+          <p class="form-hint">
+            Noch kein Konto?
+            <button type="button" class="link-button" id="register-switch">
+              Jetzt registrieren
+            </button>
+          </p>
+        </form>
+
+        <form id="register-form" class="form hidden">
+          <div class="auth-info-banner">
+            <strong>7 Tage kostenlos testen.</strong><br />
+            Keine Zahlungsmethode nötig für die Testphase.
+          </div>
+
+<label class="field-label" for="register-company">Firmenname</label>
+<input
+  id="register-company"
+  type="text"
+  class="field-input"
+  autocomplete="organization"
+  required
+/>
+
+          <label class="field-label" for="register-business-types">Branche</label>
+
+<div class="settings-dropdown" style="margin-bottom: 14px;">
+  <button
+    type="button"
+    class="settings-dropdown-toggle"
+    id="register-business-toggle"
+    aria-expanded="false"
+  >
+    <span id="register-business-label">Branche wählen</span>
+    <span class="settings-dropdown-chevron">▾</span>
+  </button>
+
+  <div id="register-business-menu" class="settings-dropdown-menu">
+    <p class="form-hint">Bitte wählen…</p>
+  </div>
+</div>
+
+<select id="register-business-types" multiple class="hidden"></select>
+
+<p class="form-hint" style="margin-top:-6px;">
+  Mehrfachauswahl möglich (z.B. Detailing + Folierung).
+</p>
+
+          <label class="field-label" for="register-email">E-Mail</label>
+          <input id="register-email" type="email" class="field-input" autocomplete="email" required />
+          
+<label class="field-label" for="register-password">Passwort</label>
+<div class="password-wrap">
+  <input id="register-password" type="password" class="field-input" autocomplete="new-password" required />
+  <button type="button" class="password-toggle" data-target="register-password">Anzeigen</button>
+</div>
+
+          <button type="submit" class="btn btn-primary" id="register-button">
+            Konto erstellen
+          </button>
+
+          <p class="form-hint">
+            Bereits ein Konto?
+            <button type="button" class="link-button" id="login-switch">
+              Zur Anmeldung
+            </button>
+          </p>
+        </form>
+
+        <p id="auth-error" class="error-text"></p>
+      </div>
+    </div>
+
+    <!-- APP VIEW -->
+    <div id="app-view" class="view">
+      <!-- HEADER MIT PROFIL -->
+      <header class="app-header glass">
+        <div class="header-left">
+          <img src="logo_icon.PNG" alt="DetailHQ Logo" class="header-logo" />
+          <div>
+            <h2 id="header-title">Dashboard</h2>
+            <p id="header-subtitle" class="header-subtitle">
+              Übersicht über deine Aufträge und Umsätze.
+            </p>
+          </div>
+        </div>
+
+        <div class="profile-wrapper">
+          <button id="profile-button" class="icon-button profile-avatar" title="Profil">
+            <img
+              id="profile-avatar-image"
+              src="pfp.png"
+              alt="Profilbild"
+              class="profile-avatar-image"
+            />
+          </button>
+          <div id="profile-menu" class="profile-menu hidden">
+            <button id="profile-manage-button" class="profile-menu-item">
+              Profil verwalten
+            </button>
+            <button id="profile-logout-button" class="profile-menu-item danger">
+              Abmelden
+            </button>
+          </div>
+        </div>
+      </header>
+
+      <div id="trial-banner" class="trial-banner hidden">
+        <span id="trial-banner-text"></span>
+        <button id="trial-banner-button" class="trial-banner-button">
+          Jetzt Abo starten
+        </button>
+      </div>
+
+      <main class="app-main">
+        <!-- DASHBOARD -->
+        <section id="tab-dashboard" class="tab-section active">
+      <!-- Zeitraum-Toggle über beiden Feldern -->
+      <div class="dashboard-period-row">
+        <div class="dashboard-period-toggle" id="dashboard-period-toggle">
+          <button class="period-chip active" data-period="today">Heute</button>
+          <button class="period-chip" data-period="week">Woche</button>
+          <button class="period-chip" data-period="month">Monat</button>
+          <button class="period-chip" data-period="year">Jahr</button>
+        </div>
+      </div>
+
+      <!-- Zwei Felder: links Umsatz, rechts Auftragsvolumen -->
+      <div class="cards-grid cards-grid-2">
+        <div class="card glass">
+          <p class="card-label">Umsatz</p>
+          <!-- Wird aktuell weiter von main.js über id="revenue-today" beschrieben (heute).
+               Logik für Woche/Monat/Jahr machen wir später in main.js. -->
+          <p class="card-value" id="revenue-today">€ 0</p>
+        </div>
+
+        <div class="card glass">
+          <p class="card-label">Auftragsvolumen</p>
+          <!-- Placeholder-ID für Logik später -->
+          <p class="card-value" id="volume-today">€ 0</p>
+        </div>
+      </div>
+
+      <!-- Versteckte alte Umsatz-IDs, damit main.js nicht crasht, bis wir Logik anpassen -->
+      <div style="display:none;">
+        <span id="revenue-week"></span>
+        <span id="revenue-14days"></span>
+        <span id="revenue-month"></span>
+      </div>
+
+          <div class="section-header">
+            <h3>Heutige Aufträge</h3>
+            <button id="new-booking-button" class="btn btn-secondary btn-small">
+              Neuer Auftrag
+            </button>
+          </div>
+          <div id="today-bookings" class="list-container empty-state">
+            <p>Noch keine Aufträge für heute.</p>
+          </div>
+
+          <div class="section-header">
+            <h3>Bewertungen fällig</h3>
+          </div>
+          <div id="review-reminders" class="list-container empty-state">
+            <p>Aktuell keine offenen Bewertungs-Erinnerungen.</p>
+          </div>
+        </section>
+
+<section id="tab-orders" class="tab-section">
+  <div class="section-header">
+    <h3>Neues Protokoll</h3>
+  </div>
+
+  <!-- Auswahl Auftrag (JS befüllt) -->
+  <div id="intake-start-panel" class="glass" style="padding:12px; margin-bottom:12px;">
+    <p class="form-hint" style="margin:0 0 10px;">
+      Wähle einen Auftrag aus und starte das Annahmeprotokoll.
+    </p>
+
+    <label class="field-label" for="intake-booking-select">Auftrag</label>
+    <select id="intake-booking-select" class="field-input">
+      <option value="">Bitte wählen…</option>
+    </select>
+
+    <button id="intake-open-button" class="btn btn-primary" type="button" style="margin-top:10px;">
+      Weiter
+    </button>
+
+    <p id="intake-start-error" class="error-text" style="margin-top:10px;"></p>
+  </div>
+
+  <div class="section-header" style="margin-top:10px;">
+    <h3>Abgeschlossene Protokolle</h3>
+  </div>
+
+  <div id="intake-list" class="list-container empty-state">
+    <p>Noch keine Annahmeprotokolle erstellt.</p>
+  </div>
+</section>
+
+
+        <!-- SCHEDULE -->
+        <section id="tab-schedule" class="tab-section">
+          <div class="section-header">
+            <h3>Zeitplan</h3>
+            <button id="new-booking-button-2" class="btn btn-secondary btn-small">
+              Neuer Auftrag
+            </button>
+          </div>
+          <div id="schedule-list" class="list-container empty-state">
+            <p>Noch keine geplanten Aufträge.</p>
+          </div>
+        </section>
+
+        <!-- SETTINGS -->
+<section id="tab-settings" class="tab-section">
+
+  <!-- HUB: nur 2 Buttons (default sichtbar) -->
+  <div id="settings-hub">
+    <div class="settings-switch">
+      <button id="open-service-settings" class="settings-switch-btn" type="button">
+        <div class="settings-switch-title">Service</div>
+        <div class="settings-switch-sub">Buchung, Dienste, Öffnungszeiten</div>
+      </button>
+
+      <button id="open-business-settings" class="settings-switch-btn" type="button">
+        <div class="settings-switch-title">Business</div>
+        <div class="settings-switch-sub">Kalender, Abo, Bewertungen, Design</div>
+      </button>
+    </div>
+  </div>
+
+  <!-- SERVICE VIEW (default versteckt) -->
+  <div id="settings-view-service" class="hidden">
+    <button id="back-from-service" class="icon-button small" type="button" title="Zurück">←</button>
+
+    <div class="settings-group glass">
+      <h3>Dienste &amp; Preise</h3>
+      <p class="settings-help">
+        Definiere Fahrzeugklassen und Services. Diese nutzt du später beim Anlegen von Aufträgen.
+      </p>
+
+      <!-- Fahrzeugklassen -->
+      <h4 class="settings-subtitle">Fahrzeugklassen</h4>
+
+      <!-- Custom Dropdown für Fahrzeugklassen (UI, kein natives select) -->
+      <div class="settings-dropdown">
+        <button type="button" class="settings-dropdown-toggle" id="vehicle-classes-dropdown-toggle">
+          Fahrzeugklassen anpassen
+          <span class="settings-dropdown-chevron">▾</span>
+        </button>
+
+        <div id="vehicle-classes-list" class="settings-dropdown-menu">
+          <p class="form-hint">Noch keine Fahrzeugklassen angelegt.</p>
+        </div>
+      </div>
+
+      <!-- Button bleibt wie gewünscht unter dem Dropdown -->
+      <button class="btn btn-secondary btn-small" id="vehicle-class-add-button">
+        Fahrzeugklasse hinzufügen
+      </button>
+
+      <!-- Services -->
+      <h4 class="settings-subtitle" style="margin-top:16px;">Services</h4>
+
+      <!-- Custom Dropdown für Services -->
+      <div class="settings-dropdown">
+        <button type="button" class="settings-dropdown-toggle" id="services-dropdown-toggle">
+          Services anpassen
+          <span class="settings-dropdown-chevron">▾</span>
+        </button>
+
+        <div id="services-list" class="settings-dropdown-menu">
+          <p class="form-hint">Noch keine Services angelegt.</p>
+        </div>
+      </div>
+
+      <button class="btn btn-secondary btn-small" id="service-add-button">
+        Service hinzufügen
+      </button>
+    </div>
+
+    <div class="settings-group glass">
+      <h3>Buchungslink</h3>
+      <p class="settings-help">
+        Diesen Link sehen deine Kunden. Darüber können sie direkt einen Termin buchen.
+      </p>
+
+      <label class="field-label" for="settings-booking-link">Dein Buchungslink</label>
+      <input id="settings-booking-link" type="text" class="field-input" readonly />
+
+      <button id="settings-booking-link-copy" class="btn btn-secondary btn-block" style="margin-top:8px;">
+        Link kopieren
+      </button>
+
+      <button id="settings-booking-link-open" class="btn btn-ghost btn-block" style="margin-top:8px;">
+        Link öffnen
+      </button>
+
+<p id="settings-booking-link-status" class="form-hint"></p>
+</div>
+
+<div class="settings-group glass" id="settings-discounts">
+  <h3>Gutscheine</h3>
+  <p class="settings-help">
+    Promo-Codes und Gutscheinkarten für dein Kunden-Buchungsportal.
+  </p>
+
+  <h4 class="settings-subtitle">Promo-Code anlegen</h4>
+
+  <label class="field-label" for="promo-code-input">Code</label>
+  <input id="promo-code-input" type="text" class="field-input" placeholder="WINTER25" style="text-transform:uppercase;" />
+
+<div style="display:flex;flex-direction:column;gap:10px;margin-top:10px;">
+
+  <!-- Row 1: %/€ + Wert -->
+<div style="display:flex;gap:10px;flex-wrap:wrap;align-items:center;">
+
+  <!-- Wert zuerst -->
+  <input
+    id="promo-value-input"
+    type="number"
+    class="field-input"
+    placeholder="Wert (z. B. 25)"
+    style="max-width:180px;"
+  />
+
+  <!-- Einheit dahinter -->
+  <label class="radio-pill">
+    <input id="promo-type-percent" type="radio" name="promoType" checked />
+    <span>%</span>
+  </label>
+
+  <label class="radio-pill">
+    <input id="promo-type-amount" type="radio" name="promoType" />
+    <span>€</span>
+  </label>
+
+</div>
+
+<!-- Row 2: Max Uses + Gültig bis + Save -->
+<div class="promo-row-2" style="display:flex;gap:10px;flex-wrap:wrap;align-items:flex-end;">
+
+  <div style="display:flex;flex-direction:column;gap:6px;max-width:180px;">
+    <div class="form-hint" style="margin:0;">Max. Nutzungen (optional)</div>
+    <input id="promo-max-uses" type="number" class="field-input" placeholder="z.B. 5" style="max-width:180px;" />
+  </div>
+
+  <div class="date-wrap" style="display:flex;flex-direction:column;gap:6px;max-width:180px;">
+    <div class="form-hint" style="margin:0;">Gültig bis (optional)</div>
+    <input id="promo-valid-until" type="text" class="field-input" placeholder="TT.MM.JJJJ" style="max-width:180px;" inputmode="numeric" />
+  </div>
+
+  <button id="promo-create-btn" class="btn btn-secondary promo-save-btn" type="button" style="white-space:nowrap;">
+    Speichern
+  </button>
+
+</div>
+
+  <p id="promo-status" class="form-hint"></p>
+
+<details class="settings-dropdown" style="margin-top:10px;">
+  <summary class="settings-dropdown-toggle">Promo-Codes verwalten</summary>
+  <div id="promo-list" class="settings-dropdown-menu">
+    <p class="form-hint">Lädt...</p>
+  </div>
+</details>
+
+  <div style="height:14px;"></div>
+
+  <h4 class="settings-subtitle">Gutscheinkarte ausstellen</h4>
+
+  <label class="field-label" for="gift-amount-input">Wert (in €)</label>
+  <input id="gift-amount-input" type="number" class="field-input" placeholder="50" />
+
+  <label class="field-label" for="gift-to-email" style="margin-top:10px;">Empfänger E-Mail (optional)</label>
+  <input id="gift-to-email" type="email" class="field-input" placeholder="kunde@email.de" />
+
+  <label class="field-label" for="gift-to-name" style="margin-top:10px;">Empfänger Name (optional)</label>
+  <input id="gift-to-name" type="text" class="field-input" placeholder="Max Mustermann" />
+
+  <label class="field-label" for="gift-message" style="margin-top:10px;">Text (optional)</label>
+  <textarea id="gift-message" class="field-input" placeholder="Kurzer Text für die Mail / PDF"></textarea>
+
+  <button id="gift-issue-btn" class="btn btn-primary btn-block" type="button" style="margin-top:12px;">
+    Gutscheinkarte erstellen
+  </button>
+
+  <p id="gift-status" class="form-hint"></p>
+  
+<div id="gift-last" class="settings-list" style="margin-top:10px; display:none;"></div>
+
+<details class="settings-dropdown" style="margin-top:10px;">
+  <summary class="settings-dropdown-toggle">Gutscheinkarten verwalten</summary>
+  <div id="gift-list" class="settings-dropdown-menu">
+    <p class="form-hint">Lädt...</p>
+  </div>
+</details>
+</div>
+</div>
+
+<div class="settings-group glass" id="settings-opening-hours">
+      <h3>Öffnungszeiten</h3>
+      <p class="settings-help">
+        Diese Zeiten gelten nur für Kunden-Buchungen über deinen Buchungslink.
+      </p>
+
+      <div class="opening-hours-list">
+        <div class="opening-hours-row">
+          <label class="opening-hours-day">
+            <input id="oh-mon-open" type="checkbox" class="opening-hours-check" />
+            <span>Montag</span>
+          </label>
+          <div class="opening-hours-pill">
+            <input id="oh-mon-start" type="time" class="opening-hours-input" />
+            <span class="opening-hours-sep">–</span>
+            <input id="oh-mon-end" type="time" class="opening-hours-input" />
+          </div>
+        </div>
+
+        <div class="opening-hours-row">
+          <label class="opening-hours-day">
+            <input id="oh-tue-open" type="checkbox" class="opening-hours-check" />
+            <span>Dienstag</span>
+          </label>
+          <div class="opening-hours-pill">
+            <input id="oh-tue-start" type="time" class="opening-hours-input" />
+            <span class="opening-hours-sep">–</span>
+            <input id="oh-tue-end" type="time" class="opening-hours-input" />
+          </div>
+        </div>
+
+        <div class="opening-hours-row">
+          <label class="opening-hours-day">
+            <input id="oh-wed-open" type="checkbox" class="opening-hours-check" />
+            <span>Mittwoch</span>
+          </label>
+          <div class="opening-hours-pill">
+            <input id="oh-wed-start" type="time" class="opening-hours-input" />
+            <span class="opening-hours-sep">–</span>
+            <input id="oh-wed-end" type="time" class="opening-hours-input" />
+          </div>
+        </div>
+
+        <div class="opening-hours-row">
+          <label class="opening-hours-day">
+            <input id="oh-thu-open" type="checkbox" class="opening-hours-check" />
+            <span>Donnerstag</span>
+          </label>
+          <div class="opening-hours-pill">
+            <input id="oh-thu-start" type="time" class="opening-hours-input" />
+            <span class="opening-hours-sep">–</span>
+            <input id="oh-thu-end" type="time" class="opening-hours-input" />
+          </div>
+        </div>
+
+        <div class="opening-hours-row">
+          <label class="opening-hours-day">
+            <input id="oh-fri-open" type="checkbox" class="opening-hours-check" />
+            <span>Freitag</span>
+          </label>
+          <div class="opening-hours-pill">
+            <input id="oh-fri-start" type="time" class="opening-hours-input" />
+            <span class="opening-hours-sep">–</span>
+            <input id="oh-fri-end" type="time" class="opening-hours-input" />
+          </div>
+        </div>
+
+        <div class="opening-hours-row">
+          <label class="opening-hours-day">
+            <input id="oh-sat-open" type="checkbox" class="opening-hours-check" />
+            <span>Samstag</span>
+          </label>
+          <div class="opening-hours-pill">
+            <input id="oh-sat-start" type="time" class="opening-hours-input" />
+            <span class="opening-hours-sep">–</span>
+            <input id="oh-sat-end" type="time" class="opening-hours-input" />
+          </div>
+        </div>
+
+        <div class="opening-hours-row">
+          <label class="opening-hours-day">
+            <input id="oh-sun-open" type="checkbox" class="opening-hours-check" />
+            <span>Sonntag</span>
+          </label>
+          <div class="opening-hours-pill">
+            <input id="oh-sun-start" type="time" class="opening-hours-input" />
+            <span class="opening-hours-sep">–</span>
+            <input id="oh-sun-end" type="time" class="opening-hours-input" />
+          </div>
+        </div>
+      </div>
+
+      <div style="margin-top: 18px;">
+        <label class="field-label" for="settings-public-daily-limit">
+          Max. Termine pro Tag (nur Kunden-Buchungen)
+        </label>
+        <select id="settings-public-daily-limit" class="field-input">
+          <option value="1">1</option><option value="2">2</option><option value="3">3</option>
+          <option value="4">4</option><option value="5">5</option><option value="6">6</option>
+          <option value="7">7</option><option value="8">8</option><option value="9">9</option>
+          <option value="10">10</option>
+        </select>
+        <p class="form-hint" style="margin-top: 6px;">
+          Gilt nur für Buchungen über deinen Buchungslink. Interne Aufträge bleiben unbegrenzt.
+        </p>
+      </div>
+
+      <button id="opening-hours-save-button" class="btn btn-secondary" style="margin-top: 10px;">
+        Speichern
+      </button>
+      <p id="opening-hours-save-status" class="form-hint"></p>
+    </div>
+  </div>
+
+  <!-- BUSINESS VIEW (default versteckt) -->
+  <div id="settings-view-business" class="hidden">
+    <button id="back-from-business" class="icon-button small" type="button" title="Zurück">←</button>
+
+    <div class="settings-group glass">
+      <h3>Kalender</h3>
+      <p class="settings-help">
+        Verbinde deinen DetailHQ-Zeitplan mit Apple Kalender oder Google Kalender.
+      </p>
+
+      <div class="settings-options">
+        <label class="radio-option">
+          <input type="radio" name="calendar-preference" value="apple" />
+          <span>Apple</span>
+        </label>
+        <label class="radio-option">
+          <input type="radio" name="calendar-preference" value="google" />
+          <span>Google</span>
+        </label>
+      </div>
+
+      <button id="calendar-open-button" class="btn btn-secondary btn-block" style="margin-top: 10px;">
+        Im Kalender öffnen
+      </button>
+    </div>
+
+    <div class="settings-group glass" id="settings-billing">
+      <h3>Zahlung &amp; Abo</h3>
+      <p class="settings-help">
+        Zahlungsdaten, Rechnungen und Kündigung im Stripe-Portal.
+      </p>
+
+      <button class="btn btn-ghost btn-block" id="billing-manage-plan-button">
+        Zahlung &amp; Abo verwalten
+      </button>
+    </div>
+
+    <div class="settings-group glass">
+      <h3>Bewertungen</h3>
+      <p class="settings-help">
+        Hinterlege deinen Google-Profil- oder Bewertungslink für Erinnerungen nach Aufträgen.
+      </p>
+      <label class="field-label" for="settings-review-link">Google Profil-URL</label>
+      <input id="settings-review-link" type="url" class="field-input" placeholder="https://www.google.com/maps/place/..." />
+
+      <button id="settings-review-save-button" class="btn btn-secondary" style="margin-top: 8px;">
+        Speichern
+      </button>
+      <p id="settings-review-save-status" class="form-hint"></p>
+    </div>
+
+    <div class="settings-group glass">
+      <h3>Erscheinungsbild</h3>
+      <p class="settings-help">Wähle, wie DetailHQ aussehen soll.</p>
+      <div class="settings-options">
+        <label class="radio-option">
+          <input type="radio" name="theme" value="light" />
+          <span>Hell</span>
+        </label>
+        <label class="radio-option">
+          <input type="radio" name="theme" value="dark" />
+          <span>Dunkel</span>
+        </label>
+        <label class="radio-option">
+          <input type="radio" name="theme" value="system" />
+          <span>System</span>
+        </label>
+      </div>
+    </div>
+  </div>
+
+  <!-- SUPPORT & RECHTLICHES (immer sichtbar) -->
+  <div class="settings-group glass">
+    <h3>Support</h3>
+    <p class="settings-help">
+      Bei Fragen oder Problemen melde dich einfach.
+    </p>
+    <a href="https://detailhq.de/support" class="btn btn-secondary btn-block">
+      Support-Ticket erstellen
+    </a>
+  </div>
+
+  <div class="settings-group glass">
+    <h3>Rechtliches</h3>
+    <p class="settings-help">
+      Impressum, Datenschutz &amp; rechtliche Hinweise zu DetailHQ.
+    </p>
+    <a href="https://detailhq.de/rechtliches" class="btn btn-ghost btn-block" target="_blank" rel="noopener noreferrer">
+      Rechtliches öffnen
+    </a>
+  </div>
+
+  <!-- MODALS: bleiben wie sie waren (nicht anfassen) -->
+<div id="service-modal" class="profile-modal hidden">
+  <div class="profile-modal-backdrop"></div>
+  <div class="profile-modal-card glass">
+    <div class="profile-modal-header">
+      <h3 id="service-modal-title">Service bearbeiten</h3>
+      <button id="service-modal-close" class="icon-button small" title="Schließen">✕</button>
+    </div>
+
+    <!-- WICHTIG: Form + erwartete IDs -->
+    <form id="service-form" class="form">
+      <div class="form-row">
+        <label class="field-label" for="service-kind">Typ</label>
+        <select id="service-kind" class="field-input">
+          <option value="single">Einzelleistung</option>
+          <option value="package">Paket</option>
+        </select>
+      </div>
+
+      <div class="form-row">
+        <label class="field-label" for="service-category">Kategorie (optional)</label>
+        <input id="service-category" class="field-input" type="text" placeholder="z.B. Innenraum" />
+      </div>
+
+      <div class="form-row">
+        <label class="field-label" for="service-name">Service Name</label>
+        <input id="service-name" class="field-input" type="text" placeholder="z.B. Innenraum Komplett" />
+      </div>
+
+      <div class="form-row">
+        <label class="field-label" for="service-base-price-input">Basispreis (€)</label>
+        <input id="service-base-price-input" class="field-input" type="number" inputmode="decimal" placeholder="z.B. 149" />
+
+        <!-- Empfehlung: dein JS erwartet diese Unter-IDs -->
+        <div id="service-price-reco" class="service-price-reco hidden">
+          <div class="service-price-reco-row">
+            <span class="service-price-reco-label">Empfehlung:</span>
+            <span id="service-price-reco-min"></span>
+            <span>–</span>
+            <span id="service-price-reco-max"></span>
+          </div>
+          <div id="service-price-reco-hint" class="service-price-reco-hint"></div>
+        </div>
+      </div>
+
+      <div class="form-row">
+        <label class="field-label" for="service-duration-input">Dauer (Std.)</label>
+        <input id="service-duration-input" class="field-input" type="number" step="0.25" inputmode="decimal" placeholder="z.B. 2" />
+      </div>
+
+      <div class="form-row">
+        <label class="field-label" for="service-notes-input">Notizen / Beschreibung</label>
+        <textarea id="service-notes-input" class="field-input" rows="3" placeholder="Optional: Hinweise für dich"></textarea>
+      </div>
+
+      <p id="service-modal-error" class="error-text"></p>
+
+      <div class="modal-actions">
+        <button id="service-delete-button" type="button" class="btn btn-ghost">Löschen</button>
+        <button id="service-save-button" type="submit" class="btn btn-secondary">Speichern</button>
+      </div>
+    </form>
+  </div>
+</div>
+  
+<div id="vehicle-class-modal" class="profile-modal hidden">
+  <div class="profile-modal-backdrop"></div>
+  <div class="profile-modal-card glass">
+    <div class="profile-modal-header">
+      <h3 id="vehicle-class-modal-title">Fahrzeugklasse bearbeiten</h3>
+      <button id="vehicle-class-modal-close" class="icon-button small" title="Schließen">✕</button>
+    </div>
+
+    <!-- WICHTIG: Form + erwartete IDs -->
+    <form id="vehicle-class-form" class="form">
+      <div class="form-row">
+        <label class="field-label" for="vehicle-class-name">Name</label>
+        <input id="vehicle-class-name" class="field-input" type="text" placeholder="z.B. Kompakt" />
+      </div>
+
+      <div class="form-row">
+        <label class="field-label" for="vehicle-class-price-delta">Preis-Anpassung (€)</label>
+        <input id="vehicle-class-price-delta" class="field-input" type="number" step="1" inputmode="decimal" placeholder="z.B. 20" />
+        <p class="form-hint">Beispiel: 0 = kein Aufpreis, 20 = +20€, -10 = -10€</p>
+      </div>
+
+      <p id="vehicle-class-modal-error" class="error-text"></p>
+
+      <div class="modal-actions">
+        <button id="vehicle-class-delete-button" type="button" class="btn btn-ghost">Löschen</button>
+        <button id="vehicle-class-save-button" type="submit" class="btn btn-secondary">Speichern</button>
+      </div>
+    </form>
+  </div>
+</div>
+</section>
+        
+      </main>
+
+      <!-- PROFIL MODAL -->
+      <div id="profile-modal" class="profile-modal hidden">
+        <div class="profile-modal-backdrop"></div>
+        <div class="profile-modal-card glass">
+          <div class="profile-modal-header">
+            <h3>Profil verwalten</h3>
+            <button id="profile-close-button" class="icon-button small" title="Schließen">
+              ✕
+            </button>
+          </div>
+          <form id="profile-form" class="form">
+            <label class="field-label" for="profile-name">Name</label>
+            <input id="profile-name" type="text" class="field-input" />
+
+            <label class="field-label" for="profile-company">Firma</label>
+            <input id="profile-company" type="text" class="field-input" />
+
+            <label class="field-label" for="profile-address">Adresse</label>
+            <input id="profile-address" type="text" class="field-input" />
+
+            <label class="field-label" for="profile-avatar-file">Profilbild (optional)</label>
+            <input id="profile-avatar-file" type="file" accept="image/*" class="field-input" />
+
+            <button type="submit" class="btn btn-primary">
+              Speichern
+            </button>
+          </form>
+          <p id="profile-save-message" class="form-hint"></p>
+        </div>
+      </div>
+
+      <!-- BUCHUNG / NEUER AUFTRAG MODAL -->
+      <div id="booking-modal" class="profile-modal hidden">
+        <div class="profile-modal-backdrop"></div>
+        <div class="profile-modal-card glass">
+          <div class="profile-modal-header">
+            <h3>Neuer Auftrag</h3>
+            <button id="booking-close-button" class="icon-button small" title="Schließen">✕</button>
+          </div>
+
+          <!-- Schritt-Indikator -->
+          <div class="booking-steps-indicator">
+            <span id="booking-step-indicator-1" class="booking-step-indicator active">1. Leistungen</span>
+            <span id="booking-step-indicator-2" class="booking-step-indicator">2. Termin</span>
+            <span id="booking-step-indicator-3" class="booking-step-indicator">3. Kunde</span>
+          </div>
+
+          <form id="booking-form" class="form">
+            <!-- STEP 1: Fahrzeug & Leistungen -->
+            <div class="booking-step" id="booking-step-1" data-step="1">
+              <label class="field-label" for="booking-vehicle-class">Fahrzeugklasse (optional)</label>
+              <select id="booking-vehicle-class" class="field-input">
+                <option value="">Keine Auswahl</option>
+              </select>
+
+              <label class="field-label" for="booking-car">Fahrzeug (optional)</label>
+              <input
+                id="booking-car"
+                type="text"
+                class="field-input"
+                placeholder="z.B. BMW M3, Kennzeichen"
+              />
+
+              <label class="field-label" for="booking-main-service">Paket (optional)</label>
+              <select id="booking-main-service" class="hidden"></select>
+              <div class="settings-dropdown">
+  <button
+    type="button"
+    class="settings-dropdown-toggle"
+    id="booking-package-toggle"
+    aria-expanded="false"
+  >
+    <span id="booking-package-label">Paket wählen</span>
+    <span class="settings-dropdown-chevron">▾</span>
+  </button>
+
+  <div id="booking-package-menu" class="settings-dropdown-menu"></div>
+</div>
+
+<div class="booking-services-group">
+  <label class="field-label optional">Einzelleistungen (optional)</label>
+
+  <!-- Custom Dropdown mit Checkboxen -->
+  <div class="settings-dropdown booking-singles-dropdown">
+<button
+  type="button"
+  class="settings-dropdown-toggle"
+  id="booking-singles-toggle"
+  aria-expanded="false"
+>
+  <span id="booking-singles-label">Einzelleistungen wählen</span>
+  <span class="settings-dropdown-chevron">▾</span>
+</button>
+
+    <div
+      id="booking-singles-menu"
+      class="settings-dropdown-menu"
+    >
+      <p class="form-hint">Noch keine Einzelleistungen angelegt.</p>
+    </div>
+  </div>
+
+  <!-- Hidden Multi-Select (Form-/Logik-Basis) -->
+  <select id="booking-singles-list" multiple class="hidden"></select>
+
+  <p class="form-hint">Mehrere Einzelleistungen wählbar.</p>
+</div>
+
+              <button
+                type="button"
+                id="booking-next-1"
+                class="btn btn-secondary btn-block"
+                style="margin-top:16px;"
+              >
+                Weiter zu Termin
+              </button>
+            </div>
+
+            <!-- STEP 2: Termin -->
+            <div class="booking-step hidden" id="booking-step-2" data-step="2">
+              <h4 class="settings-subtitle">Termin</h4>
+              <div class="booking-datetime-row">
+                <div>
+                  <label class="field-label" for="booking-date">Datum</label>
+                  <input id="booking-date" type="date" class="field-input" />
+                </div>
+                <div>
+                  <label class="field-label" for="booking-time">Uhrzeit</label>
+                  <input id="booking-time" type="time" step="900" class="field-input" />
+                  <!-- 900 Sekunden = 15 Minuten -->
+                </div>
+              </div>
+
+              <div class="booking-step-actions" style="margin-top:16px;">
+                <button type="button" id="booking-back-2" class="btn btn-ghost btn-small">
+                  Zurück
+                </button>
+                <button
+                  type="button"
+                  id="booking-next-2"
+                  class="btn btn-secondary btn-small"
+                  style="float:right;"
+                >
+                  Weiter zu Kunde
+                </button>
+              </div>
+            </div>
+
+            <!-- STEP 3: Kunde -->
+            <div class="booking-step hidden" id="booking-step-3" data-step="3">
+              <h4 class="settings-subtitle">Kunde (optional)</h4>
+              <label class="field-label" for="booking-customer-name">Name</label>
+              <input id="booking-customer-name" type="text" class="field-input" />
+
+              <label class="field-label" for="booking-customer-email">E-Mail</label>
+              <input id="booking-customer-email" type="email" class="field-input" />
+
+              <label class="field-label" for="booking-customer-phone">Telefon</label>
+              <input id="booking-customer-phone" type="tel" class="field-input" />
+
+              <label class="field-label" for="booking-customer-address">Adresse</label>
+              <input id="booking-customer-address" type="text" class="field-input" />
+
+              <label class="field-label" for="booking-notes">Notizen (optional)</label>
+              <textarea id="booking-notes" class="field-input" rows="3"></textarea>
+
+              <h4 class="settings-subtitle" style="margin-top:12px;">Rabatt (optional)</h4>
+              <div class="form-row">
+                <label class="field-label" for="booking-discount-type">Rabattart</label>
+                <select id="booking-discount-type" class="field-input">
+                  <option value="none">Kein Rabatt</option>
+                  <option value="amount">Betrag (€)</option>
+                  <option value="percent">Prozent (%)</option>
+                </select>
+              </div>
+
+              <div class="form-row">
+                <label class="field-label" for="booking-discount-value">Rabattwert</label>
+                <input
+                  id="booking-discount-value"
+                  type="number"
+                  class="field-input"
+                  placeholder="z.B. 10"
+                  step="0.01"
+                  min="0"
+                />
+                <p class="form-hint">
+                  Bei Betrag: Euro. Bei Prozent: 0–100.
+                </p>
+              </div>
+
+              <div class="booking-step-actions" style="margin-top:16px;">
+                <button type="button" id="booking-back-3" class="btn btn-ghost btn-small">
+                  Zurück
+                </button>
+                <button type="submit" class="btn btn-primary btn-small" style="float:right;">
+                  Auftrag anlegen
+                </button>
+              </div>
+            </div>
+
+            <!-- Zusammenfassung -->
+            <div class="booking-summary glass" style="margin-top:16px; padding:12px;">
+              <p><strong>Gesamtpreis:</strong> <span id="booking-summary-price">€ 0,00</span></p>
+              <p><strong>Gesamtzeit:</strong> <span id="booking-summary-duration">0 Std.</span></p>
+            </div>
+          </form>
+          <p id="booking-error" class="error-text"></p>
+        </div>
+      </div>
+
+      <!-- AUFTRAG-DETAIL / BUCHUNG-DETAIL MODAL -->
+      <div id="booking-detail-modal" class="profile-modal hidden">
+        <div class="profile-modal-backdrop"></div>
+        <div class="profile-modal-card glass">
+          <div class="profile-modal-header">
+            <h3 id="booking-detail-title">Auftrag</h3>
+            <button
+              id="booking-detail-close"
+              class="icon-button small"
+              type="button"
+              title="Schließen"
+            >
+              ✕
+            </button>
+          </div>
+
+          <div class="booking-detail-body">
+            <!-- Termin + Fahrzeug -->
+            <p id="booking-detail-meta"></p>
+
+            <!-- Auftragsvolumen -->
+            <p id="booking-detail-price" class="price"></p>
+
+            <!-- BUCHUNGSDETAILS (editierbar) -->
+            <details class="modal-section">
+              <summary>Buchungsdetails</summary>
+
+  <div class="modal-section">
+    <label class="field-label" for="booking-detail-date">Termin</label>
+    <div class="booking-datetime-row">
+      <div>
+        <input
+          id="booking-detail-date"
+          type="date"
+          class="field-input"
+        />
+      </div>
+      <div>
+        <input
+          id="booking-detail-time"
+          type="time"
+          step="900"
+          class="field-input"
+        />
+      </div>
+    </div>
+  </div>
+
+  <div class="modal-section">
+    <label class="field-label" for="booking-detail-car">Fahrzeug</label>
+    <input
+      id="booking-detail-car"
+      type="text"
+      class="field-input"
+      placeholder="z.B. BMW M3, Kennzeichen"
+    />
+  </div>
+
+  <div class="modal-section">
+    <label class="field-label" for="booking-detail-vehicle-class">
+      Fahrzeugklasse
+    </label>
+    <select id="booking-detail-vehicle-class" class="field-input">
+      <option value="">Keine Auswahl</option>
+      <!-- Optionen werden per JS geladen -->
+    </select>
+  </div>
+
+  <!-- NEU: Paket -->
+  <div class="modal-section">
+    <label class="field-label" for="booking-detail-main-service">
+      Paket (optional)
+    </label>
+    <select id="booking-detail-main-service" class="hidden"></select>
+<div class="settings-dropdown">
+  <button
+    type="button"
+    class="settings-dropdown-toggle"
+    id="booking-detail-package-toggle"
+    aria-expanded="false"
+  >
+    <span id="booking-detail-package-label">Paket wählen</span>
+    <span class="settings-dropdown-chevron">▾</span>
+  </button>
+
+  <div id="booking-detail-package-menu" class="settings-dropdown-menu"></div>
+</div>
+      <option value="">Kein Paket</option>
+      <!-- Optionen per JS -->
+    </select>
+    <p class="form-hint">
+      Optionales Hauptpaket für diesen Auftrag.
+    </p>
+  </div>
+
+<div class="modal-section">
+  <label class="field-label">Einzelleistungen</label>
+
+  <!-- Custom Dropdown mit Checkboxen (wie Neuer Auftrag) -->
+  <div class="settings-dropdown booking-singles-dropdown">
+<button
+  type="button"
+  class="settings-dropdown-toggle"
+  id="booking-detail-singles-toggle"
+  aria-expanded="false"
+>
+  <span id="booking-detail-singles-label">Einzelleistungen wählen</span>
+  <span class="settings-dropdown-chevron">▾</span>
+</button>
+    <div
+      class="settings-dropdown-menu"
+      id="booking-detail-singles-menu"
+    >
+      <p class="form-hint">Noch keine Einzelleistungen angelegt.</p>
+    </div>
+  </div>
+
+  <!-- Hidden Multi-Select als Datenbasis -->
+  <select
+    id="booking-detail-singles-list"
+    multiple
+    class="hidden"
+  ></select>
+
+  <p class="form-hint">Mehrere Einzelleistungen wählbar.</p>
+</div>
+
+  <div class="modal-section">
+    <label class="field-label" for="booking-detail-discount-type">
+      Rabattart
+    </label>
+    <select id="booking-detail-discount-type" class="field-input">
+      <option value="none">Kein Rabatt</option>
+      <option value="amount">Betrag (€)</option>
+      <option value="percent">Prozent (%)</option>
+    </select>
+  </div>
+
+  <div class="modal-section">
+    <label class="field-label" for="booking-detail-discount-value">
+      Rabattwert
+    </label>
+    <input
+      id="booking-detail-discount-value"
+      type="number"
+      class="field-input"
+      step="0.01"
+      min="0"
+      placeholder="z.B. 10"
+    />
+  </div>
+            </details>
+
+            <!-- KUNDE (editierbar) -->
+            <details class="modal-section">
+              <summary>Kunde</summary>
+
+              <div class="modal-section">
+                <label class="field-label" for="booking-detail-customer-name">Name</label>
+                <input
+                  id="booking-detail-customer-name"
+                  type="text"
+                  class="field-input"
+                />
+              </div>
+
+              <div class="modal-section">
+                <label class="field-label" for="booking-detail-customer-email">E-Mail</label>
+                <input
+                  id="booking-detail-customer-email"
+                  type="email"
+                  class="field-input"
+                />
+              </div>
+
+              <div class="modal-section">
+                <label class="field-label" for="booking-detail-customer-phone">Telefon</label>
+                <input
+                  id="booking-detail-customer-phone"
+                  type="tel"
+                  class="field-input"
+                />
+              </div>
+
+              <div class="modal-section">
+                <label class="field-label" for="booking-detail-customer-address">Adresse</label>
+                <input
+                  id="booking-detail-customer-address"
+                  type="text"
+                  class="field-input"
+                />
+              </div>
+            </details>
+
+            <!-- Notizen -->
+            <div class="modal-section">
+              <label class="field-label" for="booking-detail-notes">Notizen</label>
+              <textarea
+                id="booking-detail-notes"
+                class="field-input"
+                rows="4"
+                placeholder="Interne Notizen zum Auftrag"
+              ></textarea>
+            </div>
+
+            <!-- Status-Blöcke -->
+            <div class="modal-section">
+              <h4 class="settings-subtitle">Status</h4>
+
+              <label class="field-label" for="booking-detail-job-status">
+                Auftragsstatus
+              </label>
+              <select
+                id="booking-detail-job-status"
+                class="field-input"
+              >
+                <option value="planned">Geplant</option>
+                <option value="in_progress">In Arbeit</option>
+                <option value="done">Abgeschlossen</option>
+                <option value="canceled">Storniert</option>
+              </select>
+
+              <label
+                class="field-label"
+                for="booking-detail-payment-status"
+                style="margin-top:8px;"
+              >
+                Zahlungsstatus
+              </label>
+              <select
+                id="booking-detail-payment-status"
+                class="field-input"
+              >
+                <option value="open">Offen</option>
+                <option value="partial">Teilzahlung</option>
+                <option value="paid">Bezahlt</option>
+              </select>
+            </div>
+
+              <!-- Teilzahlung: bereits gezahlter Betrag -->
+              <div class="modal-section payment-partial-row">
+                <label class="field-label" for="booking-detail-partial-amount">
+                  Bereits bezahlt (Teilzahlung, in €)
+                </label>
+                <input
+                  id="booking-detail-partial-amount"
+                  type="number"
+                  class="field-input"
+                  step="0.01"
+                  min="0"
+                  placeholder="z.B. 100"
+                />
+              </div>
+
+              <!-- Bezahlt: abweichende Gesamtsumme -->
+              <div class="modal-section payment-paid-override-row">
+                <label
+                  class="field-label"
+                  for="booking-detail-paid-override-amount"
+                >
+                  Abweichende Gesamtsumme (in €)
+                </label>
+                <input
+                  id="booking-detail-paid-override-amount"
+                  type="number"
+                  class="field-input"
+                  step="0.01"
+                  min="0"
+                  placeholder="z.B. 299"
+                />
+                <p class="form-hint">
+                  Nur ausfüllen, wenn der gezahlte Betrag vom Auftragsvolumen abweicht.
+                </p>
+              </div>
+
+            <!-- Buttons -->
+            <div class="modal-buttons">
+              <button
+                type="button"
+                id="booking-detail-delete-button"
+                class="btn btn-danger"
+              >
+                Auftrag löschen
+              </button>
+              <button
+                type="button"
+                id="booking-detail-save"
+                class="btn btn-primary"
+              >
+                Änderungen speichern
+              </button>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- INTAKE MODAL -->
+<div id="intake-modal" class="profile-modal hidden">
+  <div class="profile-modal-backdrop"></div>
+  <div class="profile-modal-card glass">
+    <div class="profile-modal-header">
+      <h3>Annahmeprotokoll</h3>
+      <button id="intake-close-button" class="icon-button small" type="button" title="Schließen">✕</button>
+    </div>
+
+    <!-- Step Indicator -->
+    <div class="booking-steps-indicator">
+      <span id="intake-step-indicator-1" class="booking-step-indicator active">1. Auftrag</span>
+      <span id="intake-step-indicator-2" class="booking-step-indicator">2. Fahrzeug</span>
+      <span id="intake-step-indicator-3" class="booking-step-indicator">3. Check</span>
+      <span id="intake-step-indicator-4" class="booking-step-indicator">4. Außen</span>
+      <span id="intake-step-indicator-5" class="booking-step-indicator">5. Innen</span>
+      <span id="intake-step-indicator-6" class="booking-step-indicator">6. Recht</span>
+    </div>
+
+    <form id="intake-form" class="form">
+
+      <!-- STEP 1 -->
+      <div class="booking-step" id="intake-step-1" data-step="1">
+        <div class="glass" style="padding:12px;">
+          <p class="form-hint" style="margin:0 0 10px;">
+            Auftrag wurde ausgewählt. Datum kannst du anpassen.
+          </p>
+
+          <div class="booking-datetime-row">
+  <div>
+    <label class="field-label" for="intake-doc-date">Datum</label>
+    <input id="intake-doc-date" type="date" class="field-input" />
+  </div>
+  <div>
+    <label class="field-label" for="intake-doc-time">Uhrzeit</label>
+    <input id="intake-doc-time" type="time" class="field-input" />
+  </div>
+</div>
+
+          <label class="field-label" for="intake-customer-note">Kundennotiz (sichtbar)</label>
+          <textarea id="intake-customer-note" class="field-input" rows="3"></textarea>
+        </div>
+
+        <div class="modal-actions">
+          <button id="intake-next-1" type="button" class="btn btn-primary-alt">Weiter</button>
+        </div>
+      </div>
+
+      <!-- STEP 2 -->
+<div class="booking-step hidden" id="intake-step-2" data-step="2">
+  <div class="glass" style="padding:12px;">
+    <label class="field-label" for="intake-vehicle-make-model">Fahrzeug (Marke & Modell)</label>
+    <input id="intake-vehicle-make-model" type="text" class="field-input" placeholder="z.B. BMW M3" />
+
+    <label class="field-label" for="intake-vehicle-vin">FIN (optional)</label>
+    <input id="intake-vehicle-vin" type="text" class="field-input" />
+
+    <label class="field-label" for="intake-vehicle-plate">Kennzeichen</label>
+    <input id="intake-vehicle-plate" type="text" class="field-input" placeholder="z.B. D-AB 1234" />
+
+    <label class="field-label" for="intake-vehicle-year">Baujahr</label>
+    <input id="intake-vehicle-year" type="number" class="field-input" inputmode="numeric" />
+
+    <label class="field-label" for="intake-vehicle-mileage">Kilometerstand</label>
+    <input id="intake-vehicle-mileage" type="number" class="field-input" inputmode="numeric" />
+  </div>
+
+  <div class="modal-actions">
+    <button id="intake-back-2" type="button" class="btn btn-ghost">Zurück</button>
+    <button id="intake-next-2" type="button" class="btn btn-primary-alt">Weiter</button>
+  </div>
+</div>
+
+      <!-- STEP 3 -->
+      <div class="booking-step hidden" id="intake-step-3" data-step="3">
+        <div class="glass" style="padding:12px;">
+          <p class="form-hint" style="margin:0 0 10px;">
+            Pflichtfelder: überall bewusst Ja/Nein auswählen.
+          </p>
+
+          <label class="field-label" for="intake-q-damages">Sind sichtbare Schäden vorhanden?</label>
+          <select id="intake-q-damages" class="field-input">
+            <option value="">Bitte wählen…</option>
+            <option value="no">Nein</option>
+            <option value="yes">Ja</option>
+          </select>
+
+          <label class="field-label" for="intake-q-odors">Sind Gerüche wahrnehmbar?</label>
+          <select id="intake-q-odors" class="field-input">
+            <option value="">Bitte wählen…</option>
+            <option value="no">Nein</option>
+            <option value="yes">Ja</option>
+          </select>
+
+          <label class="field-label" for="intake-q-valuables">Wurden Wertgegenstände im Fahrzeug belassen?</label>
+          <select id="intake-q-valuables" class="field-input">
+            <option value="">Bitte wählen…</option>
+            <option value="no">Nein</option>
+            <option value="yes">Ja</option>
+          </select>
+
+          <label class="field-label">Aktueller Tankstand</label>
+<div id="intake-fuel-pill" class="pill-group">
+  <button type="button" class="pill" data-value="25">¼</button>
+  <button type="button" class="pill" data-value="50">½</button>
+  <button type="button" class="pill" data-value="75">¾</button>
+  <button type="button" class="pill" data-value="100">Voll</button>
+</div>
+
+          <label class="field-label" for="intake-check-notes">Zusatznotiz zur Checkliste (optional)</label>
+          <textarea id="intake-check-notes" class="field-input" rows="3"></textarea>
+        </div>
+
+        <div class="modal-actions">
+          <button id="intake-back-3" type="button" class="btn btn-ghost">Zurück</button>
+          <button id="intake-next-3" type="button" class="btn btn-primary-alt">Weiter</button>
+        </div>
+      </div>
+
+      <!-- STEP 4 -->
+      <div class="booking-step hidden" id="intake-step-4" data-step="4">
+        <p class="form-hint" style="margin-top:0;">
+          Außenaufnahmen: pro Punkt Fotos hinzufügen + optionale Notiz.
+        </p>
+
+        <div id="intake-exterior-points"></div>
+
+        <div class="modal-actions">
+          <button id="intake-back-4" type="button" class="btn btn-ghost">Zurück</button>
+          <button id="intake-next-4" type="button" class="btn btn-primary-alt">Weiter</button>
+        </div>
+      </div>
+
+      <!-- STEP 5 -->
+      <div class="booking-step hidden" id="intake-step-5" data-step="5">
+        <p class="form-hint" style="margin-top:0;">
+          Innenraumaufnahmen: pro Punkt Fotos hinzufügen + optionale Notiz.
+        </p>
+
+        <div id="intake-interior-points"></div>
+
+        <div class="modal-actions">
+          <button id="intake-back-5" type="button" class="btn btn-ghost">Zurück</button>
+          <button id="intake-next-5" type="button" class="btn btn-primary-alt">Weiter</button>
+        </div>
+      </div>
+
+      <!-- STEP 6 -->
+      <div class="booking-step hidden" id="intake-step-6" data-step="6">
+        <div class="glass" style="padding:12px;">
+          <label class="field-label" style="margin-top:0;">Rechtliches</label>
+
+          <label class="form-hint" style="display:flex; gap:10px; align-items:flex-start; user-select:none;">
+            <input id="intake-legal-handover" type="checkbox" />
+            <span>Kunde bestätigt die Übergabe des Fahrzeugs im dokumentierten Zustand.</span>
+          </label>
+
+          <label class="form-hint" style="display:flex; gap:10px; align-items:flex-start;">
+  <input id="intake-legal-hidden-damages" type="checkbox" />
+  <span>
+    Kunde bestätigt, dass mögliche Schäden aufgrund von Verschmutzungen bei Übergabe
+    nicht sichtbar waren.
+  </span>
+</label>
+
+          <label class="form-hint" style="display:flex; gap:10px; align-items:flex-start; user-select:none;">
+            <input id="intake-legal-terms" type="checkbox" />
+            <span>Kunde akzeptiert die AGB und Datenschutzbestimmungen.</span>
+          </label>
+
+          <label class="field-label" style="margin-top:12px;">Unterschrift Kunde</label>
+          <div class="glass intake-signature-wrap">
+            <canvas id="intake-signature-canvas" style="width:100%; height:160px; border-radius:14px;"></canvas>
+
+            <div style="display:flex; gap:8px; margin-top:10px;">
+              <button id="intake-signature-clear" type="button" class="btn btn-ghost" style="flex:1;">Löschen</button>
+              <button id="intake-signature-apply" type="button" class="btn btn-secondary" style="flex:1;">Übernehmen</button>
+            </div>
+          </div>
+
+<label class="field-label" for="intake-send-email" style="margin-top:14px;">Annahmebericht per E-Mail senden</label>
+          <select id="intake-send-email" class="field-input">
+            <option value="no">Nein</option>
+            <option value="yes">Ja</option>
+          </select>
+
+          <div id="intake-email-panel" style="margin-top:10px; display:none;">
+            <label class="field-label" for="intake-customer-email">E-Mail Kunde</label>
+            <input id="intake-customer-email" type="email" class="field-input" autocomplete="email" />
+          </div>
+
+          <p id="intake-final-error" class="error-text" style="margin-top:10px; color: #ef4444; font-weight: bold;"></p>
+          <p id="intake-final-success" class="form-hint" style="margin-top:10px;"></p>
+
+          <div class="modal-actions">
+            <button id="intake-back-6" type="button" class="btn btn-ghost">Zurück</button>
+            <button id="intake-finish" type="submit" class="btn btn-primary-alt">Abschließen</button>
+          </div>
+        </div> </div> </form>
+  </div>
+</div>
+
+      <!-- REVIEW MODAL -->
+      <div id="review-modal" class="profile-modal hidden">
+        <div class="profile-modal-backdrop"></div>
+        <div class="profile-modal-card glass">
+          <div class="profile-modal-header">
+            <h3>Bewertung anfragen</h3>
+            <button
+              id="review-modal-close"
+              class="icon-button small"
+              type="button"
+              title="Schließen"
+            >
+              ✕
+            </button>
+          </div>
+
+          <div class="form">
+            <p id="review-modal-text" class="form-hint" style="user-select:text;">
+              <!-- Text wird per JS gesetzt -->
+            </p>
+
+            <button
+              type="button"
+              id="review-modal-copy"
+              class="btn btn-secondary"
+              style="margin-top:12px;"
+            >
+              Text kopieren
+            </button>
+
+            <button
+              type="button"
+              id="review-modal-done"
+              class="btn btn-primary"
+              style="margin-top:8px;"
+            >
+              Erledigt
+            </button>
+          </div>
+        </div>
+      </div>
+
+      <!-- BOTTOM NAV -->
+      <nav class="bottom-nav glass">
+        <button class="nav-item active" data-tab="dashboard">
+          <span class="nav-icon">
+            <img src="dashboard-icon.png" alt="Dashboard" />
+          </span>
+          <span class="nav-label">Dashboard</span>
+        </button>
+        <button class="nav-item" data-tab="schedule">
+          <span class="nav-icon">
+            <img src="zeitplan-icon.png" alt="Zeitplan" />
+          </span>
+          <span class="nav-label">Zeitplan</span>
+        </button>
+<button class="nav-item" data-tab="orders">
+  <span class="nav-icon">
+    <img src="auftragsannahme.png" alt="Annahmeprotokoll" />
+  </span>
+  <span class="nav-label">Annahmeprotokoll</span>
+</button>
+        <button class="nav-item" data-tab="settings">
+          <span class="nav-icon">
+            <img src="einstellungen-icon.png" alt="Einstellungen" />
+          </span>
+          <span class="nav-label">Einstellungen</span>
+        </button>
+      </nav>
+    </div>
+  </div>
+
+  <script src="app.js?v1.02"></script>
+</body>
+</html>
