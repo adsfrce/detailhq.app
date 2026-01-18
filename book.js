@@ -1,7 +1,7 @@
 // Public Booking (detailhq.de/<detailer_uuid>)
 // Lädt Services + Fahrzeugklassen über Worker API und schreibt "requested" Booking.
 
-const API_BASE = "https://api.detailhq.de"; // dein Worker Host
+const API_BASE = "https://api.detailhq.de";
 
 function $(id) { return document.getElementById(id); }
 
@@ -1088,6 +1088,7 @@ showThankYouPage({
 });
 
 init();
+
 
 
 
