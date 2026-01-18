@@ -47,10 +47,10 @@ function normalizeTopic(value) {
   const map = {
     problem_mit_zahlung: "Payment issue",
     abo_verwalten: "Manage subscription",
-    app_fehler: "App-Error",
+    app_fehler: "App Issue",
     login_probleme: "Login-Error",
     fragen: "Questions",
-    sonstiges: "Additional",
+    sonstiges: "Other",
   };
   return map[value] || "Sonstiges";
 }
