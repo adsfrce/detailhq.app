@@ -1,8 +1,8 @@
 <!doctype html>
-<html lang="de">
+<html lang="en">
 <head>
   <meta charset="UTF-8" />
-  <title>DetailHQ – Termin buchen</title>
+  <title>DetailHQ – Book Appointment</title>
   <link rel="icon" type="image/png" href="app_icon.PNG" />
   <meta name="viewport" content="width=device-width, initial-scale=1" />
   <meta name="theme-color" content="#000000" />
@@ -21,10 +21,8 @@
           </div>
         </div>
 
-        <!-- Fehler/Info -->
         <p id="public-error" class="form-hint" style="display:none;"></p>
 
-        <!-- Schritt-Indikator -->
         <div class="booking-steps-indicator" style="margin-top:10px;">
           <span id="booking-step-indicator-1" class="booking-step-indicator active">1. Vehicle</span>
           <span id="booking-step-indicator-2" class="booking-step-indicator">2. Services</span>
@@ -33,10 +31,9 @@
         </div>
 
         <form id="booking-form" class="form" style="margin-top:10px;">
-          <!-- STEP 1: Fahrzeug -->
           <div class="booking-step" id="booking-step-1" data-step="1">
             <label class="field-label" for="booking-car">Vehicle</label>
-            <input id="booking-car" type="text" class="field-input" placeholder="Marke & Modell" required />
+            <input id="booking-car" type="text" class="field-input" placeholder="Make & Model" required />
 
             <label class="field-label" for="booking-vehicle-class">Vehicle Class</label>
             <select id="booking-vehicle-class" class="field-input" required>
@@ -48,30 +45,28 @@
             </button>
           </div>
 
-          <!-- STEP 2: Leistungen -->
           <div class="booking-step hidden" id="booking-step-2" data-step="2">
-<label class="field-label">Package (optional)</label>
+            <label class="field-label">Package (optional)</label>
 
-<div class="settings-dropdown booking-package-dropdown">
-  <button
-    type="button"
-    class="settings-dropdown-toggle"
-    id="booking-package-toggle"
-    aria-expanded="false"
-  >
-    <span id="booking-package-label">Please select</span>
-    <span class="settings-dropdown-chevron">▾</span>
-  </button>
+            <div class="settings-dropdown booking-package-dropdown">
+              <button
+                type="button"
+                class="settings-dropdown-toggle"
+                id="booking-package-toggle"
+                aria-expanded="false"
+              >
+                <span id="booking-package-label">Please select</span>
+                <span class="settings-dropdown-chevron">▾</span>
+              </button>
 
-  <div id="booking-package-menu" class="settings-dropdown-menu">
-    <p class="form-hint">Loading...</p>
-  </div>
-</div>
+              <div id="booking-package-menu" class="settings-dropdown-menu">
+                <p class="form-hint">Loading...</p>
+              </div>
+            </div>
 
-<!-- Hidden select bleibt für Validation/Submit/Existing Logic -->
-<select id="booking-main-service" class="field-input hidden">
-  <option value="">No Package</option>
-</select>
+            <select id="booking-main-service" class="field-input hidden">
+              <option value="">No Package</option>
+            </select>
 
             <div class="form-hint" style="margin-top:6px;">
               Select at least one package or single service.
@@ -102,30 +97,28 @@
             </div>
           </div>
 
-<!-- STEP 3: Termin -->
-<div class="booking-step hidden" id="booking-step-3" data-step="3">
-  <label class="field-label">Preferred date</label>
+          <div class="booking-step hidden" id="booking-step-3" data-step="3">
+            <label class="field-label">Preferred date</label>
 
-<div class="booking-datetime-row booking-datetime-pill">
-  <div class="dt-cell dt-date">
-    <input id="booking-date" type="date" class="field-input" required />
-  </div>
-  <div class="dt-cell dt-time">
-    <select id="booking-time" class="field-input" required>
-      <option value="">Please select</option>
-    </select>
-  </div>
-</div>
+            <div class="booking-datetime-row booking-datetime-pill">
+              <div class="dt-cell dt-date">
+                <input id="booking-date" type="date" class="field-input" required />
+              </div>
+              <div class="dt-cell dt-time">
+                <select id="booking-time" class="field-input" required>
+                  <option value="">Please select</option>
+                </select>
+              </div>
+            </div>
 
-  <p id="booking-time-hint" class="form-hint" style="margin-top:6px;"></p>
+            <p id="booking-time-hint" class="form-hint" style="margin-top:6px;"></p>
 
-  <div style="display:flex; gap:10px; margin-top:12px;">
-    <button type="button" class="btn btn-secondary" id="booking-back-3">Back</button>
-    <button type="button" class="btn btn-primary" id="booking-next-3">Next</button>
-  </div>
-</div>
- 
-          <!-- STEP 4: Kontakt -->
+            <div style="display:flex; gap:10px; margin-top:12px;">
+              <button type="button" class="btn btn-secondary" id="booking-back-3">Back</button>
+              <button type="button" class="btn btn-primary" id="booking-next-3">Next</button>
+            </div>
+          </div>
+          
           <div class="booking-step hidden" id="booking-step-4" data-step="4">
             <label class="field-label" for="booking-customer-name">Name</label>
             <input id="booking-customer-name" type="text" class="field-input" required />
@@ -136,33 +129,33 @@
             <label class="field-label" for="booking-customer-email">E-Mail</label>
             <input id="booking-customer-email" type="email" class="field-input" required />
 
-            <label class="field-label" for="booking-customer-address">Adress</label>
+            <label class="field-label" for="booking-customer-address">Address</label>
             <input id="booking-customer-address" type="text" class="field-input" />
 
             <label class="field-label" for="booking-notes">Notes (optional)</label>
-            <textarea id="booking-notes" class="field-input" rows="4" placeholder="Sonderwünsche, worauf geachtet werden soll..."></textarea>
+            <textarea id="booking-notes" class="field-input" rows="4" placeholder="Special requests, details to note..."></textarea>
 
             <label class="field-label" for="booking-discount-code" style="margin-top:12px;">Voucher code (optional)</label>
-<div style="display:flex; gap:10px; align-items:center;">
-  <input id="booking-discount-code" type="text" class="field-input" placeholder="CODE" style="text-transform:uppercase;" />
-  <button id="booking-discount-apply" type="button" class="btn btn-secondary" style="white-space:nowrap;">Apply</button>
-</div>
-<p id="booking-discount-status" class="form-hint"></p>
+            <div style="display:flex; gap:10px; align-items:center;">
+              <input id="booking-discount-code" type="text" class="field-input" placeholder="CODE" style="text-transform:uppercase;" />
+              <button id="booking-discount-apply" type="button" class="btn btn-secondary" style="white-space:nowrap;">Apply</button>
+            </div>
+            <p id="booking-discount-status" class="form-hint"></p>
 
             <button type="submit" class="btn btn-primary" id="public-submit" style="margin-top:12px;">
               Book appointment
             </button>
-
           </div>
         </form>
-<section id="booking-thankyou" class="hidden" style="margin-top:10px;">
-  <h2 style="margin:0 0 6px 0;">Thank you for your booking.</h2>
-  <p class="form-hint" style="margin:0 0 14px 0;">
-    Your appointment has been successfully scheduled.
-  </p>
 
-  <div id="booking-thankyou-content"></div>
-</section>
+        <section id="booking-thankyou" class="hidden" style="margin-top:10px;">
+          <h2 style="margin:0 0 6px 0;">Thank you for your booking.</h2>
+          <p class="form-hint" style="margin:0 0 14px 0;">
+            Your appointment has been successfully scheduled.
+          </p>
+
+          <div id="booking-thankyou-content"></div>
+        </section>
 
       </div>
     </div>
@@ -171,4 +164,3 @@
   <script src="book.js?v1.0.3"></script>
 </body>
 </html>
-
