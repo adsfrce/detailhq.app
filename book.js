@@ -1,7 +1,7 @@
-// Public Booking (detailhq.com/<detailer_uuid>)
-// Loads Services + Vehicle Classes via Worker API and writes "requested" booking.
+// Public Booking (detailhq.de/<detailer_uuid>)
+// Lädt Services + Fahrzeugklassen über Worker API und schreibt "requested" Booking.
 
-const API_BASE = "https://api.detailhq.app";
+const API_BASE = "https://api.detailhq.de"; // dein Worker Host
 
 function $(id) { return document.getElementById(id); }
 
@@ -25,9 +25,9 @@ let appliedDiscount = {
 function minutesToHoursText(mins) {
   const m = Number(mins || 0) || 0;
   const h = m / 60;
-  // 0.5 steps
+  // 0.5er Schritte
   const rounded = Math.round(h * 2) / 2;
-  return `${rounded.toLocaleString("en-US", { minimumFractionDigits: rounded % 1 ? 1 : 0, maximumFractionDigits: 1 })} hrs`;
+  return `${rounded.toLocaleString("de-DE", { minimumFractionDigits: rounded % 1 ? 1 : 0, maximumFractionDigits: 1 })} Std.`;
 }
 
 function formatIcsDateUtc(d) {
@@ -51,16 +51,16 @@ function downloadIcs(summary) {
   const lines = [
     "BEGIN:VCALENDAR",
     "VERSION:2.0",
-    "PRODID:-//DetailHQ//Public Booking//EN",
+    "PRODID:-//DetailHQ//Public Booking//DE",
     "CALSCALE:GREGORIAN",
     "METHOD:PUBLISH",
     "BEGIN:VEVENT",
-    `UID:${crypto.randomUUID()}@detailhq.app`,
+    `UID:${crypto.randomUUID()}@detailhq.de`,
     `DTSTAMP:${formatIcsDateUtc(new Date())}`,
     `DTSTART:${formatIcsDateUtc(start)}`,
     `DTEND:${formatIcsDateUtc(end)}`,
-    "SUMMARY:Detailing Appointment",
-    `DESCRIPTION:Vehicle: ${summary.car}\\nVehicle Class: ${summary.vehicleClassName || "—"}\\nServices: ${summary.packageName ? "Package: " + summary.packageName + " " : ""}${summary.singlesNames && summary.singlesNames.length ? "Individual Services: " + summary.singlesNames.join(", ") : ""}`,
+    "SUMMARY:Termin Aufbereitung",
+    `DESCRIPTION:Fahrzeug: ${summary.car}\\nFahrzeugklasse: ${summary.vehicleClassName || "—"}\\nLeistungen: ${summary.packageName ? "Paket: " + summary.packageName + " " : ""}${summary.singlesNames && summary.singlesNames.length ? "Einzelleistungen: " + summary.singlesNames.join(", ") : ""}`,
     "END:VEVENT",
     "END:VCALENDAR",
   ];
@@ -71,7 +71,7 @@ function downloadIcs(summary) {
 
   const a = document.createElement("a");
   a.href = url;
-  a.download = "detailing-appointment.ics";
+  a.download = "termin-aufbereitung.ics";
   document.body.appendChild(a);
   a.click();
   a.remove();
@@ -80,36 +80,36 @@ function downloadIcs(summary) {
 }
 
 function showThankYouPage(summary) {
-  // Hide steps
+  // Steps ausblenden
   step1.classList.add("hidden");
   step2.classList.add("hidden");
   step3.classList.add("hidden");
   step4.classList.add("hidden");
 
-  // Hide step indicator (if exists)
+  // Step-Indikator ausblenden (falls vorhanden)
   document.querySelector(".booking-steps-indicator")?.classList.add("hidden");
 
   if (thankYouContent) {
     const servicesLine = [
-      summary.packageName ? `Package: ${summary.packageName}` : "",
-      summary.singlesNames && summary.singlesNames.length ? `Individual Services: ${summary.singlesNames.join(", ")}` : "",
+      summary.packageName ? `Paket: ${summary.packageName}` : "",
+      summary.singlesNames && summary.singlesNames.length ? `Einzelleistungen: ${summary.singlesNames.join(", ")}` : "",
     ].filter(Boolean).join("<br>");
 
     thankYouContent.innerHTML = `
 
-      <div class="success-line"><strong>Vehicle:</strong> ${summary.car}</div>
-      <div class="success-line"><strong>Vehicle Class:</strong> ${summary.vehicleClassName || "—"}</div>
-      <div class="success-line"><strong>Appointment:</strong> ${summary.dateStr} · ${summary.timeStr}</div>
-      <div class="success-line"><strong>Duration:</strong> ${minutesToHoursText(summary.durationMinutes)}</div>
-      <div class="success-line"><strong>Price:</strong> ${usd(summary.totalPriceCents)}</div>
+      <div class="success-line"><strong>Fahrzeug:</strong> ${summary.car}</div>
+      <div class="success-line"><strong>Fahrzeugklasse:</strong> ${summary.vehicleClassName || "—"}</div>
+      <div class="success-line"><strong>Termin:</strong> ${summary.dateStr} · ${summary.timeStr}</div>
+      <div class="success-line"><strong>Dauer:</strong> ${minutesToHoursText(summary.durationMinutes)}</div>
+      <div class="success-line"><strong>Preis:</strong> ${euro(summary.totalPriceCents)}</div>
 
       <div class="success-line" style="margin-top:12px;">
-        <strong>Services:</strong><br>
+        <strong>Leistungen:</strong><br>
         ${servicesLine || "—"}
       </div>
 
       <div style="margin-top:16px;">
-        <button type="button" id="add-to-calendar" class="btn btn-primary" style="width:100%;">Add to calendar</button>
+        <button type="button" id="add-to-calendar" class="btn btn-primary" style="width:100%;">Zum Kalender hinzufügen</button>
       </div>
     `;
 
@@ -121,7 +121,7 @@ function showThankYouPage(summary) {
 
   if (thankYouSection) thankYouSection.classList.remove("hidden");
 
-  // Scroll to top
+  // Ganz nach oben, damit die Section nicht “unten” wirkt
   document.querySelector(".auth-card")?.scrollIntoView({ behavior: "smooth", block: "start" });
 }
 
@@ -167,10 +167,10 @@ async function rebuildTimeOptionsForDay(detailerId, day, durationMinutes) {
   const hint = document.getElementById("booking-time-hint");
   if (!timeSelect) return;
 
-  timeSelect.innerHTML = `<option value="">Please select</option>`;
-  if (hint) hint.textContent = "Loading available times...";
+  timeSelect.innerHTML = `<option value="">Bitte wählen</option>`;
+  if (hint) hint.textContent = "Lädt verfügbare Zeiten...";
 
-  // Load blocked times
+    // Blockierte Zeiten laden (bereits gebuchte Slots etc.)
   let blocked = [];
   try {
     const av = await fetchAvailability(detailerId, day);
@@ -179,20 +179,20 @@ async function rebuildTimeOptionsForDay(detailerId, day, durationMinutes) {
       end: new Date(b.end_at),
     }));
   } catch (e) {
-    console.warn("DetailHQ: Availability could not be loaded, fallback without blocking.");
+    console.warn("DetailHQ: availability konnte nicht geladen werden, fallback ohne blocking");
     blocked = [];
   }
 
 const dayKey = dayKeyFromISODate(day);
 
-// Load opening hours from provider (Fallback 07:00–19:00)
+// Öffnungszeiten aus Provider laden (Fallback 07:00–19:00)
 const opening = providerSettings?.opening_hours?.[dayKey] || null;
 
-// If closed (checkbox not set) => no times
+// Wenn geschlossen (Checkbox nicht gesetzt) => keine Zeiten
 const isOpen = opening ? (opening.open === true || (!!opening.start && !!opening.end)) : true;
 
 if (!isOpen) {
-  if (hint) hint.textContent = "Closed on this day.";
+  if (hint) hint.textContent = "An diesem Tag geschlossen.";
   return;
 }
 
@@ -206,7 +206,7 @@ if (opening?.start && opening?.end) {
 
 const STEP = 15;
 
-  // Duration is NOT used to restrict start times
+  // Dauer wird NICHT zur Einschränkung der Startzeiten genutzt
   const dur = 15;
   const options = [];
 
@@ -225,7 +225,7 @@ const STEP = 15;
     timeSelect.appendChild(opt);
   }
 
-  if (hint) hint.textContent = options.length ? "" : "No available times on this day.";
+  if (hint) hint.textContent = options.length ? "" : "Keine freien Zeiten an diesem Tag.";
 }
 
 const bookingCustomerNameInput = $("booking-customer-name");
@@ -285,6 +285,12 @@ function showStep(step) {
 }
 
 function getPathDetailerId() {
+  // Unterstützt:
+  // - /<uuid>
+  // - /book/<uuid>
+  // - /book.html?u=<uuid>
+  // - /book.html?detailer=<uuid>
+
   const rawPath = (location.pathname || "/").replace(/^\/+|\/+$/g, "");
   const parts = rawPath ? rawPath.split("/") : [];
 
@@ -295,6 +301,7 @@ function getPathDetailerId() {
     if (uuidRe.test(seg)) return seg;
   }
 
+  // Fallback: wenn jemand direkt /<uuid> ohne weitere Segmente hat, aber nicht als UUID erkannt (sollte nicht passieren)
   if (rawPath && rawPath !== "book.html" && rawPath !== "book") return rawPath;
 
   const params = new URLSearchParams(window.location.search);
@@ -338,7 +345,7 @@ async function applyDiscountCode(detailerId, subtotalCents) {
     return;
   }
 
-  if (discountStatus) discountStatus.textContent = "Checking Code...";
+  if (discountStatus) discountStatus.textContent = "Prüfe Code...";
 
   try {
     const res = await apiPost(`/public/discount/validate`, {
@@ -357,7 +364,7 @@ async function applyDiscountCode(detailerId, subtotalCents) {
 
     const net = Math.max(0, Number(subtotalCents || 0) - Number(appliedDiscount.discount_cents || 0));
     if (discountStatus) {
-      discountStatus.textContent = `Discount: ${usd(appliedDiscount.discount_cents)} · Now: ${usd(net)}`;
+      discountStatus.textContent = `Rabatt: ${euro(appliedDiscount.discount_cents)} · Neu: ${euro(net)}`;
     }
   } catch (e) {
     appliedDiscount = {
@@ -367,13 +374,13 @@ async function applyDiscountCode(detailerId, subtotalCents) {
       discount_type: null,
       discount_value: null,
     };
-    if (discountStatus) discountStatus.textContent = "Invalid code.";
+    if (discountStatus) discountStatus.textContent = "Code ungültig.";
   }
 }
 
-function usd(cents) {
+function euro(cents) {
   const v = (Number(cents || 0) / 100);
-  return v.toLocaleString("en-US", { style: "currency", currency: "USD" });
+  return v.toLocaleString("de-DE", { style: "currency", currency: "EUR" });
 }
 
 function safeText(s) {
@@ -409,40 +416,47 @@ async function apiPost(path, body) {
 }
 
 function renderVehicleClasses() {
-  bookingVehicleClassSelect.innerHTML = `<option value="">Please select</option>`;
+  bookingVehicleClassSelect.innerHTML = `<option value="">Bitte wählen</option>`;
   vehicleClasses.forEach((vc) => {
     const opt = document.createElement("option");
-    opt.value = vc.id; 
+    opt.value = vc.id; // vehicle_classes.id
     opt.textContent = vc.name;
     bookingVehicleClassSelect.appendChild(opt);
   });
 }
 
 function renderPackages() {
+  // hidden select leeren
   bookingMainServiceSelect.innerHTML = "";
+
+  // Dropdown menu leeren
   bookingPackageMenu.innerHTML = "";
 
-  const packages = services.filter((s) =>
-    s && (s.kind === "package" || s.is_single_service === false || s.is_single_service === 0 || s.is_single_service === "false")
-  );
+  // Filter: nur Pakete (nicht single services)
+const packages = services.filter((s) =>
+  s && (s.kind === "package" || s.is_single_service === false || s.is_single_service === 0 || s.is_single_service === "false")
+);
 
+  // Placeholder option im hidden select
   const ph = document.createElement("option");
   ph.value = "";
-  ph.textContent = "Select Package";
+  ph.textContent = "Paket wählen";
   bookingMainServiceSelect.appendChild(ph);
 
   if (!packages.length) {
-    bookingPackageMenu.innerHTML = `<p class="form-hint">No packages available.</p>`;
-    bookingPackageLabel.textContent = "Choose package.";
+    bookingPackageMenu.innerHTML = `<p class="form-hint">Keine Pakete verfügbar.</p>`;
+    bookingPackageLabel.textContent = "Paket wählen";
     return;
   }
 
   packages.forEach((svc) => {
+    // hidden select option
     const o = document.createElement("option");
     o.value = String(svc.id);
-    o.textContent = `${svc.name} · ${usd(svc.base_price_cents)}`;
+    o.textContent = `${svc.name} · ${euro(svc.base_price_cents)}`;
     bookingMainServiceSelect.appendChild(o);
 
+    // visible row
     const row = document.createElement("div");
     row.className = "settings-dropdown-item";
     row.dataset.value = String(svc.id);
@@ -450,15 +464,16 @@ function renderPackages() {
     const radio = document.createElement("div");
     radio.className = "booking-singles-item-checkbox";
     
-    const headerRow = document.createElement("div");
-    headerRow.className = "service-header-row";
+const headerRow = document.createElement("div");
+headerRow.className = "service-header-row";
 
-    const txt = document.createElement("div");
-    txt.className = "booking-singles-item-label";
-    txt.textContent = `${svc.name} · ${usd(svc.base_price_cents)}`;
+const txt = document.createElement("div");
+txt.className = "booking-singles-item-label";
+txt.textContent = `${svc.name} · ${euro(svc.base_price_cents)}`;
 
-    headerRow.appendChild(txt);
+headerRow.appendChild(txt);
 
+    // optional details (accordion)
     const desc = (svc.description || "").trim();
     let descWrap = null;
 
@@ -504,15 +519,16 @@ function renderPackages() {
     col.style.flexDirection = "column";
     col.style.gap = "6px";
 
-    if (descWrap) {
-      headerRow.appendChild(descWrap.querySelector(".service-desc-toggle"));
-    }
+if (descWrap) {
+  headerRow.appendChild(descWrap.querySelector(".service-desc-toggle"));
+}
 
-    col.appendChild(headerRow);
+col.appendChild(headerRow);
 
-    if (descWrap) {
-      col.appendChild(descWrap.querySelector(".service-desc-panel"));
-    }
+// Panel (Text) kommt darunter
+if (descWrap) {
+  col.appendChild(descWrap.querySelector(".service-desc-panel"));
+}
 
     row.appendChild(col);
 
@@ -524,8 +540,9 @@ function renderPackages() {
         it.classList.toggle("selected", it === row);
       });
 
-      bookingPackageLabel.textContent = `${svc.name} · ${usd(svc.base_price_cents)}`;
+      bookingPackageLabel.textContent = `${svc.name} · ${euro(svc.base_price_cents)}`;
 
+      // dropdown schließen
       const dd = bookingPackageToggle.closest(".settings-dropdown");
       dd?.classList.remove("open");
       bookingPackageToggle.setAttribute("aria-expanded", "false");
@@ -536,10 +553,12 @@ function renderPackages() {
     bookingPackageMenu.appendChild(row);
   });
 
-  bookingPackageLabel.textContent = "Select Package";
+  bookingPackageLabel.textContent = "Paket wählen";
 }
 
 function closeAllServiceDescriptions() {
+
+  // Singles panels schließen
   document.querySelectorAll(".service-desc-toggle[aria-expanded='true']").forEach((btn) => {
     btn.setAttribute("aria-expanded", "false");
     const p = btn.closest(".settings-dropdown-item")?.querySelector(".service-desc-panel");
@@ -549,14 +568,14 @@ function closeAllServiceDescriptions() {
 
 function renderSinglesMenu() {
   bookingSinglesMenu.innerHTML = "";
-  const singles = services.filter((s) =>
-    s && (s.kind === "single" || s.is_single_service === true || s.is_single_service === 1 || s.is_single_service === "true") && (s.is_active !== false)
-  );
+const singles = services.filter((s) =>
+  s && (s.kind === "single" || s.is_single_service === true || s.is_single_service === 1 || s.is_single_service === "true") && (s.is_active !== false)
+);
 
   if (singles.length === 0) {
     const p = document.createElement("p");
     p.className = "form-hint";
-    p.textContent = "No individual services available.";
+    p.textContent = "Keine Einzelleistungen verfügbar.";
     bookingSinglesMenu.appendChild(p);
     return;
   }
@@ -568,30 +587,31 @@ function renderSinglesMenu() {
     row.style.gap = "10px";
     row.style.alignItems = "flex-start";
 
-    const cb = document.createElement("div");
-    cb.className = "booking-singles-item-checkbox";
+const cb = document.createElement("div");
+cb.className = "booking-singles-item-checkbox";
 
-    const isSelected = selectedSingles.has(svc.id);
-    row.classList.toggle("selected", isSelected);
+const isSelected = selectedSingles.has(svc.id);
+row.classList.toggle("selected", isSelected);
 
-    function toggleSingle() {
-      const now = !selectedSingles.has(svc.id);
-      if (now) selectedSingles.add(svc.id);
-      else selectedSingles.delete(svc.id);
+function toggleSingle() {
+  const now = !selectedSingles.has(svc.id);
+  if (now) selectedSingles.add(svc.id);
+  else selectedSingles.delete(svc.id);
 
-      row.classList.toggle("selected", now);
-      renderSelectedSinglesList();
-    }
+  row.classList.toggle("selected", now);
+  renderSelectedSinglesList();
+}
 
-    const headerRow = document.createElement("div");
-    headerRow.className = "service-header-row";
+const headerRow = document.createElement("div");
+headerRow.className = "service-header-row";
 
-    const txt = document.createElement("div");
-    txt.className = "booking-singles-item-label";
-    txt.textContent = `${svc.name} · ${usd(svc.base_price_cents)}`;
+const txt = document.createElement("div");
+txt.className = "booking-singles-item-label";
+txt.textContent = `${svc.name} · ${euro(svc.base_price_cents)}`;
 
-    headerRow.appendChild(txt);
+headerRow.appendChild(txt);
 
+    // optional details (accordion)
     const desc = (svc.description || "").trim();
     let descWrap = null;
 
@@ -629,9 +649,10 @@ function renderSinglesMenu() {
     }
 
     row.addEventListener("click", (e) => {
-      if (e.target.closest(".service-desc-toggle")) return;
-      toggleSingle();
-    });
+  // Wenn auf "Details" geklickt wurde, NICHT selektieren
+  if (e.target.closest(".service-desc-toggle")) return;
+  toggleSingle();
+});
 
     row.appendChild(cb);
 
@@ -642,15 +663,16 @@ function renderSinglesMenu() {
     col.style.flexDirection = "column";
     col.style.gap = "6px";
 
-    if (descWrap) {
-      headerRow.appendChild(descWrap.querySelector(".service-desc-toggle"));
-    }
+if (descWrap) {
+  headerRow.appendChild(descWrap.querySelector(".service-desc-toggle"));
+}
 
-    col.appendChild(headerRow);
+col.appendChild(headerRow);
 
-    if (descWrap) {
-      col.appendChild(descWrap.querySelector(".service-desc-panel"));
-    }
+// Panel (Text) kommt darunter
+if (descWrap) {
+  col.appendChild(descWrap.querySelector(".service-desc-panel"));
+}
 
     row.appendChild(col);
     bookingSinglesMenu.appendChild(row);
@@ -662,7 +684,7 @@ function renderSinglesMenu() {
 function renderSelectedSinglesList() {
   const singles = services.filter(s => selectedSingles.has(s.id));
   if (singles.length === 0) {
-    bookingSinglesList.textContent = "No services selected.";
+    bookingSinglesList.textContent = "Keine Einzelleistungen gewählt.";
     return;
   }
   bookingSinglesList.textContent = singles.map(s => s.name).join(", ");
@@ -710,18 +732,18 @@ function validateStep2() {
 
   const bad = (!packageId && singlesCount === 0);
 
+  // Nur bei Fehler rot markieren
   bookingPackageToggle.classList.toggle("is-invalid", bad);
   bookingSinglesToggle.classList.toggle("is-invalid", bad);
 
   if (bad) {
-    bookingError.textContent = "Please select at least one package or service.";
+    bookingError.textContent = "Bitte mindestens ein Paket oder eine Einzelleistung auswählen.";
     return false;
   }
 
   bookingError.textContent = "";
   return true;
 }
-
 bookingPackageMenu.addEventListener("click", () => {
   clearInvalid(bookingPackageToggle);
   clearInvalid(bookingSinglesToggle);
@@ -740,9 +762,10 @@ function wireRequiredRedBorders(root = document) {
     el.classList.toggle("is-invalid", isEmpty);
   };
 
+  // WICHTIG: kein initial apply() -> erst wenn wir es triggern (Weiter/Buchen)
   fields.forEach((el) => {
     el.addEventListener("input", () => {
-      if (el.classList.contains("is-invalid")) apply(el);
+      if (el.classList.contains("is-invalid")) apply(el); // nur wenn bereits rot war
     });
     el.addEventListener("change", () => {
       if (el.classList.contains("is-invalid")) apply(el);
@@ -770,17 +793,20 @@ function clearInvalid(el) {
 }
 
 function dayKeyFromISODate(dayIso) {
+  // dayIso: "YYYY-MM-DD"
   const dow = new Date(`${dayIso}T12:00:00`).getDay(); // 0=Sun ... 6=Sat
   const map = ["sun", "mon", "tue", "wed", "thu", "fri", "sat"];
   return map[dow];
 }
 
 async function fetchProviderSettings(detailerId) {
+  // Wenn du den Endpoint schon hast (du hattest ihn kommentiert):
+  // /public/provider?user=<id>
   try {
     const res = await apiGet(`/public/provider?user=${encodeURIComponent(detailerId)}`);
     return res || null;
   } catch (e) {
-    console.warn("DetailHQ: provider settings could not be loaded (fallback 07–19).");
+    console.warn("DetailHQ: provider settings konnten nicht geladen werden (fallback 07-19).");
     return null;
   }
 }
@@ -789,7 +815,7 @@ async function init() {
   detailerId = getPathDetailerId();
   if (!detailerId) {
     publicError.style.display = "block";
-    publicError.textContent = "Invalid Link.";
+    publicError.textContent = "Ungültiger Link.";
     showStep(1);
     return;
   }
@@ -798,6 +824,7 @@ async function init() {
   publicError.textContent = "";
 
   try {
+    // Provider Info optional (Name etc.) – wenn du das später willst, Route ist schon vorbereitet.
     providerSettings = await fetchProviderSettings(detailerId);
 
     const vcRes = await apiGet(`/public/vehicle-classes?detailer=${encodeURIComponent(detailerId)}`);
@@ -809,15 +836,15 @@ async function init() {
     renderVehicleClasses();
     renderPackages();
     renderSinglesMenu();
-    clearInvalid(bookingCarInput);
-    clearInvalid(bookingVehicleClassSelect);
-    clearInvalid(bookingDateInput);
-    clearInvalid(bookingTimeInput);
+clearInvalid(bookingCarInput);
+clearInvalid(bookingVehicleClassSelect);
+clearInvalid(bookingDateInput);
+clearInvalid(bookingTimeInput);
 
     showStep(1);
   } catch (err) {
     publicError.style.display = "block";
-    publicError.textContent = "Could not load data. Please try again later.";
+    publicError.textContent = "Konnte Daten nicht laden. Bitte später erneut versuchen.";
     console.error(err);
   }
 }
@@ -842,7 +869,7 @@ next1.addEventListener("click", () => {
         const subtotalCents = getCurrentSubtotalCents();
         await applyDiscountCode(detailerId, subtotalCents);
       } catch (e) {
-        if (discountStatus) discountStatus.textContent = "Code could not be verified.";
+        if (discountStatus) discountStatus.textContent = "Code konnte nicht geprüft werden.";
       }
     });
   }
@@ -857,7 +884,6 @@ next1.addEventListener("click", () => {
 
   showStep(2);
 });
-
 bookingCarInput.addEventListener("input", () => {
   if (bookingCarInput.classList.contains("is-invalid")) clearInvalid(bookingCarInput);
 });
@@ -895,7 +921,6 @@ next3.addEventListener("click", () => {
 
   showStep(4);
 });
-
 bookingDateInput.addEventListener("change", () => {
   if (bookingDateInput.classList.contains("is-invalid")) clearInvalid(bookingDateInput);
 });
@@ -904,10 +929,10 @@ bookingTimeInput.addEventListener("change", () => {
   if (bookingTimeInput.classList.contains("is-invalid")) clearInvalid(bookingTimeInput);
 });
 
+// Step 4 – rote Markierung entfernen beim Tippen
 bookingCustomerNameInput.addEventListener("input", () => clearInvalid(bookingCustomerNameInput));
 bookingCustomerEmailInput.addEventListener("input", () => clearInvalid(bookingCustomerEmailInput));
 bookingCustomerPhoneInput.addEventListener("input", () => clearInvalid(bookingCustomerPhoneInput));
-
 if (discountApplyBtn) {
   discountApplyBtn.addEventListener("click", async () => {
     const subtotalCents = getCurrentSubtotalCents();
@@ -932,17 +957,17 @@ bookingForm.addEventListener("submit", async (e) => {
   const singlesSvcs = services.filter(s => singles.includes(s.id));
 
   if (!car || !vehicleClassId) {
-    bookingError.textContent = "Please fill in vehicle and vehicle class.";
+    bookingError.textContent = "Bitte Fahrzeug und Fahrzeugklasse ausfüllen.";
     showStep(1);
     return;
   }
   if (!packageId && singles.length === 0) {
-    bookingError.textContent = "Please select at least one package or service.";
+    bookingError.textContent = "Bitte mindestens ein Paket oder eine Einzelleistung auswählen.";
     showStep(2);
     return;
   }
   if (!bookingDateInput.value || !bookingTimeInput.value) {
-    bookingError.textContent = "Please select date and time.";
+    bookingError.textContent = "Bitte Datum und Uhrzeit wählen.";
     showStep(3);
     return;
   }
@@ -953,22 +978,24 @@ bookingForm.addEventListener("submit", async (e) => {
   const customerAddress = safeText(bookingCustomerAddressInput.value);
   const notes = safeText(bookingNotesInput.value);
   
-  if (!customerName || !customerEmail || !customerPhone) {
-    bookingError.textContent = "Please fill in name, phone, and email.";
+if (!customerName || !customerEmail || !customerPhone) {
+  bookingError.textContent = "Bitte Name, Telefon und E-Mail ausfüllen.";
 
-    bookingCustomerNameInput.classList.toggle("is-invalid", !customerName);
-    bookingCustomerEmailInput.classList.toggle("is-invalid", !customerEmail);
-    bookingCustomerPhoneInput.classList.toggle("is-invalid", !customerPhone);
+  bookingCustomerNameInput.classList.toggle("is-invalid", !customerName);
+  bookingCustomerEmailInput.classList.toggle("is-invalid", !customerEmail);
+  bookingCustomerPhoneInput.classList.toggle("is-invalid", !customerPhone);
 
-    return;
-  }
+  return;
+}
+
 
   const startAt = new Date(`${bookingDateInput.value}T${bookingTimeInput.value}:00`);
   if (isNaN(startAt.getTime())) {
-    bookingError.textContent = "Invalid appointment.";
+    bookingError.textContent = "Ungültiger Termin.";
     return;
   }
 
+  // duration + price (nur aus Services, keine Vehicle-Class-Delta hier; kann man später addieren)
   let durationMinutes = 0;
   let totalPriceCents = 0;
 
@@ -977,15 +1004,16 @@ bookingForm.addEventListener("submit", async (e) => {
   if (packageSvc) {
     durationMinutes += Number(packageSvc.duration_minutes || 0);
     totalPriceCents += Number(packageSvc.base_price_cents || 0);
-    items.push({ role: "package", kind: "package", id: packageSvc.id, name: packageSvc.name, price_cents: packageSvc.base_price_cents || 0 });
+items.push({ role: "package", kind: "package", id: packageSvc.id, name: packageSvc.name, price_cents: packageSvc.base_price_cents || 0 });
   }
 
   singlesSvcs.forEach((s) => {
     durationMinutes += Number(s.duration_minutes || 0);
     totalPriceCents += Number(s.base_price_cents || 0);
-    items.push({ role: "single", kind: "single", id: s.id, name: s.name, price_cents: s.base_price_cents || 0 });
+items.push({ role: "single", kind: "single", id: s.id, name: s.name, price_cents: s.base_price_cents || 0 });
   });
   
+  // Code immer direkt vor Submit validieren (damit state aktuell ist)
   const subtotalCents = getCurrentSubtotalCents();
   await applyDiscountCode(detailerId, subtotalCents);
 
@@ -1010,13 +1038,16 @@ bookingForm.addEventListener("submit", async (e) => {
     job_status: "planned",
     payment_status: "open",
 
-    service_name: packageSvc ? packageSvc.name : (singlesSvcs[0]?.name || "Order"),
+    // legacy / kompatibilität
+    service_name: packageSvc ? packageSvc.name : (singlesSvcs[0]?.name || "Auftrag"),
     service_price: (totalPriceCents / 100),
     total_price: (totalPriceCents / 100),
 
+    // NEU: Rabattstate (wird serverseitig validiert und angewendet)
     applied_code: appliedDiscount?.applied_code || null,
     applied_kind: appliedDiscount?.applied_kind || null,
 
+    // Items im selben Format wie deine App (service_id statt id)
     items: items.map((it) => ({
       role: it.role,
       service_id: it.id,
@@ -1028,33 +1059,32 @@ bookingForm.addEventListener("submit", async (e) => {
   try {
     await apiPost(`/public/booking/request`, payload);
 
-    const dateStr = new Date(payload.start_at).toLocaleDateString("en-US", {
+    const dateStr = new Date(payload.start_at).toLocaleDateString("de-DE", {
       weekday: "short",
       day: "2-digit",
       month: "2-digit",
       year: "numeric",
     });
 
-    showThankYouPage({
-      car,
-      vehicleClassName,
-      dateStr,
-      timeStr: bookingTimeInput.value,
-      startAtIso: payload.start_at,
-      durationMinutes,
-      totalPriceCents,
-      packageName: packageSvc ? packageSvc.name : "",
-      singlesNames: singlesSvcs.map(s => s.name),
-    });
+showThankYouPage({
+  car,
+  vehicleClassName,
+  dateStr,
+  timeStr: bookingTimeInput.value,
+  startAtIso: payload.start_at,
+  durationMinutes,
+  totalPriceCents,
+  packageName: packageSvc ? packageSvc.name : "",
+  singlesNames: singlesSvcs.map(s => s.name),
+});
 
     const submitBtn = bookingForm.querySelector("#public-submit");
     if (submitBtn) submitBtn.disabled = true;
   } catch (err) {
     console.error(err);
     publicError.style.display = "block";
-    publicError.textContent = "Request could not be sent. Please try again later.";
+    publicError.textContent = "Anfrage konnte nicht gesendet werden. Bitte später erneut versuchen.";
   }
 });
 
 init();
-
