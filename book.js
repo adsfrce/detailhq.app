@@ -957,17 +957,17 @@ bookingForm.addEventListener("submit", async (e) => {
   const singlesSvcs = services.filter(s => singles.includes(s.id));
 
   if (!car || !vehicleClassId) {
-    bookingError.textContent = "Bitte Fahrzeug und Fahrzeugklasse ausfüllen.";
+    bookingError.textContent = "Please fill in vehicle and vehicle class.";
     showStep(1);
     return;
   }
   if (!packageId && singles.length === 0) {
-    bookingError.textContent = "Bitte mindestens ein Paket oder eine Einzelleistung auswählen.";
+    bookingError.textContent = "Please select at least one package or single service.";
     showStep(2);
     return;
   }
   if (!bookingDateInput.value || !bookingTimeInput.value) {
-    bookingError.textContent = "Bitte Datum und Uhrzeit wählen.";
+    bookingError.textContent = "Please select date and time.";
     showStep(3);
     return;
   }
@@ -979,7 +979,7 @@ bookingForm.addEventListener("submit", async (e) => {
   const notes = safeText(bookingNotesInput.value);
   
 if (!customerName || !customerEmail || !customerPhone) {
-  bookingError.textContent = "Bitte Name, Telefon und E-Mail ausfüllen.";
+  bookingError.textContent = "Please fill in name, phone, and email.";
 
   bookingCustomerNameInput.classList.toggle("is-invalid", !customerName);
   bookingCustomerEmailInput.classList.toggle("is-invalid", !customerEmail);
@@ -1039,7 +1039,7 @@ items.push({ role: "single", kind: "single", id: s.id, name: s.name, price_cents
     payment_status: "open",
 
     // legacy / kompatibilität
-    service_name: packageSvc ? packageSvc.name : (singlesSvcs[0]?.name || "Auftrag"),
+    service_name: packageSvc ? packageSvc.name : (singlesSvcs[0]?.name || "Order"),
     service_price: (totalPriceCents / 100),
     total_price: (totalPriceCents / 100),
 
@@ -1083,8 +1083,9 @@ showThankYouPage({
   } catch (err) {
     console.error(err);
     publicError.style.display = "block";
-    publicError.textContent = "Anfrage konnte nicht gesendet werden. Bitte später erneut versuchen.";
+    publicError.textContent = "Request could not be sent. Please try again later.";
   }
 });
 
 init();
+
