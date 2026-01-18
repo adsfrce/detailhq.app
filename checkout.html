@@ -3,7 +3,7 @@
   <head>
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1" />
-    <title>DetailHQ – Zahlung & Abo</title>
+    <title>DetailHQ – Billing & Subscription</title>
 
     <link rel="icon" type="image/png" href="app_icon.PNG" />
     <link rel="apple-touch-icon" href="app_icon.PNG" />
@@ -17,15 +17,15 @@
   <div class="header-left">
     <img src="logo_icon.PNG" alt="DetailHQ Logo" class="header-logo" />
     <div>
-      <h2 id="header-title">Zahlung & Abo</h2>
+      <h2 id="header-title">Payment & Subscription</h2>
       <p id="header-subtitle" class="header-subtitle">
-        Wähle deinen Plan oder verwalte dein Abo.
+        Choose your plan or manage your subscription.
       </p>
     </div>
   </div>
 
   <div style="display:flex; align-items:center; gap:10px;">
-    <a class="btn btn-ghost btn-small" id="checkout-back-to-app" href="/app">Zur App</a>
+    <a class="btn btn-ghost btn-small" id="checkout-back-to-app" href="/app">Go to app</a>
 
     <div class="profile-wrapper">
       <button id="profile-button" class="icon-button profile-avatar" title="Profil">
@@ -39,10 +39,10 @@
 
       <div id="profile-menu" class="profile-menu hidden">
         <button id="profile-manage-button" class="profile-menu-item">
-          Profil verwalten
+          Manage profile
         </button>
         <button id="profile-logout-button" class="profile-menu-item danger">
-          Abmelden
+          Log out
         </button>
       </div>
     </div>
@@ -76,50 +76,50 @@
                 <div class="cards-grid checkout-plans-grid">
                   <div class="card checkout-plan-card">
                     <div class="card-header">
-                      <div class="card-title">Monatlich</div>
-                      <div class="card-subtitle">Flexibel, kündbar jederzeit</div>
+                      <div class="card-title">Monthly</div>
+                      <div class="card-subtitle">Flexible, cancel anytime</div>
                     </div>
 
                     <div class="card-content">
                       <div class="checkout-price-line">
-                        <span class="checkout-price" id="checkout-price-monthly">39€</span>
-                        <span class="muted">/ Monat</span>
+                        <span class="checkout-price" id="checkout-price-monthly">$ 99</span>
+                        <span class="muted">/ Month</span>
                       </div>
 
                       <ul class="checkout-ul">
-                        <li>Alle Kernfunktionen freigeschaltet</li>
-                        <li>Buchungslink für Kunden</li>
-                        <li>Kalender, Aufträge, Pakete, Fahrzeuge</li>
+                        <li>All core features unlocked</li>
+                        <li>Booking link for customers</li>
+                        <li>Calendar, jobs, packages, vehicles</li>
                         <li>Support & Updates</li>
                       </ul>
 
                       <button class="btn btn-secondary btn-block" id="checkout-start-monthly">
-                        Monatlich starten
+                        Choose monthly
                       </button>
                     </div>
                   </div>
 
                   <div class="card checkout-plan-card checkout-plan-card--featured">
                     <div class="card-header">
-                      <div class="card-title">Jährlich</div>
-                      <div class="card-subtitle">Beste Wahl für Profis</div>
+                      <div class="card-title">Yearly</div>
+                      <div class="card-subtitle">Best choice for pros</div>
                     </div>
 
                     <div class="card-content">
                       <div class="checkout-price-line">
-  <span class="checkout-price" id="checkout-price-yearly">249€</span>
-  <span class="muted">/ Jahr</span>
-  <span class="checkout-savings-pill">47% sparen</span>
+  <span class="checkout-price" id="checkout-price-yearly">$ 899</span>
+  <span class="muted">/ Year</span>
+  <span class="checkout-savings-pill">Save 25%</span>
 </div>
 
                       <ul class="checkout-ul">
-                        <li>Planbar, keine Monats-Entscheidung</li>
-                        <li>Priorisierte Weiterentwicklung</li>
-                        <li>Bestes Preis-Leistungs-Verhältnis</li>
+                        <li>Predictable, no monthly decisions</li>
+                        <li>Priority development</li>
+                        <li>Best value for money</li>
                       </ul>
 
                       <button class="btn btn-primary btn-block" id="checkout-start-yearly">
-                        Jährlich starten
+                        Choose yearly
                       </button>
                     </div>
                   </div>
@@ -129,12 +129,12 @@
 
                 <div class="list-container" style="padding: 14px;">
                   <div style="display:flex; flex-direction:column; gap:10px;">
-                    <div style="font-weight:600;">Zahlung & Abo verwalten</div>
+                    <div style="font-weight:600;">Manage Billing & Subscription</div>
                     <div class="muted">
-                      Hier kannst du Zahlungsmethode ändern, Rechnungen ansehen, kündigen oder upgraden.
+                      Here you can change your payment method, view invoices, cancel, or upgrade.
                     </div>
                     <button class="btn btn-ghost btn-block" id="checkout-manage-portal">
-                      Abo & Zahlung verwalten (Stripe)
+                      Manage subscription & billing (Stripe)
                     </button>
                   </div>
                 </div>
@@ -142,7 +142,7 @@
                 <div style="height: 10px;"></div>
 
                 <div class="muted" id="checkout-auth-hint" style="display:none;">
-                  Du bist nicht eingeloggt. Bitte öffne die App und logge dich ein.
+                  You are not logged in. Please open the app and log in.
                 </div>
               </div>
             </div>
@@ -153,8 +153,8 @@
 
     <div class="app-loading-overlay" id="checkout-loading">
       <div class="app-loading-card glass">
-        <div class="app-loading-title">Lade…</div>
-        <div class="app-loading-subtitle">Session wird geprüft</div>
+        <div class="app-loading-title">Loading…</div>
+        <div class="app-loading-subtitle">Checking session</div>
       </div>
     </div>
 
