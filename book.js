@@ -376,6 +376,13 @@ function usd(cents) {
   return v.toLocaleString("en-US", { style: "currency", currency: "USD" });
 }
 
+function to12h(hhmm) {
+  const [h, m] = hhmm.split(":").map(Number);
+  const ampm = h >= 12 ? "PM" : "AM";
+  const h12 = h % 12 || 12;
+  return `${h12}:${String(m).padStart(2,"0")} ${ampm}`;
+}
+
 function safeText(s) {
   return (s || "").toString().trim();
 }
@@ -789,7 +796,7 @@ async function init() {
   detailerId = getPathDetailerId();
   if (!detailerId) {
     publicError.style.display = "block";
-    publicError.textContent = "Invalid Link.";
+    publicError.textContent = "Invalid.";
     showStep(1);
     return;
   }
@@ -1028,18 +1035,18 @@ bookingForm.addEventListener("submit", async (e) => {
   try {
     await apiPost(`/public/booking/request`, payload);
 
-    const dateStr = new Date(payload.start_at).toLocaleDateString("en-US", {
-      weekday: "short",
-      day: "2-digit",
-      month: "2-digit",
-      year: "numeric",
-    });
+const dateStr = new Date(payload.start_at).toLocaleDateString("en-US", {
+  weekday: "short",
+  month: "short",
+  day: "numeric",
+  year: "numeric",
+});
 
     showThankYouPage({
       car,
       vehicleClassName,
       dateStr,
-      timeStr: bookingTimeInput.value,
+      timeStr: to12h(bookingTimeInput.value),
       startAtIso: payload.start_at,
       durationMinutes,
       totalPriceCents,
@@ -1057,4 +1064,5 @@ bookingForm.addEventListener("submit", async (e) => {
 });
 
 init();
+
 
