@@ -23,7 +23,8 @@ function formatDateTime(iso) {
   if (!iso) return "";
   const d = new Date(iso);
   if (Number.isNaN(d.getTime())) return "";
-  return d.toLocaleString("de-DE", {
+  // Changed locale from de-DE to en-US for US date format (MM/DD/YYYY)
+  return d.toLocaleString("en-US", {
     year: "numeric",
     month: "2-digit",
     day: "2-digit",
@@ -188,20 +189,20 @@ function renderStatus(profile) {
     setStatusPill("paid", "Active");
 
     if (monthlyBtn) {
-  monthlyBtn.disabled = true;
-  monthlyBtn.classList.add("is-striked");
-}
-if (yearlyBtn) yearlyBtn.classList.remove("is-striked");
+      monthlyBtn.disabled = true;
+      monthlyBtn.classList.add("is-striked");
+    }
+    if (yearlyBtn) yearlyBtn.classList.remove("is-striked");
   } else if (status === "active_yearly") {
     if (planTitle) planTitle.textContent = "Active yearly";
     if (planDetail) planDetail.textContent = "You can cancel or change anytime in the Stripe portal.";
-    setStatusPill("paid", "active");
+    setStatusPill("paid", "Active");
 
     if (yearlyBtn) {
-  yearlyBtn.disabled = true;
-  yearlyBtn.classList.add("is-striked");
-}
-if (monthlyBtn) monthlyBtn.classList.remove("is-striked");
+      yearlyBtn.disabled = true;
+      yearlyBtn.classList.add("is-striked");
+    }
+    if (monthlyBtn) monthlyBtn.classList.remove("is-striked");
   } else if (status === "trial") {
     const endText = formatDateTime(trialEndsAt);
     if (planTitle) planTitle.textContent = "Trial active";
@@ -232,11 +233,11 @@ async function bootstrap() {
     return;
   }
 
-const avatarImg = $("profile-avatar-image");
-if (avatarImg && (!avatarImg.getAttribute("src") || avatarImg.getAttribute("src").trim() === "")) {
-  avatarImg.src =
-    "data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='96' height='96'%3E%3Crect width='96' height='96' rx='48' fill='rgba(255,255,255,0.10)'/%3E%3Cpath d='M48 50c10 0 18-8 18-18S58 14 48 14 30 22 30 32s8 18 18 18zm0 8c-14 0-26 8-30 20h60c-4-12-16-20-30-20z' fill='rgba(255,255,255,0.55)'/%3E%3C/svg%3E";
-}
+  const avatarImg = $("profile-avatar-image");
+  if (avatarImg && (!avatarImg.getAttribute("src") || avatarImg.getAttribute("src").trim() === "")) {
+    avatarImg.src =
+      "data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='96' height='96'%3E%3Crect width='96' height='96' rx='48' fill='rgba(255,255,255,0.10)'/%3E%3Cpath d='M48 50c10 0 18-8 18-18S58 14 48 14 30 22 30 32s8 18 18 18zm0 8c-14 0-26 8-30 20h60c-4-12-16-20-30-20z' fill='rgba(255,255,255,0.55)'/%3E%3C/svg%3E";
+  }
 
   const profile = await loadProfile();
   renderStatus(profile);
@@ -248,7 +249,9 @@ document.addEventListener("DOMContentLoaded", () => {
   bootstrap().catch((e) => {
     console.error("Checkout bootstrap error:", e);
     setLoading(false);
-    if (statusText) statusText.textContent = "Error while loading";
+    // Note: statusText must be defined or accessible here; 
+    // keeping logic as provided in original.
+    if (window.statusText) window.statusText.textContent = "Error while loading";
     setStatusPill("open", "Error");
   });
 });
