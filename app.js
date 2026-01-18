@@ -18,7 +18,8 @@ function eurToCents(eur) {
 
 function centsToEurText(cents) {
   const v = (Number(cents || 0) / 100);
-  return v.toLocaleString("de-DE", { style: "currency", currency: "EUR" });
+  // Umgestellt auf USD / en-US
+  return v.toLocaleString("en-US", { style: "currency", currency: "USD" });
 }
 
 let supabaseClient = null;
@@ -34,7 +35,7 @@ try {
   },
 });
 
-  console.log("DetailHQ: Supabase Client initialisiert");
+  console.log("DetailHQ: Supabase Client initialized");
 } catch (err) {
   console.error("DetailHQ: Supabase initialisation FAILED:", err);
 }
@@ -140,7 +141,7 @@ function saveReviewReminderState() {
       JSON.stringify(reviewReminderState || {})
     );
   } catch (err) {
-    console.error("ReviewReminderState speichern fehlgeschlagen:", err);
+    console.error("Saving ReviewReminderState failed:", err);
   }
 }
 
@@ -150,7 +151,7 @@ function startReviewReminderTimer() {
 }
 
 // ================================
-// DOM REFERENZEN
+// DOM REFERENCES
 // ================================
 const authView = document.getElementById("auth-view");
 const appView = document.getElementById("app-view");
@@ -173,7 +174,7 @@ const tabSections = document.querySelectorAll(".tab-section");
 const headerTitle = document.getElementById("header-title");
 const headerSubtitle = document.getElementById("header-subtitle");
 
-// Profil / Menü
+// Profile / Menu
 const profileButton = document.getElementById("profile-button");
 const profileMenu = document.getElementById("profile-menu");
 const profileManageButton = document.getElementById("profile-manage-button");
@@ -187,7 +188,7 @@ const trialBanner = document.getElementById("trial-banner");
 const trialBannerText = document.getElementById("trial-banner-text");
 const trialBannerButton = document.getElementById("trial-banner-button");
 
-// Profil-Modal
+// Profile-Modal
 const profileModal = document.getElementById("profile-modal");
 const profileCloseButton = document.getElementById("profile-close-button");
 const profileForm = document.getElementById("profile-form");
@@ -203,7 +204,7 @@ const bookingDetailTitle = document.getElementById("booking-detail-title");
 const bookingDetailMeta = document.getElementById("booking-detail-meta");
 const bookingDetailPrice = document.getElementById("booking-detail-price");
 
-// NEU:
+// NEW:
 const bookingDetailDateInput = document.getElementById("booking-detail-date");
 const bookingDetailTimeInput = document.getElementById("booking-detail-time");
 const bookingDetailCarInput = document.getElementById("booking-detail-car");
@@ -278,7 +279,7 @@ const bookingDetailPackageMenu   = document.getElementById("booking-detail-packa
 // Theme
 const themeRadioInputs = document.querySelectorAll('input[name="theme"]');
 
-// Kalender
+// Calendar
 const calendarPreferenceInputs = document.querySelectorAll(
   'input[name="calendar-preference"]'
 );
@@ -298,7 +299,7 @@ const billingOpenCheckoutButton = document.getElementById(
   "billing-open-checkout-button"
 );
 
-// Bewertungen
+// Reviews
 const settingsReviewLinkInput = document.getElementById(
   "settings-review-link"
 );
@@ -314,7 +315,7 @@ const settingsBookingLinkCopyBtn = document.getElementById("settings-booking-lin
 const settingsBookingLinkOpenBtn = document.getElementById("settings-booking-link-open");
 const settingsBookingLinkStatus = document.getElementById("settings-booking-link-status");
 
-// Gutscheine
+// Vouchers
 const promoCodeInput = document.getElementById("promo-code-input");
 const promoTypePercent = document.getElementById("promo-type-percent");
 const promoTypeAmount = document.getElementById("promo-type-amount");
@@ -336,10 +337,10 @@ const giftList = document.getElementById("gift-list");
 const promoDetails = promoList?.closest("details");
 const giftDetails = giftList?.closest("details");
 
-// Öffnungszeiten
+// Opening Hours
 const openingHoursSaveButton = document.getElementById("opening-hours-save-button");
 const openingHoursSaveStatus = document.getElementById("opening-hours-save-status");
-// Öffnungszeiten (Checkboxen "offen")
+// Opening Hours (Checkboxes "open")
 const openingHoursDayOpen = {
   mon: document.getElementById("oh-mon-open"),
   tue: document.getElementById("oh-tue-open"),
@@ -350,17 +351,17 @@ const openingHoursDayOpen = {
   sun: document.getElementById("oh-sun-open"),
 };
 
-// Kunde-Booking Limit pro Tag (1–10)
+// Customer Booking Limit per day (1–10)
 const publicDailyLimitSelect = document.getElementById("settings-public-daily-limit");
 
 async function loadPromoCodes() {
   if (!promoList) return;
-  promoList.innerHTML = `<p class="form-hint">Lädt...</p>`;
+  promoList.innerHTML = `<p class="form-hint">Loading...</p>`;
 
   const user = await supabaseClient.auth.getUser();
   const uid = user?.data?.user?.id;
   if (!uid) {
-    promoList.innerHTML = `<p class="form-hint">Nicht eingeloggt.</p>`;
+    promoList.innerHTML = `<p class="form-hint">Not logged in.</p>`;
     return;
   }
 
@@ -371,20 +372,20 @@ async function loadPromoCodes() {
     .order("created_at", { ascending: false });
 
   if (error) {
-    promoList.innerHTML = `<p class="form-hint">Fehler beim Laden.</p>`;
+    promoList.innerHTML = `<p class="form-hint">Error loading.</p>`;
     return;
   }
 
   const rows = Array.isArray(data) ? data : [];
   if (!rows.length) {
-    promoList.innerHTML = `<p class="form-hint">Noch keine Promo-Codes.</p>`;
+    promoList.innerHTML = `<p class="form-hint">No promo codes yet.</p>`;
     return;
   }
 
   promoList.innerHTML = rows
     .map((r) => {
       const typ = r.discount_type === "percent" ? `${r.discount_value}%` : centsToEurText(r.discount_value);
-      const active = r.active ? "Aktiv" : "Inaktiv";
+      const active = r.active ? "Active" : "Inactive";
       const code = normCode(r.code);
       return `
         <div style="display:flex;justify-content:space-between;align-items:center;padding:10px 12px;border:1px solid rgba(0,0,0,0.08);border-radius:14px;margin-bottom:8px;background:rgba(255,255,255,0.6);">
@@ -394,8 +395,8 @@ async function loadPromoCodes() {
           </div>
           <div style="display:flex; gap:8px;">
           <div style="display:flex;gap:8px;align-items:center;">
-            <button type="button" class="btn btn-ghost btn-small" data-promo-disable="${r.id}">Deaktivieren</button>
-            <button type="button" class="btn btn-ghost btn-small" data-promo-delete="${r.id}">Löschen</button>
+            <button type="button" class="btn btn-ghost btn-small" data-promo-disable="${r.id}">Deactivate</button>
+            <button type="button" class="btn btn-ghost btn-small" data-promo-delete="${r.id}">Delete</button>
           </div>
       `;
     })
@@ -441,7 +442,7 @@ async function createPromoCode() {
   const rawVal = Number(promoValueInput?.value || 0);
 
   if (!code) {
-    if (promoStatus) promoStatus.textContent = "Code fehlt.";
+    if (promoStatus) promoStatus.textContent = "Code missing.";
     return;
   }
 
@@ -449,13 +450,13 @@ async function createPromoCode() {
   let discount_value = 0;
   const max_redemptions = promoMaxUsesInput?.value ? Math.max(1, Math.floor(Number(promoMaxUsesInput.value))) : null;
 
-  // Date -> ends_at (23:59:59)
-const v = String(promoValidUntilInput?.value || "").trim();
-let ends_at = null;
-if (v) {
-  const m = v.match(/^(\d{2})\.(\d{2})\.(\d{4})$/);
-  if (m) ends_at = new Date(`${m[3]}-${m[2]}-${m[1]}T23:59:59.000Z`).toISOString();
-}
+  // Date -> ends_at (23:59:59) - Umgestellt auf US Format MM/DD/YYYY
+  const v = String(promoValidUntilInput?.value || "").trim();
+  let ends_at = null;
+  if (v) {
+    const m = v.match(/^(\d{2})\/(\d{2})\/(\d{4})$/);
+    if (m) ends_at = new Date(`${m[3]}-${m[1]}-${m[2]}T23:59:59.000Z`).toISOString();
+  }
 
   if (discount_type === "percent") {
     discount_value = Math.max(1, Math.min(100, Math.round(rawVal)));
@@ -464,11 +465,11 @@ if (v) {
   }
 
   if (!discount_value) {
-    if (promoStatus) promoStatus.textContent = "Wert fehlt.";
+    if (promoStatus) promoStatus.textContent = "Value missing.";
     return;
   }
 
-  if (promoStatus) promoStatus.textContent = "Speichere...";
+  if (promoStatus) promoStatus.textContent = "Saving...";
   
   const { error } = await supabaseClient.from("promo_codes").insert({
     detailer_id: uid,
@@ -482,11 +483,11 @@ if (v) {
   });
 
   if (error) {
-    if (promoStatus) promoStatus.textContent = "Fehler beim Speichern.";
+    if (promoStatus) promoStatus.textContent = "Error saving.";
     return;
   }
 
-  if (promoStatus) promoStatus.textContent = "Gespeichert.";
+  if (promoStatus) promoStatus.textContent = "Saved.";
   if (promoCodeInput) promoCodeInput.value = "";
   if (promoValueInput) promoValueInput.value = "";
   if (promoMaxUsesInput) promoMaxUsesInput.value = "";
@@ -496,12 +497,12 @@ if (v) {
 
 async function loadGiftCards() {
   if (!giftList) return;
-  giftList.innerHTML = `<p class="form-hint">Lädt...</p>`;
+  giftList.innerHTML = `<p class="form-hint">Loading...</p>`;
 
   const user = await supabaseClient.auth.getUser();
   const uid = user?.data?.user?.id;
   if (!uid) {
-    giftList.innerHTML = `<p class="form-hint">Nicht eingeloggt.</p>`;
+    giftList.innerHTML = `<p class="form-hint">Not logged in.</p>`;
     return;
   }
 
@@ -512,13 +513,13 @@ async function loadGiftCards() {
     .order("created_at", { ascending: false });
 
   if (error) {
-    giftList.innerHTML = `<p class="form-hint">Fehler beim Laden.</p>`;
+    giftList.innerHTML = `<p class="form-hint">Error loading.</p>`;
     return;
   }
 
   const rows = Array.isArray(data) ? data : [];
   if (!rows.length) {
-    giftList.innerHTML = `<p class="form-hint">Noch keine Gutscheinkarten.</p>`;
+    giftList.innerHTML = `<p class="form-hint">No gift cards yet.</p>`;
     return;
   }
 
@@ -527,20 +528,20 @@ async function loadGiftCards() {
       const code = normCode(r.code);
       const bal = centsToEurText(r.balance_cents);
       const init = centsToEurText(r.initial_balance_cents);
-      const active = r.active ? "Aktiv" : "Inaktiv";
+      const active = r.active ? "Active" : "Inactive";
       const pdfUrl = `${WORKER_API_BASE}/public/giftcard/pdf?detailer_id=${encodeURIComponent(uid)}&code=${encodeURIComponent(code)}`;
       return `
         <div style="display:flex;justify-content:space-between;align-items:center;padding:10px 12px;border:1px solid rgba(0,0,0,0.08);border-radius:14px;margin-bottom:8px;background:rgba(255,255,255,0.6);">
           <div>
             <div style="font-weight:700;">${code}</div>
-            <div style="font-size:12px;color:#6b7280;">Saldo: ${bal} · Start: ${init} · ${active}</div>
+            <div style="font-size:12px;color:#6b7280;">Balance: ${bal} · Initial: ${init} · ${active}</div>
             <div style="margin-top:6px;">
-              <a href="${pdfUrl}" target="_blank" rel="noopener" style="font-size:12px;">PDF öffnen</a>
+              <a href="${pdfUrl}" target="_blank" rel="noopener" style="font-size:12px;">Open PDF</a>
             </div>
           </div>
 <div style="display:flex;gap:8px;">
-  <button type="button" class="btn btn-ghost btn-small" data-gift-disable="${r.id}">Deaktivieren</button>
-  <button type="button" class="btn btn-ghost btn-small" data-gift-delete="${r.id}">Löschen</button>
+  <button type="button" class="btn btn-ghost btn-small" data-gift-disable="${r.id}">Deactivate</button>
+  <button type="button" class="btn btn-ghost btn-small" data-gift-delete="${r.id}">Delete</button>
 </div>
         </div>
       `;
@@ -564,11 +565,11 @@ async function issueGiftCard() {
 
   const amountCents = eurToCents(giftAmountInput?.value || 0);
   if (!amountCents) {
-    if (giftStatus) giftStatus.textContent = "Wert fehlt.";
+    if (giftStatus) giftStatus.textContent = "Value missing.";
     return;
   }
 
-  if (giftStatus) giftStatus.textContent = "Erstelle...";
+  if (giftStatus) giftStatus.textContent = "Creating...";
 
   const res = await fetch(`${WORKER_API_BASE}/giftcards/issue`, {
     method: "POST",
@@ -586,11 +587,11 @@ async function issueGiftCard() {
 
   const data = await res.json().catch(() => null);
   if (!res.ok || !data?.ok) {
-    if (giftStatus) giftStatus.textContent = "Fehler beim Erstellen.";
+    if (giftStatus) giftStatus.textContent = "Error creating.";
     return;
   }
 
-  if (giftStatus) giftStatus.textContent = `Erstellt: ${data.code}`;
+  if (giftStatus) giftStatus.textContent = `Created: ${data.code}`;
 
   if (giftLast) {
     giftLast.style.display = "";
@@ -598,7 +599,7 @@ async function issueGiftCard() {
       <div style="padding:10px 12px;border:1px solid rgba(0,0,0,0.08);border-radius:14px;background:rgba(255,255,255,0.6);">
         <div style="font-weight:700;">${normCode(data.code)}</div>
         <div style="margin-top:6px;">
-          <a href="${data.pdf_url}" target="_blank" rel="noopener" style="font-size:12px;">PDF öffnen</a>
+          <a href="${data.pdf_url}" target="_blank" rel="noopener" style="font-size:12px;">Open PDF</a>
         </div>
       </div>
     `;
@@ -620,16 +621,16 @@ function setupDiscountsUIHandlers() {
 }
 
 // ================================
-// ÖFFNUNGSZEITEN (Settings)
+// OPENING HOURS (Settings)
 // ================================
 const OPENING_HOURS_KEYS = [
-  { key: "mon", label: "Montag", openId: "oh-mon-open", startId: "oh-mon-start", endId: "oh-mon-end" },
-  { key: "tue", label: "Dienstag", openId: "oh-tue-open", startId: "oh-tue-start", endId: "oh-tue-end" },
-  { key: "wed", label: "Mittwoch", openId: "oh-wed-open", startId: "oh-wed-start", endId: "oh-wed-end" },
-  { key: "thu", label: "Donnerstag", openId: "oh-thu-open", startId: "oh-thu-start", endId: "oh-thu-end" },
-  { key: "fri", label: "Freitag", openId: "oh-fri-open", startId: "oh-fri-start", endId: "oh-fri-end" },
-  { key: "sat", label: "Samstag", openId: "oh-sat-open", startId: "oh-sat-start", endId: "oh-sat-end" },
-  { key: "sun", label: "Sonntag", openId: "oh-sun-open", startId: "oh-sun-start", endId: "oh-sun-end" },
+  { key: "mon", label: "Monday", openId: "oh-mon-open", startId: "oh-mon-start", endId: "oh-mon-end" },
+  { key: "tue", label: "Tuesday", openId: "oh-tue-open", startId: "oh-tue-start", endId: "oh-tue-end" },
+  { key: "wed", label: "Wednesday", openId: "oh-wed-open", startId: "oh-wed-start", endId: "oh-wed-end" },
+  { key: "thu", label: "Thursday", openId: "oh-thu-open", startId: "oh-thu-start", endId: "oh-thu-end" },
+  { key: "fri", label: "Friday", openId: "oh-fri-open", startId: "oh-fri-start", endId: "oh-fri-end" },
+  { key: "sat", label: "Saturday", openId: "oh-sat-open", startId: "oh-sat-start", endId: "oh-sat-end" },
+  { key: "sun", label: "Sunday", openId: "oh-sun-open", startId: "oh-sun-start", endId: "oh-sun-end" },
 ];
 
 function getDefaultOpeningHours() {
@@ -717,7 +718,7 @@ function setupOpeningHoursHandlers() {
 
   openingHoursSaveButton.addEventListener("click", async () => {
     if (!currentUser) {
-      if (openingHoursSaveStatus) openingHoursSaveStatus.textContent = "Bitte zuerst anmelden.";
+      if (openingHoursSaveStatus) openingHoursSaveStatus.textContent = "Please log in first.";
       return;
     }
 
@@ -751,7 +752,7 @@ const public_daily_limit = Math.max(
   Math.min(10, parseInt(publicDailyLimitSelect?.value || "2", 10) || 2)
 );
 
-    if (openingHoursSaveStatus) openingHoursSaveStatus.textContent = "Speichern...";
+    if (openingHoursSaveStatus) openingHoursSaveStatus.textContent = "Saving...";
 
     try {
       const { error } = await supabaseClient
@@ -763,8 +764,8 @@ const public_daily_limit = Math.max(
         .eq("id", currentUser.id);
 
       if (error) {
-        console.error("DetailHQ: Öffnungszeiten speichern fehlgeschlagen:", error);
-        if (openingHoursSaveStatus) openingHoursSaveStatus.textContent = "Fehler beim Speichern.";
+        console.error("DetailHQ: Saving opening hours failed:", error);
+        if (openingHoursSaveStatus) openingHoursSaveStatus.textContent = "Error saving.";
         return;
       }
 
@@ -774,12 +775,12 @@ const public_daily_limit = Math.max(
       }
 
       if (openingHoursSaveStatus) {
-        openingHoursSaveStatus.textContent = "Gespeichert.";
+        openingHoursSaveStatus.textContent = "Saved.";
         setTimeout(() => (openingHoursSaveStatus.textContent = ""), 2000);
       }
     } catch (e) {
-      console.warn("DetailHQ: Öffnungszeiten/Limit konnte nicht gespeichert werden (Spalte fehlt evtl.)");
-      if (openingHoursSaveStatus) openingHoursSaveStatus.textContent = "Gespeichert.";
+      console.warn("DetailHQ: Opening hours/limit could not be saved (column might be missing)");
+      if (openingHoursSaveStatus) openingHoursSaveStatus.textContent = "Saved.";
       setTimeout(() => (openingHoursSaveStatus.textContent = ""), 2000);
     }
   });
@@ -825,7 +826,7 @@ const servicePriceInput = document.getElementById("service-base-price-input");
 const serviceDurationInput = document.getElementById("service-duration-input");
 const serviceDescriptionInput = document.getElementById("service-notes-input");
 const serviceModalError = document.getElementById("service-modal-error");
-// Service Preis-Empfehlung UI
+// Service Price Recommendation UI
 const servicePriceRecoWrap = document.getElementById("service-price-reco");
 const servicePriceRecoMin = document.getElementById("service-price-reco-min");
 const servicePriceRecoMax = document.getElementById("service-price-reco-max");
@@ -873,7 +874,7 @@ const bookingSinglesList = document.getElementById("booking-singles-list");
 const bookingSinglesToggle = document.getElementById("booking-singles-toggle");
 const bookingSinglesMenu = document.getElementById("booking-singles-menu");
 const bookingSinglesLabel = document.getElementById("booking-singles-label");
-const bookingSinglesMenuUI = bookingSinglesMenu; // Alias, damit dein renderSingles nicht crasht
+const bookingSinglesMenuUI = bookingSinglesMenu; // Alias
 
 const bookingDateInput = document.getElementById("booking-date");
 const bookingTimeInput = document.getElementById("booking-time");
@@ -899,7 +900,7 @@ const bookingError = document.getElementById("booking-error");
 // Dashboard / Schedule Lists
 const todayBookingsContainer = document.getElementById("today-bookings");
 const scheduleListContainer = document.getElementById("schedule-list");
-// Dashboard: Bewertungen fällig
+// Dashboard: Reviews due
 const reviewRemindersContainer = document.getElementById("review-reminders");
 
 // Review-Modal
@@ -909,7 +910,7 @@ const reviewModalClose = document.getElementById("review-modal-close");
 const reviewModalCopyButton = document.getElementById("review-modal-copy");
 const reviewModalDoneButton = document.getElementById("review-modal-done");
 
-// Annahmeprotokoll (Orders Tab + Modal) — HTML IDs
+// Intake Protocol (Orders Tab + Modal) — HTML IDs
 const intakeStartButton = document.getElementById("intake-start-button");
 const intakeBookingSelect = document.getElementById("intake-booking-select");
 const intakeOpenButton = document.getElementById("intake-open-button");
@@ -1040,10 +1041,10 @@ const intakeBack3 = document.getElementById("intake-back-3");
 const intakeBack4 = document.getElementById("intake-back-4");
 const intakeBack5 = document.getElementById("intake-back-5");
 const intakeBack6 = document.getElementById("intake-back-6");
-// Aktueller Review-Booking
+// Current Review-Booking
 let currentReviewBooking = null;
 
-// Dashboard-KPIs
+// Dashboard KPIs
 const revenueTodayElement = document.getElementById("revenue-today");
 const volumeTodayElement = document.getElementById("volume-today");
 const dashboardPeriodToggle = document.getElementById(
@@ -1056,9 +1057,9 @@ const dashboardPeriodToggle = document.getElementById(
 // ===== BOOK PACKAGE UI (copied from book.js) =====
 function euro(cents) {
   const v = Number(cents || 0) / 100;
-  return v.toLocaleString("de-DE", {
+  return v.toLocaleString("en-US", {
     style: "currency",
-    currency: "EUR",
+    currency: "USD",
   });
 }
 
@@ -1071,7 +1072,7 @@ function escapeHtml(str) {
     .replaceAll("'", "&#039;");
 }
 
-// 1:1 aus book.js
+// 1:1 from book.js
 function renderPackages() {
   bookingMainServiceSelect.innerHTML = "";
   bookingPackageMenu.innerHTML = "";
@@ -1087,13 +1088,13 @@ function renderPackages() {
 
   const ph = document.createElement("option");
   ph.value = "";
-  ph.textContent = "Paket wählen";
+  ph.textContent = "Select package";
   bookingMainServiceSelect.appendChild(ph);
 
   if (!packages.length) {
     bookingPackageMenu.innerHTML =
-      `<p class="form-hint">Keine Pakete verfügbar.</p>`;
-    bookingPackageLabel.textContent = "Paket wählen";
+      `<p class="form-hint">No packages available.</p>`;
+    bookingPackageLabel.textContent = "Select package";
     return;
   }
 
@@ -1178,7 +1179,7 @@ if (panel) {
 function renderSingles() {
   if (!bookingSinglesMenuUI || !bookingSinglesList) return;
 
-  // Selection merken (falls renderSingles erneut läuft)
+  // Remember selection (if renderSingles runs again)
   const prevSelected = new Set(
     Array.from(bookingSinglesList.selectedOptions || []).map((o) => String(o.value))
   );
@@ -1191,7 +1192,7 @@ function renderSingles() {
   );
 
   if (!singles.length) {
-    bookingSinglesMenuUI.innerHTML = `<p class="form-hint">Noch keine Einzelleistungen.</p>`;
+    bookingSinglesMenuUI.innerHTML = `<p class="form-hint">No individual services yet.</p>`;
     updateBookingSinglesToggleText();
     return;
   }
@@ -1266,7 +1267,7 @@ function renderSingles() {
     row.appendChild(col);
 
     row.addEventListener("click", (e) => {
-      // wenn "Details" geklickt wurde -> nicht selektieren
+      // if "Details" was clicked -> do not select
       if (e.target.closest(".service-desc-toggle")) return;
 
       opt.selected = !opt.selected;
@@ -1289,7 +1290,7 @@ function updateBookingSinglesToggleText() {
     .map((o) => o.textContent)
     .filter(Boolean);
 
-  const text = labels.length ? labels.join(", ") : "Einzelleistungen wählen";
+  const text = labels.length ? labels.join(", ") : "Select individual services";
 
   const chevron = bookingSinglesToggle.querySelector(".settings-dropdown-chevron");
   bookingSinglesToggle.textContent = text + " ";
@@ -1355,8 +1356,7 @@ const hash = window.location.hash || "";
 if (hash.includes("type=recovery")) {
   console.log("DetailHQ: Password recovery flow detected");
 
-  // Wenn Supabase auf /#... (root) landet, direkt auf die Reset-Seite umleiten
-  // Hash muss mit, weil access_token/refresh_token da drin stehen
+  // Redirect to reset page if landing on root
   const target = `/reset-password.html${hash}`;
   window.location.replace(target);
   return;
@@ -1373,30 +1373,28 @@ if (qs.get("reset") === "1") {
   return;
 }
 
-  console.log("DetailHQ init startet...");
+  console.log("DetailHQ init starting...");
   saveAffiliateRefFirstTouch();
   showLoadingView();
 
   // ================================
   // PUBLIC BOOKING ROUTE GUARD
-  // Wenn URL = /<uuid>, niemals App/Dashboard laden
+  // If URL = /<uuid>, never load App/Dashboard
   // ================================
   const __path = (window.location.pathname || "/").replace(/^\/+/, "").trim();
   const __uuidRe =
     /^[0-9a-f]{8}-[0-9a-f]{4}-[1-5][0-9a-f]{3}-[89ab][0-9a-f]{3}-[0-9a-f]{12}$/i;
 
-  // /book.html soll nie hier reinlaufen
   if (__path.toLowerCase() === "book.html") {
-    // App kann normal weiter initten (falls du book.html jemals main.js geben würdest)
+    // App continues normally
   } else if (__uuidRe.test(__path)) {
-    // Wichtig: replace, damit Back-Button nicht wieder in die SPA fällt
+    // replace so back button doesn't fall into SPA
     window.location.replace(`/book.html?user=${encodeURIComponent(__path)}`);
     return;
   }
 
   if (!supabaseClient) {
-    console.error("DetailHQ: Kein Supabase-Client – Auth funktioniert nicht.");
-    // Kein supabaseClient => NICHTS davon aufrufen. Nur Login anzeigen.
+    console.error("DetailHQ: No Supabase Client – Auth will not work.");
     showAuthView();
     return;
   }
@@ -1434,7 +1432,7 @@ if (qs.get("reset") === "1") {
     btn.addEventListener("click", () => {
       const isHidden = input.getAttribute("type") === "password";
       input.setAttribute("type", isHidden ? "text" : "password");
-      btn.textContent = isHidden ? "Verbergen" : "Anzeigen";
+      btn.textContent = isHidden ? "Hide" : "Show";
     });
   });
 }
@@ -1461,23 +1459,20 @@ attachDropdownToggle(null, "booking-detail-package-toggle", "booking-detail-pack
 function setupRegisterBusinessTypeDropdown() {
   if (!registerBusinessToggle || !registerBusinessMenu || !registerBusinessTypesList) return;
 
-  // Seed hidden multi-select
   const OPTIONS = [
-    { value: "fahrzeugaufbereiter", label: "Fahrzeugaufbereiter" },
-    { value: "folierer", label: "Folierer (Wrap/PPF)" },
+    { value: "fahrzeugaufbereiter", label: "Car Detailer" },
+    { value: "folierer", label: "Wrapper (Wrap/PPF)" },
   ];
 
   registerBusinessTypesList.innerHTML = "";
   registerBusinessMenu.innerHTML = "";
 
   OPTIONS.forEach((opt) => {
-    // hidden select option
     const o = document.createElement("option");
     o.value = opt.value;
     o.textContent = opt.label;
     registerBusinessTypesList.appendChild(o);
 
-    // visible item (same styling as your multi select items)
     const item = document.createElement("div");
     item.className = "booking-singles-item";
     item.dataset.value = opt.value;
@@ -1504,25 +1499,22 @@ function setupRegisterBusinessTypeDropdown() {
 
   function updateRegisterBusinessToggleText() {
     const selectedLabels = Array.from(registerBusinessTypesList.selectedOptions || []).map((x) => x.textContent);
-    const text = selectedLabels.length ? selectedLabels.join(", ") : "Branche wählen";
+    const text = selectedLabels.length ? selectedLabels.join(", ") : "Select industry";
     if (registerBusinessLabel) registerBusinessLabel.textContent = text;
   }
 
-  // Toggle open/close (same behavior style as your other dropdowns)
   registerBusinessToggle.addEventListener("click", () => {
     const wrapper = registerBusinessToggle.closest(".settings-dropdown");
     if (!wrapper) return;
 
     const isOpen = wrapper.classList.contains("open");
 
-    // close other dropdowns
     document.querySelectorAll(".settings-dropdown.open").forEach((el) => el.classList.remove("open"));
 
     wrapper.classList.toggle("open", !isOpen);
     registerBusinessToggle.setAttribute("aria-expanded", !isOpen ? "true" : "false");
   });
 
-  // Close on outside click
   document.addEventListener("click", (e) => {
     const wrapper = registerBusinessToggle.closest(".settings-dropdown");
     if (!wrapper) return;
@@ -1541,7 +1533,7 @@ function setupRegisterBusinessTypeDropdown() {
     settingsReviewSaveButton.addEventListener("click", async () => {
       if (!currentUser) {
         if (settingsReviewSaveStatus) {
-          settingsReviewSaveStatus.textContent = "Bitte zuerst anmelden.";
+          settingsReviewSaveStatus.textContent = "Please log in first.";
         }
         return;
       }
@@ -1549,7 +1541,7 @@ function setupRegisterBusinessTypeDropdown() {
       const link = settingsReviewLinkInput.value.trim();
 
       if (settingsReviewSaveStatus) {
-        settingsReviewSaveStatus.textContent = "Speichern...";
+        settingsReviewSaveStatus.textContent = "Saving...";
       }
 
       const { error } = await supabaseClient
@@ -1559,12 +1551,12 @@ function setupRegisterBusinessTypeDropdown() {
 
       if (error) {
         console.error(
-          "DetailHQ: review_link speichern fehlgeschlagen:",
+          "DetailHQ: saving review_link failed:",
           error
         );
         if (settingsReviewSaveStatus) {
           settingsReviewSaveStatus.textContent =
-            "Fehler beim Speichern. Bitte später erneut versuchen.";
+            "Error saving. Please try again later.";
         }
         return;
       }
@@ -1574,7 +1566,7 @@ function setupRegisterBusinessTypeDropdown() {
       }
 
       if (settingsReviewSaveStatus) {
-        settingsReviewSaveStatus.textContent = "Gespeichert.";
+        settingsReviewSaveStatus.textContent = "Saved.";
         setTimeout(() => {
           settingsReviewSaveStatus.textContent = "";
         }, 2000);
@@ -1582,17 +1574,17 @@ function setupRegisterBusinessTypeDropdown() {
     });
   }
 
-  console.log("DetailHQ: Setup-Funktionen ausgeführt, hole aktuellen User...");
+  console.log("DetailHQ: Setup functions executed, getting current user...");
 
   const { data, error } = await supabaseClient.auth.getUser();
   if (error) {
-    console.error("DetailHQ: Fehler bei getUser:", error);
+    console.error("DetailHQ: Error at getUser:", error);
   }
 
   const user = data?.user || null;
 
   if (user) {
-    console.log("DetailHQ: Benutzer bereits eingeloggt:", user.id);
+    console.log("DetailHQ: User already logged in:", user.id);
     currentUser = user;
 
     await ensureProfile();
@@ -1606,7 +1598,7 @@ function setupRegisterBusinessTypeDropdown() {
     hideLoadingView();
     showAppView();
 } else {
-  console.log("DetailHQ: Kein aktiver User -> Login anzeigen");
+  console.log("DetailHQ: No active user -> show login");
   hideLoadingView();
   showAuthView();
   applyAuthModeFromUrl();
@@ -1641,7 +1633,7 @@ function applyAuthModeFromUrl() {
 
   if (!forceRegister) return;
 
-  // Register-Form anzeigen
+  // Show register form
   if (loginForm) loginForm.classList.add("hidden");
   if (registerForm) registerForm.classList.remove("hidden");
   if (authError) authError.textContent = "";
@@ -1652,7 +1644,7 @@ function showAppView() {
   if (authView) authView.classList.remove("active");
   if (appView) appView.classList.add("active");
 
-  // Pull-to-refresh einmalig initialisieren (nur Daten reloaden, kein Auth)
+  // Initialize Pull-to-refresh once
   if (!window.__detailhqPtrSetup) {
     window.__detailhqPtrSetup = true;
     setupPullToRefresh();
@@ -1696,7 +1688,7 @@ function setupAuthHandlers() {
 
       if (!email || !password) {
         if (authError)
-          authError.textContent = "Bitte E-Mail und Passwort eingeben.";
+          authError.textContent = "Please enter email and password.";
         return;
       }
 
@@ -1706,10 +1698,10 @@ function setupAuthHandlers() {
       });
 
       if (error) {
-        console.error("DetailHQ: Login-Fehler:", error);
+        console.error("DetailHQ: Login error:", error);
         if (authError)
           authError.textContent =
-            error.message || "Anmeldung fehlgeschlagen.";
+            error.message || "Login failed.";
         return;
       }
 
@@ -1745,28 +1737,28 @@ const businessTypes = registerBusinessTypesList
 
 if (!email || !password || !companyName || businessTypes.length === 0) {
   if (authError)
-    authError.textContent = "Bitte E-Mail, Passwort, Firmenname und Branche auswählen.";
+    authError.textContent = "Please provide email, password, company name, and select an industry.";
   return;
 }
 
-    // 1) REGISTRIEREN
+    // 1) REGISTER
     const { data, error } = await supabaseClient.auth.signUp({
       email,
       password,
     });
 
     if (error) {
-      console.error("DetailHQ: Register-Fehler:", error);
+      console.error("DetailHQ: Register error:", error);
       if (authError)
         authError.textContent =
-          error.message || "Registrierung fehlgeschlagen.";
+          error.message || "Registration failed.";
       return;
     }
 
-    // 2) SOFORT Make informieren (NEUER NUTZER)
+    // 2) Inform Make immediately (NEW USER)
     await notifyMakeNewUser();
 
-    // 3) Auto-Login (optional – nur für UX)
+    // 3) Auto-Login
     const { data: signInData, error: signInError } =
       await supabaseClient.auth.signInWithPassword({
         email,
@@ -1775,14 +1767,12 @@ if (!email || !password || !companyName || businessTypes.length === 0) {
 
     if (signInError) {
       console.error(
-        "DetailHQ: Auto-Login nach Register fehlgeschlagen:",
+        "DetailHQ: Auto-login after register failed:",
         signInError
       );
       if (authError)
         authError.textContent =
-          signInError.message || "Automatische Anmeldung fehlgeschlagen.";
-      // Wichtig: hier KEIN return, weil User ist zumindest registriert
-      // aber wir brechen UI-Aufbau ab
+          signInError.message || "Automatic login failed.";
       return;
     }
 
@@ -1795,20 +1785,20 @@ try {
     .update({ company_name: companyName })
     .eq("id", currentUser.id);
 } catch (e) {
-  console.warn("DetailHQ: company_name konnte nicht gespeichert werden.");
+  console.warn("DetailHQ: company_name could not be saved.");
 }
 
-// Branche(n) speichern (falls Spalte nicht existiert: nicht crashen)
+// Save industries
 try {
   await supabaseClient
     .from("profiles")
     .update({ business_types: businessTypes })
     .eq("id", currentUser.id);
 } catch (e) {
-  console.warn("DetailHQ: business_types konnte nicht gespeichert werden (Spalte fehlt evtl.)");
+  console.warn("DetailHQ: business_types could not be saved (column missing?)");
 }
 
-    // Signup Event einmalig loggen (für Monatsreport)
+    // Log signup event
 try {
   await supabaseClient.from("signup_events").insert({ user_id: currentUser.id });
 } catch (e) {}
@@ -1836,7 +1826,7 @@ try {
       if (!email) {
         if (authError) {
           authError.textContent =
-            'Bitte gib oben deine E-Mail ein und klicke dann auf "Passwort vergessen?".';
+            'Please enter your email above and then click "Forgot password?".';
         }
         return;
       }
@@ -1846,17 +1836,17 @@ try {
 });
 
       if (error) {
-        console.error("Passwort-Reset Fehler:", error);
+        console.error("Password reset error:", error);
         if (authError) {
           authError.textContent =
-            error.message || "Zurücksetzen des Passworts fehlgeschlagen.";
+            error.message || "Password reset failed.";
         }
         return;
       }
 
       if (authError) {
         authError.textContent =
-          "Wenn die E-Mail existiert, wurde ein Link zum Zurücksetzen gesendet.";
+          "If the email exists, a reset link has been sent.";
       }
     });
   }
@@ -1870,7 +1860,7 @@ function isTrialExpiredAndUnpaid(profile) {
 
   const status = profile.plan_status || "trial";
 
-  // Wenn schon Abo / Lifetime => nicht gesperrt
+  // If sub / lifetime => not locked
   if (
     status === "active" ||
     status === "active_yearly" ||
@@ -1879,17 +1869,17 @@ function isTrialExpiredAndUnpaid(profile) {
     return false;
   }
 
-  // Wenn kein trial_ends_at => kein Lock
+  // If no trial_ends_at => no lock
   if (!profile.trial_ends_at) return false;
 
   const endsAt = new Date(profile.trial_ends_at);
   const today = new Date();
 
-  // Beide auf Mitternacht, damit wir wirklich ganze Tage vergleichen
+  // Compare midnights
   endsAt.setHours(0, 0, 0, 0);
   today.setHours(0, 0, 0, 0);
 
-  // Gesperrt erst, wenn Trial-Datum vor "heute" liegt
+  // Locked if trial date is before today
   return endsAt.getTime() < today.getTime();
 }
 
@@ -1898,10 +1888,7 @@ function updateAccessUI() {
 
   const locked = isTrialExpiredAndUnpaid(currentProfile);
 
-  // Bestimmte Settings-Gruppen ausblenden:
-  // - "Dienste & Preise"
-  // - "Kalender"
-  // - "Bewertungen"
+  // Hide certain settings groups:
   const settingsGroups = document.querySelectorAll(".settings-group");
 
   settingsGroups.forEach((group) => {
@@ -1910,9 +1897,9 @@ function updateAccessUI() {
 
     const title = (titleEl.textContent || "").trim();
 
-    const isServices = title.startsWith("Dienste & Preise");
-    const isCalendar = title.startsWith("Kalender");
-    const isReviews = title.startsWith("Bewertungen");
+    const isServices = title.startsWith("Services & Prices");
+    const isCalendar = title.startsWith("Calendar");
+    const isReviews = title.startsWith("Reviews");
 
     if (locked && (isServices || isCalendar || isReviews)) {
       group.classList.add("hidden");
@@ -1921,7 +1908,7 @@ function updateAccessUI() {
     }
   });
 
-  // Tabs Dashboard / Zeitplan optisch sperren
+  // Lock Dashboard / Schedule tabs visually
   navItems.forEach((item) => {
     const tab = item.getAttribute("data-tab");
     if (!tab || tab === "settings") return;
@@ -1933,8 +1920,7 @@ function updateAccessUI() {
     }
   });
 
-  // Wenn gesperrt und aktuell NICHT Einstellungen aktiv:
-  // sofort auf Einstellungen springen (ohne Alert)
+  // If locked and settings not active, jump to settings
   if (locked) {
     const activeSettings = document.querySelector(
       '.nav-item.active[data-tab="settings"]'
@@ -1956,8 +1942,7 @@ function setupNavHandlers() {
 }
 
 function switchTab(tabName) {
-  // Trial-Lock: Wenn Testphase abgelaufen + kein aktives Abo,
-  // nur Einstellungen erlauben
+  // Trial Lock
   if (
     tabName !== "settings" &&
     currentProfile &&
@@ -1965,7 +1950,7 @@ function switchTab(tabName) {
   ) {
     tabName = "settings";
     alert(
-      "Deine Testphase ist abgelaufen. Bitte schließe ein Abo ab, um DetailHQ weiter zu nutzen."
+      "Your trial has expired. Please start a subscription to continue using DetailHQ."
     );
   }
 
@@ -1981,35 +1966,35 @@ function switchTab(tabName) {
   if (tabName === "dashboard") {
     headerTitle.textContent = "Dashboard";
     headerSubtitle.textContent =
-      "Übersicht über deine Aufträge und Umsätze.";
+      "Overview of your orders and revenue.";
   } else if (tabName === "schedule") {
-    headerTitle.textContent = "Zeitplan";
-    headerSubtitle.textContent = "Alle geplanten Aufträge im Blick.";
+    headerTitle.textContent = "Schedule";
+    headerSubtitle.textContent = "Keep track of all planned orders.";
   } else if (tabName === "orders") {
-  headerTitle.textContent = "Annahmeprotokoll";
+  headerTitle.textContent = "Intake Protocol";
   headerSubtitle.textContent =
-    "Fahrzeugannahme & Zustandsdokumentation.";
+    "Vehicle intake & condition documentation.";
   if (typeof loadOrdersTab === "function") {
     loadOrdersTab();
   }
   } else if (tabName === "settings") {
-    headerTitle.textContent = "Einstellungen";
+    headerTitle.textContent = "Settings";
     headerSubtitle.textContent =
-      "Darstellung, Dienste, Zahlung & Support.";
+      "Appearance, services, payment & support.";
   }
 }
 
 // ================================
 // SETTINGS: SUB-VIEWS (Service / Business)
-// Default: Hub sichtbar, Views versteckt.
-// Öffnet erst nach Klick.
-// Erwartete IDs (wie in deiner app.html):
+// Default: Hub visible, Views hidden.
+// Opens only after click.
+// Expected IDs (as in your app.html):
 // - #settings-hub
 // - Buttons: #open-service-settings, #open-business-settings
 // - Views:   #settings-view-service, #settings-view-business
 // - Back:    #back-from-service, #back-from-business
-// Support/Rechtliches bleiben im Hub sichtbar.
-// Optional: Sections mit IDs #settings-support und #settings-legal werden beim Öffnen versteckt.
+// Support/Legal remain visible in the Hub.
+// Optional: Sections with IDs #settings-support and #settings-legal are hidden when opening a view.
 // ================================
 function setupSettingsSubViews() {
   const hub = document.getElementById("settings-hub");
@@ -2023,14 +2008,14 @@ function setupSettingsSubViews() {
   const backService = document.getElementById("back-from-service");
   const backBusiness = document.getElementById("back-from-business");
 
-  // Support + Rechtliches (falls vorhanden – du wolltest: im Hub sichtbar, sonst verstecken wenn View offen)
+  // Support + Legal
   const fallbackStaticSections = Array.from(
     document.querySelectorAll("#settings-support, #settings-legal")
   ).filter(Boolean);
 
   if (!hub || !btnService || !btnBusiness || !viewService || !viewBusiness) {
     console.warn(
-      "DetailHQ: Settings SubViews: Fehlende Container. Erwartet: #settings-hub, #open-service-settings, #open-business-settings, #settings-view-service, #settings-view-business"
+      "DetailHQ: Settings SubViews: Missing containers. Expected: #settings-hub, #open-service-settings, #open-business-settings, #settings-view-service, #settings-view-business"
     );
     return;
   }
@@ -2047,24 +2032,24 @@ function setupSettingsSubViews() {
   }
 
   function openView(which) {
-    // Hub ausblenden
+    // Hide Hub
     hub.classList.add("hidden");
 
-    // Support/Rechtliches ausblenden
+    // Hide Support/Legal
     setStaticVisible(false);
 
-    // Views toggeln
+    // Toggle views
     hideAllViews();
-if (which === "service") {
-  viewService.classList.remove("hidden");
-  setupDiscountsUIHandlers();
-  loadPromoCodes();
-  loadGiftCards();
-}
+    if (which === "service") {
+      viewService.classList.remove("hidden");
+      setupDiscountsUIHandlers();
+      loadPromoCodes();
+      loadGiftCards();
+    }
 
-if (which === "business") viewBusiness.classList.remove("hidden");
+    if (which === "business") viewBusiness.classList.remove("hidden");
 
-    // nach oben scrollen
+    // Scroll to top
     const main = document.querySelector(".app-main");
     if (main) main.scrollTop = 0;
   }
@@ -2072,17 +2057,17 @@ if (which === "business") viewBusiness.classList.remove("hidden");
   function backToHub() {
     hideAllViews();
 
-    // Hub wieder zeigen
+    // Show Hub again
     hub.classList.remove("hidden");
 
-    // Support/Rechtliches wieder zeigen
+    // Show Support/Legal again
     setStaticVisible(true);
 
     const main = document.querySelector(".app-main");
     if (main) main.scrollTop = 0;
   }
 
-  // Default: NICHTS offen (Hub sichtbar, Views zu)
+  // Default: NOTHING open (Hub visible, Views closed)
   backToHub();
 
   // Clicks
@@ -2091,9 +2076,6 @@ if (which === "business") viewBusiness.classList.remove("hidden");
 
   if (backService) backService.addEventListener("click", backToHub);
   if (backBusiness) backBusiness.addEventListener("click", backToHub);
-
-  // Wenn man auf den Settings-Tab klickt: NICHT automatisch irgendwas öffnen.
-  // (Dein Wunsch: erst nach Klick auf Service/Business)
 }
 
 // ================================
@@ -2149,7 +2131,7 @@ async function ensureProfile() {
     .maybeSingle();
 
   if (error) {
-    console.error("DetailHQ: Fehler beim Laden des Profils:", error);
+    console.error("DetailHQ: Error loading profile:", error);
     return;
   }
 
@@ -2171,7 +2153,7 @@ async function ensureProfile() {
       });
 
     if (insertError) {
-      console.error("DetailHQ: Fehler beim Anlegen des Profils:", insertError);
+      console.error("DetailHQ: Error creating profile:", insertError);
       return;
     }
   }
@@ -2199,7 +2181,7 @@ async function loadProfileIntoForm() {
     .single();
 
   if (error) {
-    console.error("DetailHQ: Fehler beim Laden des Profils:", error);
+    console.error("DetailHQ: Error loading profile:", error);
     return;
   }
 
@@ -2228,7 +2210,7 @@ async function loadProfileIntoForm() {
   applyOpeningHoursToForm(currentProfile?.opening_hours);
 }
 
-// Avatar: Default pfp.png, sonst URL
+// Avatar: Default pfp.png, otherwise URL
 function updateAvatarVisual(avatarUrl) {
   if (!profileAvatarImage) return;
   console.log("DetailHQ: updateAvatarVisual", avatarUrl);
@@ -2240,7 +2222,7 @@ function updateAvatarVisual(avatarUrl) {
 }
 
 // ================================
-// PROFILE-MODAL / MENÜ
+// PROFILE-MODAL / MENU
 // ================================
 function setupProfileMenuHandlers() {
   console.log("DetailHQ: setupProfileMenuHandlers");
@@ -2280,7 +2262,7 @@ function setupProfileMenuHandlers() {
       try {
         await supabaseClient.auth.signOut();
       } catch (err) {
-        console.error("DetailHQ: Logout Fehler:", err);
+        console.error("DetailHQ: Logout Error:", err);
       }
       currentUser = null;
       currentProfile = null;
@@ -2289,11 +2271,11 @@ function setupProfileMenuHandlers() {
 
       if (todayBookingsContainer) {
         todayBookingsContainer.innerHTML =
-          '<p>Noch keine Aufträge für heute.</p>';
+          '<p>No orders for today yet.</p>';
       }
       if (scheduleListContainer) {
         scheduleListContainer.innerHTML =
-          '<p>Noch keine geplanten Aufträge.</p>';
+          '<p>No scheduled orders yet.</p>';
       }
 
       showAuthView();
@@ -2347,7 +2329,7 @@ function setupProfileMenuHandlers() {
         const ext = file.name.split(".").pop() || "jpg";
         const path = `${currentUser.id}/${Date.now()}.${ext}`;
 
-        console.log("DetailHQ: Avatar-Upload startet, Pfad:", path);
+        console.log("DetailHQ: Avatar upload started, path:", path);
 
         const { error: uploadError } = await supabaseClient.storage
           .from("avatars")
@@ -2357,12 +2339,12 @@ function setupProfileMenuHandlers() {
 
         if (uploadError) {
           console.error(
-            "DetailHQ: Avatar Upload fehlgeschlagen:",
+            "DetailHQ: Avatar Upload failed:",
             uploadError
           );
           if (profileSaveMessage) {
             profileSaveMessage.textContent =
-              "Profilbild-Upload fehlgeschlagen, Rest wird gespeichert.";
+              "Profile picture upload failed, other changes will be saved.";
           }
         } else {
           const {
@@ -2387,10 +2369,10 @@ function setupProfileMenuHandlers() {
         .eq("id", currentUser.id);
 
       if (error) {
-        console.error("DetailHQ: Profil speichern fehlgeschlagen:", error);
+        console.error("DetailHQ: Profile saving failed:", error);
         if (profileSaveMessage) {
           profileSaveMessage.textContent =
-            "Fehler beim Speichern. Bitte später erneut versuchen.";
+            "Error saving. Please try again later.";
         }
         return;
       }
@@ -2409,7 +2391,7 @@ function setupProfileMenuHandlers() {
       updateBillingUI();
       updateTrialBanner();
 
-      if (profileSaveMessage) profileSaveMessage.textContent = "Gespeichert.";
+      if (profileSaveMessage) profileSaveMessage.textContent = "Saved.";
       setTimeout(() => {
         if (profileSaveMessage) profileSaveMessage.textContent = "";
         closeProfileModal();
@@ -2442,16 +2424,16 @@ function closeProfileModal() {
 // BILLING (Stripe)
 // ================================
 function setupBillingHandlers() {
-  const apiBase = "https://api.detailhq.de"; // aktuell ungenutzt, aber ok
+  const apiBase = "https://api.detailhq.de"; 
 
-  // Open Checkout Page (deine Checkout Sales Page)
+  // Open Checkout Page 
   if (billingOpenCheckoutButton) {
     billingOpenCheckoutButton.addEventListener("click", () => {
       window.location.href = "/checkout";
     });
   }
 
-  // Zahlung & Abo verwalten -> Checkout
+  // Manage Billing & Subscription -> Checkout
   if (billingManageButton) {
     billingManageButton.addEventListener("click", () => {
       window.location.href = "/checkout";
@@ -2460,8 +2442,8 @@ function setupBillingHandlers() {
 }
 
 function updateBillingUI() {
-  // App zeigt keine Monats/Jahres/Lifetime Buttons mehr.
-  // Manage-Button bleibt immer sichtbar.
+  // App no longer shows monthly/yearly/lifetime buttons.
+  // Manage button remains visible.
   return;
 }
 
@@ -2477,12 +2459,12 @@ function updateBookingLinkUI() {
     settingsBookingLinkCopyBtn.onclick = async () => {
       try {
         await navigator.clipboard.writeText(link);
-        if (settingsBookingLinkStatus) settingsBookingLinkStatus.textContent = "Kopiert.";
+        if (settingsBookingLinkStatus) settingsBookingLinkStatus.textContent = "Copied.";
         setTimeout(() => {
           if (settingsBookingLinkStatus) settingsBookingLinkStatus.textContent = "";
         }, 1200);
       } catch (e) {
-        if (settingsBookingLinkStatus) settingsBookingLinkStatus.textContent = "Kopieren fehlgeschlagen.";
+        if (settingsBookingLinkStatus) settingsBookingLinkStatus.textContent = "Copying failed.";
       }
     };
   }
@@ -2507,7 +2489,7 @@ function updateTrialBanner() {
     return;
   }
 
-  // Beide Daten auf 00:00 normalisieren, damit wir echte "Kalendertage" vergleichen
+  // Normalize dates to midnight
   const today = new Date();
   today.setHours(0, 0, 0, 0);
 
@@ -2520,13 +2502,13 @@ function updateTrialBanner() {
 
   let msg;
   if (diffDays > 1) {
-    msg = `Deine Testphase läuft in ${diffDays} Tagen ab.`;
+    msg = `Your trial expires in ${diffDays} days.`;
   } else if (diffDays === 1) {
-    msg = `Deine Testphase läuft morgen ab.`;
+    msg = `Your trial expires tomorrow.`;
   } else if (diffDays === 0) {
-    msg = `Deine Testphase läuft heute ab.`;
+    msg = `Your trial expires today.`;
   } else {
-    msg = `Deine Testphase ist abgelaufen.`;
+    msg = `Your trial has expired.`;
   }
 
   trialBannerText.textContent = msg;
@@ -2542,7 +2524,7 @@ function setupTrialBannerHandlers() {
 }
 
 // ================================
-// KALENDER
+// CALENDAR
 // ================================
 function setupCalendarHandlers() {
   console.log("DetailHQ: setupCalendarHandlers");
@@ -2558,11 +2540,11 @@ function setupCalendarHandlers() {
     });
 
     if (pref === "apple") {
-      // iOS / macOS – direkt per webcal öffnen
+      // iOS / macOS – directly via webcal
       const webcalUrl = currentCalendarUrl.replace(/^https?:/, "webcal:");
       window.location.href = webcalUrl;
     } else {
-      // Google Calendar – offizielles Muster: render?cid=webcal://...
+      // Google Calendar
       const webcalUrl = currentCalendarUrl.replace(/^https?:/, "webcal:");
       const googleUrl = `https://calendar.google.com/calendar/render?cid=${webcalUrl}`;
       window.open(googleUrl, "_blank");
@@ -2591,9 +2573,9 @@ async function loadVehicleClasses() {
 
   if (vehicleClasses.length === 0) {
     const defaults = [
-      { name: "Kleinwagen", price_delta_cents: 0, sort_order: 1 },
-      { name: "Limo / Kombi", price_delta_cents: 2000, sort_order: 2 },
-      { name: "SUV / Transporter", price_delta_cents: 4000, sort_order: 3 },
+      { name: "Small Car", price_delta_cents: 0, sort_order: 1 },
+      { name: "Sedan / Wagon", price_delta_cents: 2000, sort_order: 2 },
+      { name: "SUV / Truck", price_delta_cents: 4000, sort_order: 3 },
     ].map((v) => ({
       detailer_id: currentUser.id,
       name: v.name,
@@ -2628,7 +2610,7 @@ function renderVehicleClassesList() {
   if (!vehicleClasses || vehicleClasses.length === 0) {
     const p = document.createElement("p");
     p.className = "form-hint";
-    p.textContent = "Noch keine Fahrzeugklassen angelegt.";
+    p.textContent = "No vehicle classes created yet.";
     vehicleClassesList.appendChild(p);
     return;
   }
@@ -2650,12 +2632,12 @@ function renderVehicleClassesList() {
     const delta = vc.price_delta_cents || 0;
     const deltaEuro = delta / 100;
     const sign = deltaEuro > 0 ? "+" : "";
-    const deltaText = deltaEuro.toLocaleString("de-DE", {
+    const deltaText = deltaEuro.toLocaleString("en-US", {
       style: "currency",
-      currency: "EUR",
+      currency: "USD",
     });
 
-    meta.textContent = `Preis-Anpassung: ${sign}${deltaText}`;
+    meta.textContent = `Price Adjustment: ${sign}${deltaText}`;
 
     left.appendChild(title);
     left.appendChild(meta);
@@ -2669,7 +2651,7 @@ function renderVehicleClassesList() {
     const editBtn = document.createElement("button");
     editBtn.type = "button";
     editBtn.className = "action-pill-btn edit";
-    editBtn.textContent = "Bearbeiten";
+    editBtn.textContent = "Edit";
     editBtn.addEventListener("click", (e) => {
       e.stopPropagation();
       openVehicleClassModal(vc);
@@ -2682,7 +2664,7 @@ function renderVehicleClassesList() {
     const delBtn = document.createElement("button");
     delBtn.type = "button";
     delBtn.className = "action-pill-btn delete";
-    delBtn.textContent = "Löschen";
+    delBtn.textContent = "Delete";
     delBtn.addEventListener("click", (e) => {
       e.stopPropagation();
       deleteVehicleClass(vc.id);
@@ -2707,13 +2689,13 @@ function openVehicleClassModal(vc) {
   if (vehicleClassModalError) vehicleClassModalError.textContent = "";
 
   if (vc) {
-    vehicleClassModalTitle.textContent = "Fahrzeugklasse bearbeiten";
+    vehicleClassModalTitle.textContent = "Edit Vehicle Class";
     vehicleClassModal.dataset.id = vc.id;
     vehicleClassNameInput.value = vc.name || "";
     const deltaEuro = (vc.price_delta_cents || 0) / 100;
     vehicleClassPriceDeltaInput.value = deltaEuro.toString();
   } else {
-    vehicleClassModalTitle.textContent = "Fahrzeugklasse hinzufügen";
+    vehicleClassModalTitle.textContent = "Add Vehicle Class";
     delete vehicleClassModal.dataset.id;
     vehicleClassNameInput.value = "";
     vehicleClassPriceDeltaInput.value = "0";
@@ -2729,7 +2711,7 @@ function closeVehicleClassModal() {
 
 async function deleteVehicleClass(id) {
   if (!currentUser || !supabaseClient) return;
-  if (!confirm("Fahrzeugklasse wirklich löschen?")) return;
+  if (!confirm("Really delete vehicle class?")) return;
 
   const { error } = await supabaseClient
     .from("vehicle_classes")
@@ -2776,7 +2758,7 @@ function renderServicesList() {
   if (!services || services.length === 0) {
     const p = document.createElement("p");
     p.className = "form-hint";
-    p.textContent = "Noch keine Services angelegt.";
+    p.textContent = "No services created yet.";
     servicesList.appendChild(p);
     return;
   }
@@ -2797,24 +2779,24 @@ function renderServicesList() {
 
     const kindLabel =
       svc.kind === "package"
-        ? "Paket"
+        ? "Package"
         : svc.kind === "single"
-        ? "Einzelleistung"
+        ? "Single Service"
         : "Service";
 
     const priceEuro = (svc.base_price_cents || 0) / 100;
-    const priceText = priceEuro.toLocaleString("de-DE", {
+    const priceText = priceEuro.toLocaleString("en-US", {
       style: "currency",
-      currency: "EUR",
+      currency: "USD",
     });
 
-    let durationText = "ohne Zeitangabe";
+    let durationText = "no time specified";
     if (svc.duration_minutes && svc.duration_minutes > 0) {
       const hours = svc.duration_minutes / 60;
-      durationText = `${hours.toFixed(1)} Std.`;
+      durationText = `${hours.toFixed(1)} hrs.`;
     }
 
-    const categoryText = svc.category ? ` · Kategorie: ${svc.category}` : "";
+    const categoryText = svc.category ? ` · Category: ${svc.category}` : "";
 
     meta.textContent = `${kindLabel} · ${priceText} · ${durationText}${categoryText}`;
 
@@ -2830,7 +2812,7 @@ function renderServicesList() {
     const editBtn = document.createElement("button");
     editBtn.type = "button";
     editBtn.className = "action-pill-btn edit";
-    editBtn.textContent = "Bearbeiten";
+    editBtn.textContent = "Edit";
     editBtn.addEventListener("click", (e) => {
       e.stopPropagation();
       openServiceModal(svc);
@@ -2843,7 +2825,7 @@ function renderServicesList() {
     const delBtn = document.createElement("button");
     delBtn.type = "button";
     delBtn.className = "action-pill-btn delete";
-    delBtn.textContent = "Löschen";
+    delBtn.textContent = "Delete";
     delBtn.addEventListener("click", (e) => {
       e.stopPropagation();
       deleteService(svc.id);
@@ -2867,34 +2849,34 @@ function openServiceModal(service) {
   if (!serviceForm) return;
   if (!serviceKindInput) return;
 
-  // Modal öffnen
+  // Open Modal
   serviceModal.classList.remove("hidden");
 
   // Title
-  serviceModalTitle.textContent = service ? "Service bearbeiten" : "Service erstellen";
+  serviceModalTitle.textContent = service ? "Edit Service" : "Create Service";
 
   // Reset UI
   serviceForm.reset();
   if (serviceModalError) serviceModalError.textContent = "";
 
-  // WICHTIG: ID da speichern, wo dein Save-Code sie später liest
+  // Set ID
   if (service && service.id) {
     serviceModal.dataset.id = service.id;
   } else {
     delete serviceModal.dataset.id;
   }
 
-  // Fields korrekt befüllen (DB-Felder: base_price_cents, duration_minutes, description)
+  // Fill fields
   if (service) {
     serviceKindInput.value = service.kind || "single";
     if (serviceCategoryInput) serviceCategoryInput.value = service.category || "";
     if (serviceNameInput) serviceNameInput.value = service.name || "";
 
-    // Preis: cents -> Euro
+    // Price: cents -> Dollars
     const euro = ((service.base_price_cents || 0) / 100);
     servicePriceInput.value = euro ? String(euro) : "";
 
-    // Dauer: Minuten -> Stunden (weil dein Save später Std.->Minuten rechnet)
+    // Duration: minutes -> hours
     const hours = service.duration_minutes ? (service.duration_minutes / 60) : 0;
     serviceDurationInput.value = hours ? String(Number(hours.toFixed(2))) : "";
 
@@ -2903,7 +2885,7 @@ function openServiceModal(service) {
     serviceKindInput.value = "single";
   }
 
-  // Empfehlung direkt refreshen
+  // Update recommendation
   updateServicePriceRecommendationUI();
 }
 
@@ -2914,7 +2896,7 @@ function closeServiceModal() {
 
 async function deleteService(id) {
   if (!currentUser || !supabaseClient) return;
-  if (!confirm("Service wirklich löschen?")) return;
+  if (!confirm("Really delete service?")) return;
 
   const { error } = await supabaseClient
     .from("services")
@@ -2936,9 +2918,9 @@ async function deleteService(id) {
 // SERVICE PRICE RECOMMENDER (v1.5)
 // ================================
 //
-// Regeln kommen aus JSON (Repo-Datei) und werden 1x geladen.
-// Match: OR-Logik pro Regel (keywords[]).
-// Überschneidungen: es gewinnt IMMER nur 1 Regel – die mit dem längsten gematchten Keyword.
+// Rules from JSON.
+// Match: OR logic per rule (keywords[]).
+// Conflicts: longest matched keyword wins.
 
 function normalizeServiceText(s) {
   return (s || "")
@@ -2948,7 +2930,7 @@ function normalizeServiceText(s) {
     .replace(/\s+/g, " ");
 }
 
-// kompakte Form: entfernt alles außer a-z0-9, mappt Umlaute/ß
+// Compact form: removes everything except a-z0-9
 function normalizeServiceKey(s) {
   const t = (s || "")
     .toString()
@@ -2959,7 +2941,6 @@ function normalizeServiceKey(s) {
     .replace(/ü/g, "ue")
     .replace(/ß/g, "ss");
 
-  // alles raus außer a-z0-9
   return t.replace(/[^a-z0-9]/g, "");
 }
 
@@ -3000,7 +2981,7 @@ async function loadServicePriceRules() {
     try {
       const res = await fetch(SERVICE_PRICE_RULES_URL, { cache: "force-cache" });
       if (!res.ok) {
-        console.warn("DetailHQ: Service-Preisregeln konnten nicht geladen werden:", res.status);
+        console.warn("DetailHQ: Service price rules could not be loaded:", res.status);
         SERVICE_PRICE_RULES = [];
         servicePriceRulesLoaded = true;
         return SERVICE_PRICE_RULES;
@@ -3013,16 +2994,15 @@ async function loadServicePriceRules() {
       servicePriceRulesLoaded = true;
       return SERVICE_PRICE_RULES;
     } catch (e) {
-      console.warn("DetailHQ: Service-Preisregeln Load Error:", e);
+      console.warn("DetailHQ: Service price rules Load Error:", e);
       SERVICE_PRICE_RULES = [];
       servicePriceRulesLoaded = true;
       return SERVICE_PRICE_RULES;
     } finally {
-      // Promise wieder freigeben (falls du später manuell reloaden willst)
       servicePriceRulesLoadPromise = null;
     }
   })();
-
+  
   return servicePriceRulesLoadPromise;
 }
 
@@ -3032,12 +3012,12 @@ function findServicePriceRecommendation(serviceName) {
 
   if (!hay && !hayKey) return null;
 
-  // Beste Regel = längstes gematchtes Keyword (spezifischer gewinnt)
+  // Best rule = longest matched keyword (specific wins)
   let best = null;
   let bestLen = 0;
 
   for (const rule of SERVICE_PRICE_RULES) {
-    // 1) match gegen "lesbar"
+    // 1) match against "readable"
     const keysNorm = Array.isArray(rule._keywordsNorm) ? rule._keywordsNorm : [];
     for (const needle of keysNorm) {
       if (!needle) continue;
@@ -3045,7 +3025,7 @@ const parts = needle.split(" ").filter(Boolean);
 
 let matched = false;
 
-// 2-Wort-Keywords: Reihenfolge egal (z.B. "reifen dressing" == "dressing reifen")
+// 2-word-keywords: order doesn't matter (e.g. "tire dressing" == "dressing tire")
 if (parts.length === 2) {
   matched = hay.includes(parts[0]) && hay.includes(parts[1]);
 } else {
@@ -3061,7 +3041,7 @@ if (matched) {
 }
     }
 
-    // 2) match gegen "kompakt" (spaces, bindestriche, sonderzeichen egal)
+    // 2) match against "compact" (spaces, hyphens, special chars ignored)
     const keysKey = Array.isArray(rule._keywordsKey) ? rule._keywordsKey : [];
     for (const needleKey of keysKey) {
       if (!needleKey) continue;
@@ -3087,7 +3067,8 @@ if (matched) {
 
 function formatEuro(euro) {
   const v = Number(euro) || 0;
-  return v.toLocaleString("de-DE", { style: "currency", currency: "EUR" });
+  // Changed to en-US and USD
+  return v.toLocaleString("en-US", { style: "currency", currency: "USD" });
 }
 
 function updateServicePriceRecommendationUI() {
@@ -3096,7 +3077,7 @@ function updateServicePriceRecommendationUI() {
   const kind = serviceKindInput ? serviceKindInput.value : "";
   const name = serviceNameInput ? serviceNameInput.value : "";
 
-  // Nur für Einzelleistung
+  // Only for single service
   if (kind !== "single") {
     servicePriceRecoWrap.classList.add("hidden");
     if (servicePriceRecoHint) servicePriceRecoHint.textContent = "";
@@ -3149,7 +3130,7 @@ function setupServiceManagementHandlers() {
       const name = vehicleClassNameInput.value.trim();
       if (!name) {
         if (vehicleClassModalError) {
-          vehicleClassModalError.textContent = "Name darf nicht leer sein.";
+          vehicleClassModalError.textContent = "Name cannot be empty.";
         }
         return;
       }
@@ -3173,7 +3154,7 @@ function setupServiceManagementHandlers() {
           console.error("DetailHQ: update vehicle_class failed:", error);
           if (vehicleClassModalError) {
             vehicleClassModalError.textContent =
-              "Fehler beim Speichern. Bitte später erneut versuchen.";
+              "Error while saving. Please try again later.";
           }
           return;
         }
@@ -3194,7 +3175,7 @@ function setupServiceManagementHandlers() {
           console.error("DetailHQ: insert vehicle_class failed:", error);
           if (vehicleClassModalError) {
             vehicleClassModalError.textContent =
-              "Fehler beim Speichern. Bitte später erneut versuchen.";
+              "Error while saving. Please try again later.";
           }
           return;
         }
@@ -3216,11 +3197,11 @@ function setupServiceManagementHandlers() {
 
     toggleEl.addEventListener("click", () => {
       const isOpen = wrapper.classList.contains("open");
-      // alle anderen zu
+      // Close all others
       document
         .querySelectorAll(".settings-dropdown.open")
         .forEach((el) => el.classList.remove("open"));
-      // dieses auf/zu
+      // Toggle this one
       wrapper.classList.toggle("open", !isOpen);
     });
   }
@@ -3246,7 +3227,7 @@ function setupServiceManagementHandlers() {
       }
     });
   }
-  // Live-Update Preis-Empfehlung
+  // Live-update price recommendation
 if (serviceNameInput) {
   serviceNameInput.addEventListener("input", updateServicePriceRecommendationUI);
 }
@@ -3265,7 +3246,7 @@ if (serviceKindInput) {
       const name = serviceNameInput.value.trim();
       const priceEuro = parseFloat(servicePriceInput.value || "0") || 0;
 
-      // Eingabe in Stunden -> Speicherung in Minuten
+      // Input in hours -> stored in minutes
       const durationHoursRaw = serviceDurationInput.value
         ? parseFloat(serviceDurationInput.value.replace(",", ".") || "0")
         : 0;
@@ -3278,7 +3259,7 @@ if (serviceKindInput) {
 
       if (!name) {
         if (serviceModalError) {
-          serviceModalError.textContent = "Name darf nicht leer sein.";
+          serviceModalError.textContent = "Name cannot be empty.";
         }
         return;
       }
@@ -3308,7 +3289,7 @@ if (serviceKindInput) {
           console.error("DetailHQ: update service failed:", error);
           if (serviceModalError) {
             serviceModalError.textContent =
-              "Fehler beim Speichern. Bitte später erneut versuchen.";
+              "Error while saving. Please try again later.";
           }
           return;
         }
@@ -3320,7 +3301,7 @@ if (serviceKindInput) {
           console.error("DetailHQ: insert service failed:", error);
           if (serviceModalError) {
             serviceModalError.textContent =
-              "Fehler beim Speichern. Bitte später erneut versuchen.";
+              "Error while saving. Please try again later.";
           }
           return;
         }
@@ -3343,7 +3324,7 @@ function refreshBookingVehicleClassOptions() {
 
     const optNone = document.createElement("option");
     optNone.value = "";
-    optNone.textContent = "Keine Auswahl";
+    optNone.textContent = "No selection";
     selectEl.appendChild(optNone);
 
     if (!vehicleClasses || vehicleClasses.length === 0) return;
@@ -3361,11 +3342,11 @@ function refreshBookingServiceOptions() {
   if (!bookingMainServiceSelect || !bookingSinglesList || !bookingSinglesMenu)
     return;
 
-  // Paket-Dropdown
+  // Package dropdown
   bookingMainServiceSelect.innerHTML = "";
   const optNone = document.createElement("option");
   optNone.value = "";
-  optNone.textContent = "Kein Paket";
+  optNone.textContent = "No package";
   bookingMainServiceSelect.appendChild(optNone);
 
   const packages = (services || []).filter((s) => s.kind === "package");
@@ -3377,7 +3358,7 @@ function refreshBookingServiceOptions() {
   });
   renderPackages();
 
-  // Einzelleistungen: Hidden-Select + schönes Dropdown mit Checkboxen
+  // Individual services: Hidden-Select + dropdown with checkboxes
   bookingSinglesList.innerHTML = "";
   bookingSinglesMenu.innerHTML = "";
 
@@ -3386,19 +3367,19 @@ function refreshBookingServiceOptions() {
   if (singles.length === 0) {
     const p = document.createElement("p");
     p.className = "form-hint";
-    p.textContent = "Noch keine Einzelleistungen angelegt.";
+    p.textContent = "No individual services created yet.";
     bookingSinglesMenu.appendChild(p);
     return;
   }
 
-  // Nach Kategorie gruppieren
+  // Group by category
   const groupsMap = new Map();
 
   singles.forEach((svc) => {
     const rawCat = (svc.category || "").trim();
     const isOther = !rawCat;
     const key = isOther ? "__zz_other" : rawCat.toLowerCase();
-    const label = isOther ? "Sonstige" : rawCat;
+    const label = isOther ? "Others" : rawCat;
 
     if (!groupsMap.has(key)) {
       groupsMap.set(key, { label, services: [] });
@@ -3417,22 +3398,22 @@ function refreshBookingServiceOptions() {
     if (b === "__zz_other") return -1;
     const la = groupsMap.get(a).label.toLowerCase();
     const lb = groupsMap.get(b).label.toLowerCase();
-    return la.localeCompare(lb, "de");
+    return la.localeCompare(lb, "en");
   });
 
   sortedKeys.forEach((key) => {
     const group = groupsMap.get(key);
     const labelText = group.label;
 
-    // Kategorie-Überschrift immer anzeigen (inkl. Sonstige)
+    // Show category header
     const catHeader = document.createElement("div");
     catHeader.className = "booking-singles-category";
     catHeader.textContent = labelText;
     bookingSinglesMenu.appendChild(catHeader);
 
-    // Services innerhalb der Kategorie nach Name sortieren
+    // Sort services by name
     const servicesSorted = [...group.services].sort((a, b) =>
-      (a.name || "").localeCompare(b.name || "", "de")
+      (a.name || "").localeCompare(b.name || "", "en")
     );
 
     servicesSorted.forEach((svc) => {
@@ -3441,9 +3422,9 @@ function refreshBookingServiceOptions() {
       item.dataset.serviceId = svc.id;
 
       const priceEuro = (svc.base_price_cents || 0) / 100;
-      const priceText = priceEuro.toLocaleString("de-DE", {
+      const priceText = priceEuro.toLocaleString("en-US", {
         style: "currency",
-        currency: "EUR",
+        currency: "USD",
       });
 
       const label = document.createElement("div");
@@ -3475,13 +3456,13 @@ function refreshBookingServiceOptions() {
 function refreshBookingDetailServiceOptions() {
   if (!services || !Array.isArray(services)) return;
 
-  // Pakete
+  // Packages
   if (bookingDetailMainServiceSelect) {
     bookingDetailMainServiceSelect.innerHTML = "";
 
     const optNone = document.createElement("option");
     optNone.value = "";
-    optNone.textContent = "Kein Paket";
+    optNone.textContent = "No package";
     bookingDetailMainServiceSelect.appendChild(optNone);
 
     const packages = services.filter((s) => s.kind === "package");
@@ -3494,7 +3475,7 @@ function refreshBookingDetailServiceOptions() {
     });
   }
 
-  // Einzelleistungen
+  // Individual services
   if (bookingDetailSinglesSelect) {
     bookingDetailSinglesSelect.innerHTML = "";
 
@@ -3503,7 +3484,7 @@ function refreshBookingDetailServiceOptions() {
     singles.forEach((svc) => {
       const opt = document.createElement("option");
       opt.value = svc.id;
-      // Kategorie voranstellen, wenn vorhanden
+      // Prefix category if present
       const prefix = svc.category ? `[${svc.category}] ` : "";
       opt.textContent = prefix + svc.name;
       bookingDetailSinglesSelect.appendChild(opt);
@@ -3522,19 +3503,19 @@ function refreshBookingDetailSinglesOptions() {
   if (singles.length === 0) {
     const p = document.createElement("p");
     p.className = "form-hint";
-    p.textContent = "Noch keine Einzelleistungen angelegt.";
+    p.textContent = "No individual services created yet.";
     bookingDetailSinglesMenu.appendChild(p);
     return;
   }
 
-  // Nach Kategorie gruppieren
+  // Group by category
   const groupsMap = new Map();
 
   singles.forEach((svc) => {
     const rawCat = (svc.category || "").trim();
     const isOther = !rawCat;
     const key = isOther ? "__zz_other" : rawCat.toLowerCase();
-    const label = isOther ? "Sonstige" : rawCat;
+    const label = isOther ? "Others" : rawCat;
 
     if (!groupsMap.has(key)) {
       groupsMap.set(key, { label, services: [] });
@@ -3553,21 +3534,21 @@ function refreshBookingDetailSinglesOptions() {
     if (b === "__zz_other") return -1;
     const la = groupsMap.get(a).label.toLowerCase();
     const lb = groupsMap.get(b).label.toLowerCase();
-    return la.localeCompare(lb, "de");
+    return la.localeCompare(lb, "en");
   });
 
   sortedKeys.forEach((key) => {
     const group = groupsMap.get(key);
     const labelText = group.label;
 
-    // Kategorie-Überschrift auch im Detail-Modal
+    // Category header
     const catHeader = document.createElement("div");
     catHeader.className = "booking-singles-category";
     catHeader.textContent = labelText;
     bookingDetailSinglesMenu.appendChild(catHeader);
 
     const servicesSorted = [...group.services].sort((a, b) =>
-      (a.name || "").localeCompare(b.name || "", "de")
+      (a.name || "").localeCompare(b.name || "", "en")
     );
 
     servicesSorted.forEach((svc) => {
@@ -3576,9 +3557,9 @@ function refreshBookingDetailSinglesOptions() {
       item.dataset.serviceId = svc.id;
 
       const priceEuro = (svc.base_price_cents || 0) / 100;
-      const priceText = priceEuro.toLocaleString("de-DE", {
+      const priceText = priceEuro.toLocaleString("en-US", {
         style: "currency",
-        currency: "EUR",
+        currency: "USD",
       });
 
       const labelEl = document.createElement("div");
@@ -3607,7 +3588,7 @@ function refreshBookingDetailSinglesOptions() {
 }
 
 // ================================
-// BOOKING / NEUER AUFTRAG
+// BOOKING / NEW ORDER
 // ================================
 function setupBookingHandlers() {
   if (newBookingButton) {
@@ -3677,7 +3658,7 @@ function setupBookingHandlers() {
     bookingDiscountValueInput.addEventListener("input", recalcBookingSummary);
   }
 
-  // Helper für Dropdown-Toggle (Neuer Auftrag + Detail-Modal)
+  // Helper for dropdown-toggle
   function attachBookingDropdown(wrapperSelector, toggleEl, menuEl) {
     if (!toggleEl || !menuEl) return;
 
@@ -3690,7 +3671,7 @@ function setupBookingHandlers() {
     toggleEl.addEventListener("click", () => {
       const isOpen = wrapper.classList.contains("open");
 
-      // alle anderen Dropdowns schließen
+      // Close all other dropdowns
       document
         .querySelectorAll(".settings-dropdown.open")
         .forEach((el) => el.classList.remove("open"));
@@ -3700,14 +3681,14 @@ function setupBookingHandlers() {
     });
   }
 
-  // Neuer Auftrag – Einzelleistungen
+  // New order – Individual services
   attachBookingDropdown(
     ".booking-singles-dropdown",
     bookingSinglesToggle,
     bookingSinglesMenu
   );
 
-  // Bestehender Auftrag – Einzelleistungen
+  // Existing order – Individual services
   attachBookingDropdown(
     ".booking-detail-singles-dropdown",
     bookingDetailSinglesToggle,
@@ -3719,7 +3700,6 @@ function openBookingModal() {
   if (!bookingModal) return;
   if (bookingError) bookingError.textContent = "";
 
-  // Form nicht komplett resetten, aber Schritt 1 anzeigen
   showBookingStep(1);
   bookingModal.classList.remove("hidden");
 }
@@ -3747,7 +3727,7 @@ function recalcBookingSummary() {
 
   const getServiceById = (id) => (services || []).find((s) => s.id === id);
 
-  // Paket
+  // Package
   if (bookingMainServiceSelect && bookingMainServiceSelect.value) {
     const main = getServiceById(bookingMainServiceSelect.value);
     if (main) {
@@ -3758,7 +3738,7 @@ function recalcBookingSummary() {
     }
   }
 
-  // Einzelleistungen (Mehrfach-Select)
+  // Individual services
   if (bookingSinglesList) {
     const selected = Array.from(bookingSinglesList.selectedOptions || []);
     selected.forEach((opt) => {
@@ -3772,7 +3752,7 @@ function recalcBookingSummary() {
     });
   }
 
-  // Rabatt
+  // Discount
   let discountType = bookingDiscountTypeSelect
     ? bookingDiscountTypeSelect.value
     : "none";
@@ -3801,13 +3781,13 @@ function recalcBookingSummary() {
   const totalPriceCents = Math.max(0, totalPriceCentsRaw);
   const priceEuro = totalPriceCents / 100;
 
-  bookingSummaryPrice.textContent = priceEuro.toLocaleString("de-DE", {
+  bookingSummaryPrice.textContent = priceEuro.toLocaleString("en-US", {
     style: "currency",
-    currency: "EUR",
+    currency: "USD",
   });
 
   const hours = totalMinutes / 60;
-  bookingSummaryDuration.textContent = `${hours.toFixed(1)} Std.`;
+  bookingSummaryDuration.textContent = `${hours.toFixed(1)} hrs.`;
 }
 
 async function submitBooking() {
@@ -3820,14 +3800,14 @@ async function submitBooking() {
   const timeStr = bookingTimeInput.value || "09:00";
 
   if (!dateStr) {
-    if (bookingError) bookingError.textContent = "Bitte Datum auswählen.";
+    if (bookingError) bookingError.textContent = "Please select a date.";
     showBookingStep(2);
     return;
   }
 
   const startAt = new Date(`${dateStr}T${timeStr}:00`);
   if (Number.isNaN(startAt.getTime())) {
-    if (bookingError) bookingError.textContent = "Ungültiges Datum / Uhrzeit.";
+    if (bookingError) bookingError.textContent = "Invalid date / time.";
     showBookingStep(2);
     return;
   }
@@ -3846,14 +3826,14 @@ async function submitBooking() {
   }
 
   // =======================================
-// AUFTRAGSNUMMER (#1, #2, #3, ...)
+// ORDER NUMBER (#1, #2, #3, ...)
 // =======================================
 const { count: bookingCount, error: countError } = await supabaseClient
   .from("bookings")
   .select("*", { count: "exact", head: true });
 
 if (countError) {
-  console.error("Fehler beim Ermitteln der Auftragsnummer:", countError);
+  console.error("Error determining the order number:", countError);
 }
 
 const orderNumber = (bookingCount || 0) + 1;
@@ -3864,7 +3844,7 @@ const orderNumber = (bookingCount || 0) + 1;
   let totalBasePriceCents = 0;
   let totalMinutes = 0;
 
-  // Paket
+  // Package
   let mainServiceName = null;
   if (bookingMainServiceSelect && bookingMainServiceSelect.value) {
     const main = getServiceById(bookingMainServiceSelect.value);
@@ -3888,7 +3868,7 @@ const orderNumber = (bookingCount || 0) + 1;
     }
   }
 
-  // Einzelleistungen
+  // Individual services
   if (bookingSinglesList) {
     const selected = Array.from(bookingSinglesList.selectedOptions || []);
     selected.forEach((opt) => {
@@ -3969,7 +3949,7 @@ const orderNumber = (bookingCount || 0) + 1;
     detailer_id: currentUser.id,
     start_at: startAt.toISOString(),
     duration_minutes: totalMinutes,
-    service_name: mainServiceName || "Auftrag",
+    service_name: mainServiceName || "Order",
     total_price: totalPriceCents / 100,
     notes,
     car,
@@ -3990,19 +3970,19 @@ const orderNumber = (bookingCount || 0) + 1;
     console.error("DetailHQ: booking insert failed:", error);
     if (bookingError) {
       bookingError.textContent =
-        "Auftrag konnte nicht gespeichert werden. Bitte später erneut versuchen.";
+        "Order could not be saved. Please try again later.";
     }
     return;
   }
 
   closeBookingModal();
-  console.log("DetailHQ: Booking erfolgreich angelegt", payload);
+  console.log("DetailHQ: Booking successfully created", payload);
 
   await loadBookingsForDashboardAndSchedule();
 }
 
 // ================================
-// BOOKINGS LADEN (Dashboard & Zeitplan)
+// LOAD BOOKINGS (Dashboard & Schedule)
 // ================================
 function setupDashboardPeriodHandlers() {
   if (!dashboardPeriodToggle) return;
@@ -4045,8 +4025,8 @@ function getPeriodRange(period) {
   }
 
   if (period === "week") {
-    // Montag als Wochenbeginn (KW)
-    const day = todayStart.getDay() || 7; // So=0 -> 7
+    // Monday as start of week
+    const day = todayStart.getDay() || 7; // Sun=0 -> 7
     const monday = new Date(todayStart);
     monday.setDate(todayStart.getDate() - (day - 1));
     const sunday = new Date(monday);
@@ -4072,8 +4052,8 @@ function getPeriodRange(period) {
 function updateDashboardStats(bookings) {
   if (!revenueTodayElement || !volumeTodayElement) return;
   if (!bookings || bookings.length === 0) {
-    revenueTodayElement.textContent = "€ 0";
-    volumeTodayElement.textContent = "€ 0";
+    revenueTodayElement.textContent = "$ 0";
+    volumeTodayElement.textContent = "$ 0";
     return;
   }
 
@@ -4097,12 +4077,12 @@ function updateDashboardStats(bookings) {
   });
 
   revenueTodayElement.textContent = (revenueCents / 100).toLocaleString(
-    "de-DE",
-    { style: "currency", currency: "EUR" }
+    "en-US",
+    { style: "currency", currency: "USD" }
   );
   volumeTodayElement.textContent = (volumeCents / 100).toLocaleString(
-    "de-DE",
-    { style: "currency", currency: "EUR" }
+    "en-US",
+    { style: "currency", currency: "USD" }
   );
 }
 
@@ -4114,7 +4094,7 @@ async function loadBookingsForDashboardAndSchedule() {
   const todayEnd = new Date(todayStart);
   todayEnd.setDate(todayEnd.getDate() + 1);
 
-  // Für KPIs: komplettes aktuelles Jahr laden
+  // For KPIs: load full current year
   const now = new Date();
   const yearStart = new Date(now.getFullYear(), 0, 1);
   const yearEnd = new Date(now.getFullYear() + 1, 0, 1);
@@ -4145,7 +4125,7 @@ async function loadBookingsForDashboardAndSchedule() {
   if (scheduleError) {
     console.error("DetailHQ: schedule bookings load failed:", scheduleError);
   }
-  // Für Annahmeprotokoll (Dropdown / Auswahl)
+  // For intake protocol (dropdown / selection)
   allBookings = Array.isArray(scheduleBookings) ? scheduleBookings : [];
   renderIntakeBookingSelect();
 
@@ -4166,19 +4146,19 @@ async function loadBookingsForDashboardAndSchedule() {
 
   lastStatsBookings = statsBookings || [];
   updateDashboardStats(lastStatsBookings);
-    // Review-Übersicht im Dashboard
+    // Review overview in Dashboard
   renderReviewReminders(statsBookings || []);
 }
 
 function formatBookingTitle(booking) {
-  if (!booking) return "Auftrag";
+  if (!booking) return "Order";
 
   const hasNumericId =
     typeof booking.id === "number" || /^[0-9]+$/.test(String(booking.id || ""));
 
   const base = hasNumericId
-    ? `Auftrag #${booking.id}`
-    : booking.service_name || "Auftrag";
+    ? `Order #${booking.id}`
+    : booking.service_name || "Order";
 
   if (booking.customer_name && booking.customer_name.trim() !== "") {
     return `${base} – ${booking.customer_name.trim()}`;
@@ -4220,7 +4200,7 @@ function renderTodayBookings(bookings) {
 
   if (!bookings || bookings.length === 0) {
     todayBookingsContainer.classList.add("empty-state");
-    todayBookingsContainer.innerHTML = "<p>Noch keine Aufträge für heute.</p>";
+    todayBookingsContainer.innerHTML = "<p>No orders for today yet.</p>";
     return;
   }
 
@@ -4238,7 +4218,7 @@ function renderTodayBookings(bookings) {
     const start = b.start_at ? new Date(b.start_at) : null;
     let timeStr = "";
     if (start) {
-      timeStr = start.toLocaleTimeString("de-DE", {
+      timeStr = start.toLocaleTimeString("en-US", {
         hour: "2-digit",
         minute: "2-digit",
       });
@@ -4248,9 +4228,9 @@ function renderTodayBookings(bookings) {
     lineDate.className = "list-item-meta";
 
     if (timeStr) {
-      lineDate.textContent = `Termin: ${timeStr}`;
+      lineDate.textContent = `Appointment: ${timeStr}`;
     } else {
-      lineDate.textContent = "Termin: –";
+      lineDate.textContent = "Appointment: –";
     }
 
     if (b.car) {
@@ -4261,20 +4241,20 @@ function renderTodayBookings(bookings) {
     lineAmount.className = "list-item-meta booking-amount";
     if (typeof b.total_price === "number") {
       lineAmount.textContent =
-        "Umsatz: " +
-        b.total_price.toLocaleString("de-DE", {
+        "Revenue: " +
+        b.total_price.toLocaleString("en-US", {
           style: "currency",
-          currency: "EUR",
+          currency: "USD",
         });
     } else {
-      lineAmount.textContent = "Umsatz: –";
+      lineAmount.textContent = "Revenue: –";
     }
 
     card.appendChild(title);
     card.appendChild(lineDate);
     card.appendChild(lineAmount);
 
-    // Klick -> Detail-Modal
+    // Click -> Detail Modal
     card.addEventListener("click", () => {
       openBookingDetail(b);
     });
@@ -4286,7 +4266,7 @@ function renderTodayBookings(bookings) {
 function renderReviewReminders(bookings) {
   if (!reviewRemindersContainer) return;
 
-  // Jobs, die abgeschlossen sind und noch keine Review als erledigt markiert haben
+  // Jobs that are completed and have no review marked as done
   const pending = (bookings || []).filter(
     (b) => b.job_status === "done" && !isBookingReviewDone(b)
   );
@@ -4294,14 +4274,14 @@ function renderReviewReminders(bookings) {
   if (pending.length === 0) {
     reviewRemindersContainer.classList.add("empty-state");
     reviewRemindersContainer.innerHTML =
-      "<p>Aktuell keine offenen Bewertungs-Erinnerungen.</p>";
+      "<p>Currently no open review reminders.</p>";
     return;
   }
 
   reviewRemindersContainer.classList.remove("empty-state");
   reviewRemindersContainer.innerHTML = "";
 
-  // nach Datum sortieren (nächster Termin zuerst)
+  // Sort by date (next appointment first)
   pending.sort((a, b) => {
     const aTime = a.start_at ? new Date(a.start_at).getTime() : 0;
     const bTime = b.start_at ? new Date(b.start_at).getTime() : 0;
@@ -4321,7 +4301,7 @@ function renderReviewReminders(bookings) {
 
     const statusPill = document.createElement("span");
     statusPill.className = "payment-pill payment-pill--open";
-    statusPill.textContent = "Review offen";
+    statusPill.textContent = "Review pending";
 
     header.appendChild(title);
     header.appendChild(statusPill);
@@ -4331,19 +4311,19 @@ function renderReviewReminders(bookings) {
 
     if (b.start_at) {
       const d = new Date(b.start_at);
-      const dateStr = d.toLocaleDateString("de-DE", {
+      const dateStr = d.toLocaleDateString("en-US", {
         weekday: "short",
         day: "2-digit",
         month: "2-digit",
       });
-      meta.textContent = `Abgeschlossen: ${dateStr}`;
+      meta.textContent = `Completed: ${dateStr}`;
     } else {
-      meta.textContent = "Abgeschlossen";
+      meta.textContent = "Completed";
     }
 
     const copyHint = document.createElement("div");
     copyHint.className = "list-item-meta";
-    copyHint.textContent = "Klick für Text & Copy";
+    copyHint.textContent = "Click for text & copy";
 
     card.appendChild(header);
     card.appendChild(meta);
@@ -4363,7 +4343,7 @@ function renderScheduleList(bookings) {
   if (!bookings || bookings.length === 0) {
     scheduleListContainer.classList.add("empty-state");
     scheduleListContainer.innerHTML =
-      "<p>Noch keine geplanten Aufträge.</p>";
+      "<p>No scheduled orders yet.</p>";
     return;
   }
 
@@ -4380,15 +4360,15 @@ const orderMap = {
 };
 
 const statusLabelMap = {
-  requested: "Anfragen",
-  proposed: "Alternativ vorgeschlagen",
-  planned: "Geplant",
-  in_progress: "In Arbeit",
-  done: "Abgeschlossen",
-  canceled: "Storniert",
+  requested: "Requests",
+  proposed: "Alternative proposed",
+  planned: "Planned",
+  in_progress: "In Progress",
+  done: "Completed",
+  canceled: "Canceled",
 };
 
-  // Sortieren nach Status + Datum
+  // Sort by status + date
   const sorted = [...bookings].sort((a, b) => {
     const aStatus = a.job_status || "planned";
     const bStatus = b.job_status || "planned";
@@ -4402,7 +4382,7 @@ const statusLabelMap = {
     return aTime - bTime;
   });
 
-  // Gruppieren
+  // Grouping
 const grouped = {
   requested: [],
   proposed: [],
@@ -4418,7 +4398,7 @@ const grouped = {
     grouped[key].push(b);
   });
 
-  // Render: Reihenfolge strikt nach orderMap
+  // Render: order strictly according to orderMap
   ["planned", "in_progress", "done", "canceled"].forEach((statusKey) => {
     const list = grouped[statusKey];
     if (!list || list.length === 0) return;
@@ -4429,12 +4409,12 @@ const grouped = {
     h.textContent = statusLabelMap[statusKey] || statusKey;
     scheduleListContainer.appendChild(h);
 
-    // LISTE
+    // LIST
     list.forEach((b) => {
       const row = document.createElement("div");
       row.className = "list-item booking-list-item";
 
-      // Header: Titel + Zahlungsstatus-Pill
+      // Header: Title + Payment Status Pill
       const header = document.createElement("div");
       header.className = "booking-row-header";
 
@@ -4445,15 +4425,15 @@ const grouped = {
       const pill = document.createElement("span");
       pill.className = "payment-pill";
 
-      let pillLabel = "Offen";
+      let pillLabel = "Open";
       let pillClass = "payment-pill--open";
       const payStatus = b.payment_status || "open";
 
       if (payStatus === "paid") {
-        pillLabel = "Bezahlt";
+        pillLabel = "Paid";
         pillClass = "payment-pill--paid";
       } else if (payStatus === "partial") {
-        pillLabel = "Teilzahlung";
+        pillLabel = "Partial Payment";
         pillClass = "payment-pill--partial";
       }
 
@@ -4463,18 +4443,18 @@ const grouped = {
       header.appendChild(title);
       header.appendChild(pill);
 
-      // Datum/Uhrzeit
+      // Date/Time
       const start = b.start_at ? new Date(b.start_at) : null;
       let dateStr = "";
       let timeStr = "";
 
       if (start) {
-        dateStr = start.toLocaleDateString("de-DE", {
+        dateStr = start.toLocaleDateString("en-US", {
           weekday: "short",
           day: "2-digit",
           month: "2-digit",
         });
-        timeStr = start.toLocaleTimeString("de-DE", {
+        timeStr = start.toLocaleTimeString("en-US", {
           hour: "2-digit",
           minute: "2-digit",
         });
@@ -4483,32 +4463,32 @@ const grouped = {
       const lineDate = document.createElement("div");
       lineDate.className = "list-item-meta";
       if (dateStr || timeStr) {
-        lineDate.textContent = `Termin: ${dateStr} ${timeStr}`.trim();
+        lineDate.textContent = `Appointment: ${dateStr} ${timeStr}`.trim();
       } else {
-        lineDate.textContent = "Termin: –";
+        lineDate.textContent = "Appointment: –";
       }
 
       if (b.car) {
         lineDate.textContent += ` · ${b.car}`;
       }
 
-      // Statuszeile (text)
+      // Status line (text)
       const statusLine = document.createElement("div");
       statusLine.className = "list-item-meta";
       statusLine.textContent = `Status: ${statusLabelMap[statusKey]}`;
 
-      // Umsatz
+      // Revenue
       const lineAmount = document.createElement("div");
       lineAmount.className = "list-item-meta booking-amount";
       if (typeof b.total_price === "number") {
         lineAmount.textContent =
-          "Umsatz: " +
-          b.total_price.toLocaleString("de-DE", {
+          "Revenue: " +
+          b.total_price.toLocaleString("en-US", {
             style: "currency",
-            currency: "EUR",
+            currency: "USD",
           });
       } else {
-        lineAmount.textContent = "Umsatz: –";
+        lineAmount.textContent = "Revenue: –";
       }
 
       row.appendChild(header);
@@ -4520,7 +4500,7 @@ const grouped = {
 
   const btnConfirm = document.createElement("button");
   btnConfirm.className = "btn-primary";
-  btnConfirm.textContent = "Bestätigen";
+  btnConfirm.textContent = "Confirm";
   btnConfirm.addEventListener("click", async (e) => {
     e.stopPropagation();
     await confirmBookingRequest(b.id);
@@ -4532,7 +4512,7 @@ const grouped = {
   btnAlt.textContent = "Alternative";
   btnAlt.addEventListener("click", async (e) => {
     e.stopPropagation();
-    const iso = prompt("Alternativtermin als ISO (z.B. 2026-01-20T09:30:00.000Z)");
+    const iso = prompt("Alternative appointment as ISO (e.g., 2026-01-20T09:30:00.000Z)");
     if (!iso) return;
     await proposeBookingAlternative(b.id, iso);
     await loadBookingsForDashboardAndSchedule();
@@ -4605,21 +4585,21 @@ function getBookingRevenueCents(booking) {
 
   const { partialCents, overrideCents } = getBookingPaymentMeta(booking);
 
-  // Voll bezahlt
+  // Fully paid
   if (status === "paid") {
-    // Wenn abweichende Summe gesetzt, diese verwenden
+    // If override amount is set, use it
     if (overrideCents != null) return overrideCents;
-    // sonst komplettes Auftragsvolumen
+    // otherwise full order volume
     return totalPriceCents;
   }
 
-  // Teilzahlung
+  // Partial payment
   if (status === "partial") {
     if (partialCents != null) return partialCents;
     return 0;
   }
 
-  // Offen oder storniert -> kein Umsatz
+  // Open or canceled -> no revenue
   return 0;
 }
 
@@ -4641,34 +4621,34 @@ function openBookingDetail(booking) {
   if (!bookingDetailModal) return;
   currentDetailBooking = booking;
 
-    // Sicherstellen, dass alle Selects / Dropdowns aktuell sind
+    // Ensure all selects / dropdowns are up to date
   refreshBookingVehicleClassOptions();
   refreshBookingDetailServiceOptions();
   refreshBookingDetailSinglesOptions();
 
-  // Titel: Auftrag #ID – Kunde
+  // Title: Order #ID – Customer
   if (bookingDetailTitle) {
     bookingDetailTitle.textContent = formatBookingTitle(booking);
   }
 
-  // Termin + Fahrzeug
+  // Appointment + Vehicle
   const start = booking.start_at ? new Date(booking.start_at) : null;
   let metaText = "";
 
   if (start) {
-    const dateStr = start.toLocaleDateString("de-DE", {
+    const dateStr = start.toLocaleDateString("en-US", {
       weekday: "short",
       day: "2-digit",
       month: "2-digit",
     });
-    const timeStr = start.toLocaleTimeString("de-DE", {
+    const timeStr = start.toLocaleTimeString("en-US", {
       hour: "2-digit",
       minute: "2-digit",
     });
-    metaText = `Termin: ${dateStr} ${timeStr}`;
+    metaText = `Appointment: ${dateStr} ${timeStr}`;
   }
 
-    // Termin in Inputs spiegeln
+    // Reflect appointment in inputs
   if (bookingDetailDateInput) {
     bookingDetailDateInput.value = start
       ? start.toISOString().slice(0, 10)
@@ -4684,7 +4664,7 @@ function openBookingDetail(booking) {
     }
   }
 
-  // Buchungsdetails
+  // Booking details
   if (bookingDetailCarInput) {
     bookingDetailCarInput.value = booking.car || "";
   }
@@ -4701,10 +4681,8 @@ function openBookingDetail(booking) {
       booking.discount_value != null ? booking.discount_value : "";
   }
 
-  // Services in die Detail-Selects spiegeln
+  // Reflect services in detail selects
   if (services && Array.isArray(services)) {
-    // Wir orientieren uns an den Items, die beim Anlegen / Bearbeiten
-    // geschrieben werden: role === "package" / "single"
     const serviceItems = Array.isArray(booking.items)
       ? booking.items.filter(
           (it) => it && (it.role === "package" || it.role === "single")
@@ -4716,9 +4694,8 @@ function openBookingDetail(booking) {
       (it) => it.role === "single"
     );
 
-    // Paket
+    // Package
     if (bookingDetailMainServiceSelect) {
-      // sicherstellen, dass Optionen aktuell sind
       refreshBookingDetailServiceOptions();
 
       if (mainServiceItem && mainServiceItem.service_id) {
@@ -4730,9 +4707,8 @@ function openBookingDetail(booking) {
       }
     }
 
-    // Einzelleistungen
+    // Individual services
     if (bookingDetailSinglesSelect) {
-      // sicherstellen, dass Optionen aktuell sind
       refreshBookingDetailServiceOptions();
 
       const singleIds = new Set(
@@ -4748,9 +4724,8 @@ function openBookingDetail(booking) {
     }
   }
 
-  // Einzelleistungen im Detail-Dropdown spiegeln
+  // Reflect individual services in detail dropdown
   if (bookingDetailSinglesList && bookingDetailSinglesMenu) {
-    // sicherstellen, dass die Optionen aktuell sind
     refreshBookingDetailSinglesOptions();
 
     const selectedIds = new Set(
@@ -4760,12 +4735,12 @@ function openBookingDetail(booking) {
         .filter(Boolean)
     );
 
-    // Hidden-Select markieren
+    // Mark hidden select
     for (const opt of bookingDetailSinglesList.options) {
       opt.selected = selectedIds.has(opt.value);
     }
 
-    // Visuelle Checkbox-Pills markieren
+    // Mark visual checkbox pills
     bookingDetailSinglesMenu
       .querySelectorAll(".booking-singles-item")
       .forEach((item) => {
@@ -4777,7 +4752,7 @@ function openBookingDetail(booking) {
   }
 
 
-  // Kunde
+  // Customer
   if (bookingDetailCustomerNameInput) {
     bookingDetailCustomerNameInput.value = booking.customer_name || "";
   }
@@ -4796,70 +4771,70 @@ function openBookingDetail(booking) {
     metaText += metaText ? ` · ${booking.car}` : booking.car;
   }
 
-  if (bookingDetailMeta) bookingDetailMeta.textContent = metaText || "Termin: –";
+  if (bookingDetailMeta) bookingDetailMeta.textContent = metaText || "Appointment: –";
 
-  // Auftragsvolumen in €
+  // Order volume in USD
   if (bookingDetailPrice) {
     if (typeof booking.total_price === "number") {
       bookingDetailPrice.textContent =
-        "Auftragsvolumen: " +
-        booking.total_price.toLocaleString("de-DE", {
+        "Order Volume: " +
+        booking.total_price.toLocaleString("en-US", {
           style: "currency",
-          currency: "EUR",
+          currency: "USD",
         });
     } else {
-      bookingDetailPrice.textContent = "Auftragsvolumen: –";
+      bookingDetailPrice.textContent = "Order Volume: –";
     }
   }
 
-  // Buchungsdetails (Pakete, Leistungen, Fahrzeugklasse, Rabatt, Dauer)
+  // Booking details (Packages, services, vehicle class, discount, duration)
   if (bookingDetailBookingContainer) {
     const parts = [];
 
-    // Leistungen aus items
+    // Services from items
     if (Array.isArray(booking.items) && booking.items.length > 0) {
       const lines = booking.items
         .filter((it) => it.role === "package" || it.role === "single")
         .map((it) => {
           const price =
             typeof it.price_cents === "number"
-              ? (it.price_cents / 100).toLocaleString("de-DE", {
+              ? (it.price_cents / 100).toLocaleString("en-US", {
                   style: "currency",
-                  currency: "EUR",
+                  currency: "USD",
                 })
               : "";
           const roleLabel =
             it.role === "package"
-              ? "Paket"
+              ? "Package"
               : it.role === "single"
-              ? "Einzelleistung"
-              : "Anpassung";
+              ? "Single Service"
+              : "Adjustment";
           return `${roleLabel}: ${it.name || "—"}${
             price ? ` (${price})` : ""
           }`;
         });
 
       if (lines.length > 0) {
-        parts.push("<strong>Leistungen:</strong><br>" + lines.join("<br>"));
+        parts.push("<strong>Services:</strong><br>" + lines.join("<br>"));
       }
     }
 
-    // Fahrzeugklasse
+    // Vehicle class
     if (booking.vehicle_class_name) {
       parts.push(
-        `<strong>Fahrzeugklasse:</strong> ${booking.vehicle_class_name}`
+        `<strong>Vehicle Class:</strong> ${booking.vehicle_class_name}`
       );
     }
 
-    // Dauer
+    // Duration
     if (typeof booking.duration_minutes === "number" && booking.duration_minutes > 0) {
       const hours = booking.duration_minutes / 60;
       parts.push(
-        `<strong>Dauer:</strong> ${hours.toFixed(1).replace(".", ",")} Std.`
+        `<strong>Duration:</strong> ${hours.toFixed(1)} hrs.`
       );
     }
 
-    // Rabatt
+    // Discount
     if (
       booking.discount_type &&
       booking.discount_type !== "none" &&
@@ -4869,28 +4844,28 @@ function openBookingDetail(booking) {
       const discountEuro = booking.discount_amount_cents / 100;
       if (booking.discount_type === "amount") {
         parts.push(
-          `<strong>Rabatt:</strong> ${discountEuro.toLocaleString("de-DE", {
+          `<strong>Discount:</strong> ${discountEuro.toLocaleString("en-US", {
             style: "currency",
-            currency: "EUR",
+            currency: "USD",
           })}`
         );
       } else if (booking.discount_type === "percent") {
         parts.push(
-          `<strong>Rabatt:</strong> ${
+          `<strong>Discount:</strong> ${
             booking.discount_value || 0
-          }% (${discountEuro.toLocaleString("de-DE", {
+          }% (${discountEuro.toLocaleString("en-US", {
             style: "currency",
-            currency: "EUR",
+            currency: "USD",
           })})`
         );
       }
     }
 
     bookingDetailBookingContainer.innerHTML =
-      parts.length > 0 ? parts.join("<br><br>") : "Keine weiteren Details.";
+      parts.length > 0 ? parts.join("<br><br>") : "No further details.";
   }
 
-  // Kunde
+  // Customer
   if (bookingDetailCustomerContainer) {
     const lines = [];
 
@@ -4898,25 +4873,25 @@ function openBookingDetail(booking) {
       lines.push(`<strong>Name:</strong> ${booking.customer_name}`);
     }
     if (booking.customer_email) {
-      lines.push(`<strong>E-Mail:</strong> ${booking.customer_email}`);
+      lines.push(`<strong>Email:</strong> ${booking.customer_email}`);
     }
     if (booking.customer_phone) {
-      lines.push(`<strong>Telefon:</strong> ${booking.customer_phone}`);
+      lines.push(`<strong>Phone:</strong> ${booking.customer_phone}`);
     }
     if (booking.customer_address) {
-      lines.push(`<strong>Adresse:</strong> ${booking.customer_address}`);
+      lines.push(`<strong>Address:</strong> ${booking.customer_address}`);
     }
 
     bookingDetailCustomerContainer.innerHTML =
-      lines.length > 0 ? lines.join("<br>") : "Keine Kundendaten hinterlegt.";
+      lines.length > 0 ? lines.join("<br>") : "No customer data stored.";
   }
 
-  // Notizen
+  // Notes
   if (bookingDetailNotes) {
     bookingDetailNotes.value = booking.notes || "";
   }
 
-  // Status-Felder
+  // Status fields
   if (bookingDetailJobStatusSelect) {
     bookingDetailJobStatusSelect.value = booking.job_status || "planned";
   }
@@ -4926,7 +4901,7 @@ function openBookingDetail(booking) {
       booking.payment_status || "open";
   }
 
-  // Payment-Meta in Inputs spiegeln
+  // Reflect payment meta in inputs
   const { partialCents, overrideCents } = getBookingPaymentMeta(booking);
 
   if (bookingDetailPartialAmountInput) {
@@ -4951,7 +4926,7 @@ function closeBookingDetailModal() {
 }
 
 // ================================
-// ANNAHMEPROTOKOLL (Intake)
+// INTAKE PROTOCOL
 // ================================
 let currentIntakeStep = 1;
 let currentIntakeBooking = null;
@@ -4959,39 +4934,39 @@ let currentIntakeBooking = null;
 const INTAKE_BUCKET = "intake";
 
 const INTAKE_EXTERIOR_SLOTS = [
-  { key: "front_left", label: "Vorne links" },
-  { key: "front_right", label: "Vorne rechts" },
-  { key: "hood", label: "Motorhaube" },
-  { key: "windshield", label: "Windschutzscheibe" },
-  { key: "roof", label: "Dach" },
-  { key: "rear_center", label: "Heck" },
-  { key: "left_side", label: "Fahrzeugseite links" },
-  { key: "right_side", label: "Fahrzeugseite rechts" },
+  { key: "front_left", label: "Front left" },
+  { key: "front_right", label: "Front right" },
+  { key: "hood", label: "Hood" },
+  { key: "windshield", label: "Windshield" },
+  { key: "roof", label: "Roof" },
+  { key: "rear_center", label: "Rear" },
+  { key: "left_side", label: "Left side" },
+  { key: "right_side", label: "Right side" },
 ];
 
 const INTAKE_INTERIOR_SLOTS = [
-  { key: "dash_left", label: "Armaturenbrett links" },
-  { key: "dash_right", label: "Armaturenbrett rechts" },
-  { key: "driver_seat", label: "Fahrersitz" },
-  { key: "codriver_seat", label: "Beifahrersitz" },
-  { key: "rear_seats", label: "Rückbank" },
-  { key: "trunk", label: "Kofferraum" },
+  { key: "dash_left", label: "Dashboard left" },
+  { key: "dash_right", label: "Dashboard right" },
+  { key: "driver_seat", label: "Driver seat" },
+  { key: "codriver_seat", label: "Passenger seat" },
+  { key: "rear_seats", label: "Rear seats" },
+  { key: "trunk", label: "Trunk" },
 ];
 
 const exteriorPoints = [
-  "Vorne links",
-  "Vorne rechts",
-  "Motorhaube",
-  "Windschutzscheibe",
-  "Fahrzeugseite links",
-  "Fahrzeugseite rechts",
-  "Dach",
-  "Heck"
+  "Front left",
+  "Front right",
+  "Hood",
+  "Windshield",
+  "Left side",
+  "Right side",
+  "Roof",
+  "Rear"
 ];
 const interiorPoints = [
-  "Armaturenbrett links", "Armaturenbrett rechts",
-  "Fahrersitz", "Beifahrersitz",
-  "Rückbank", "Kofferraum"
+  "Dashboard left", "Dashboard right",
+  "Driver seat", "Passenger seat",
+  "Rear seats", "Trunk"
 ];
 
 let intakeState = {
@@ -5001,7 +4976,6 @@ let intakeState = {
   internal_note: "",
   vehicle: { make_model: "", plate: "", vin: "", year: "", mileage: "" },
   checklist: {},
-  // WICHTIG: Arrays statt {}
   exterior: new Array(8).fill(null), 
   interior: new Array(6).fill(null),
   signature: { jpeg_base64: "" },
@@ -5018,7 +4992,6 @@ function resetIntakeState() {
     internal_note: "",
     vehicle: { make_model: "", plate: "", vin: "", year: "", mileage: "" },
     checklist: {},
-    // WICHTIG: Reset auch als Array
     exterior: new Array(8).fill(null), 
     interior: new Array(6).fill(null),
     signature: { jpeg_base64: "" },
@@ -5030,8 +5003,8 @@ function resetIntakeState() {
 
 function openIntakeModalForBooking(booking) {
   if (intakeDocDate && !intakeDocDate.value) {
-  intakeDocDate.value = new Date().toISOString().slice(0, 10);
-}
+    intakeDocDate.value = new Date().toISOString().slice(0, 10);
+  }
   if (!booking) return;
 
   resetIntakeState();
@@ -5047,23 +5020,23 @@ function openIntakeModalForBooking(booking) {
   if (intakeCustomerEmail && booking.customer_email) {
     intakeCustomerEmail.value = booking.customer_email;
   }
-// E-Mail Feld sichtbar machen
-if (intakeCustomerEmail) {
-  intakeCustomerEmail.closest(".form-row")?.classList.remove("hidden");
-}
+  // Make email field visible
+  if (intakeCustomerEmail) {
+    intakeCustomerEmail.closest(".form-row")?.classList.remove("hidden");
+  }
   if (intakeBookingSummary) {
     intakeBookingSummary.textContent =
-      (booking.customer_name || "Kunde") +
+      (booking.customer_name || "Customer") +
       " – " +
-      (booking.car || "Fahrzeug");
+      (booking.car || "Vehicle");
   }
 
   if (intakeModal) intakeModal.classList.remove("hidden");
   setIntakeStep(1);
-if (intakeDocDate && !intakeDocDate.value) {
-  const today = new Date();
-  intakeDocDate.value = today.toISOString().slice(0, 10);
-}
+  if (intakeDocDate && !intakeDocDate.value) {
+    const today = new Date();
+    intakeDocDate.value = today.toISOString().slice(0, 10);
+  }
 }
 
 function openIntakeModalForBooking(booking) {
@@ -5073,14 +5046,14 @@ function openIntakeModalForBooking(booking) {
   currentIntakeBooking = booking;
   intakeState.booking_id = booking.id;
 
-  // Default Datum = heute (lokal)
+  // Default date = today (local)
   const now = new Date();
   const isoDate = now.toISOString().slice(0, 10);
 
   if (intakeDocDate) intakeDocDate.value = isoDate;
   intakeState.doc_date = isoDate;
 
-  // E-Mail vom Auftrag ziehen (falls vorhanden)
+  // Pull email from order (if available)
   const email = String(booking.customer_email || "").trim();
   if (intakeCustomerEmail) intakeCustomerEmail.value = email;
   intakeState.customer_email = email;
@@ -5089,11 +5062,9 @@ function openIntakeModalForBooking(booking) {
     intakeBookingSummary.textContent = formatBookingTitle(booking);
   }
 
-  // Falls Fahrzeugdaten schon im Auftrag stehen, vorfüllen
+  // Pre-fill vehicle data if available in the order
   if (intakeVehicleMakeModel) intakeVehicleMakeModel.value = booking.car || "";
   if (intakeVehicleMakeModel) intakeState.vehicle.make_model = intakeVehicleMakeModel.value;
-
-  // "car" ist bei dir eher Freitext. Kennzeichen/Baujahr/km sind im Booking nicht zwingend -> leer lassen.
 
   if (intakeCustomerNote) intakeCustomerNote.value = "";
   if (intakeInternalNote) intakeInternalNote.value = "";
@@ -5120,20 +5091,20 @@ function openIntakeModalForBooking(booking) {
   if (intakeLegalAgb) intakeLegalAgb.checked = false;
   if (intakeLegalNote) intakeLegalNote.checked = false;
 
-if (intakeSendEmail) intakeSendEmail.value = "no";
-if (intakeEmailRow) intakeEmailRow.style.display = "none";
-if (intakeCustomerEmail) intakeCustomerEmail.value = "";
+  if (intakeSendEmail) intakeSendEmail.value = "no";
+  if (intakeEmailRow) intakeEmailRow.style.display = "none";
+  if (intakeCustomerEmail) intakeCustomerEmail.value = "";
 
   if (intakeStatus) intakeStatus.textContent = "";
 
   if (intakeSendEmail && intakeEmailRow) {
-  const syncEmailRow = () => {
-    const v = String(intakeSendEmail.value || "no").toLowerCase();
-    intakeEmailRow.style.display = v === "yes" ? "block" : "none";
-  };
-  intakeSendEmail.addEventListener("change", syncEmailRow);
-  syncEmailRow();
-}
+    const syncEmailRow = () => {
+      const v = String(intakeSendEmail.value || "no").toLowerCase();
+      intakeEmailRow.style.display = v === "yes" ? "block" : "none";
+    };
+    intakeSendEmail.addEventListener("change", syncEmailRow);
+    syncEmailRow();
+  }
 
   currentIntakeStep = 1;
   setIntakeStep(1);
@@ -5146,7 +5117,6 @@ if (intakeCustomerEmail) intakeCustomerEmail.value = "";
 function closeIntakeModal() {
   if (!intakeModal) return;
   intakeModal.classList.add("hidden");
-  intakeModal.classList.add("hidden");
   currentIntakeBooking = null;
   if (intakeStatus) intakeStatus.textContent = "";
   const errEl = document.getElementById("intake-final-error");
@@ -5158,16 +5128,13 @@ function closeIntakeModal() {
 function setIntakeStep(step) {
   currentIntakeStep = step;
 
-  // 1. Alle Steps durchgehen und Sichtbarkeit toggeln
   const steps = [intakeStep1, intakeStep2, intakeStep3, intakeStep4, intakeStep5, intakeStep6];
   steps.forEach((el, idx) => {
     if (!el) return;
     const s = idx + 1;
-    // Zeige nur den aktuellen Step
     el.classList.toggle("hidden", s !== step);
   });
 
-  // 2. Indikatoren oben aktualisieren
   const inds = [intakeStepIndicator1, intakeStepIndicator2, intakeStepIndicator3, intakeStepIndicator4, intakeStepIndicator5, intakeStepIndicator6];
   inds.forEach((el, idx) => {
     if (!el) return;
@@ -5175,43 +5142,35 @@ function setIntakeStep(step) {
     el.classList.toggle("active", s === step);
   });
 
-  // 3. Logik für spezifische Steps
-  
-  // Step 3: Tank-Pills (Logik aus deinem Snippet)
   if (step === 3) {
     const fuelPills = document.querySelectorAll("#intake-fuel-pill .pill");
     if (fuelPills.length > 0) {
-        fuelPills.forEach(pill => {
-          pill.onclick = () => {
-            document
-              .querySelectorAll("#intake-fuel-pill .pill")
-              .forEach(p => p.classList.remove("active"));
-            pill.classList.add("active");
-            if(intakeState) intakeState.fuel_level = pill.dataset.value;
-          };
-        });
+      fuelPills.forEach(pill => {
+        pill.onclick = () => {
+          document
+            .querySelectorAll("#intake-fuel-pill .pill")
+            .forEach(p => p.classList.remove("active"));
+          pill.classList.add("active");
+          if (intakeState) intakeState.fuel_level = pill.dataset.value;
+        };
+      });
     }
   }
 
-  // Step 4: Außenfotos & Punkte
   if (step === 4) {
     if (typeof renderPhotoSlots === "function") renderPhotoSlots(intakeExteriorList, INTAKE_EXTERIOR_SLOTS, "exterior");
     if (typeof renderIntakePhotoPoints === "function") renderIntakePhotoPoints("intake-exterior-points", exteriorPoints, "exterior");
   }
 
-  // Step 5: Innenfotos & Punkte
   if (step === 5) {
     if (typeof renderPhotoSlots === "function") renderPhotoSlots(intakeInteriorList, INTAKE_INTERIOR_SLOTS, "interior");
     if (typeof renderIntakePhotoPoints === "function") renderIntakePhotoPoints("intake-interior-points", interiorPoints, "interior");
   }
 
-  // Step 6: Unterschrift (CRITICAL FIX für DOMException)
   if (step === 6) {
-      // Kleiner Timeout, damit das Element sicher sichtbar ist (display:block),
-      // bevor der Canvas seine Größe berechnet.
-      setTimeout(() => {
-          if (typeof setupSignaturePad === "function") setupSignaturePad();
-      }, 50);
+    setTimeout(() => {
+      if (typeof setupSignaturePad === "function") setupSignaturePad();
+    }, 50);
   }
 }
 
@@ -5225,7 +5184,6 @@ function safeFileName(s) {
 }
 
 async function compressImageToJpegBlob(file) {
-  // file -> JPEG blob (max 1600px)
   const dataUrl = await new Promise((resolve, reject) => {
     const r = new FileReader();
     r.onload = () => resolve(String(r.result || ""));
@@ -5277,7 +5235,7 @@ function renderIntakeBookingSelect() {
   const select = document.getElementById("intake-booking-select");
   if (!select || !Array.isArray(allBookings)) return;
 
-  select.innerHTML = `<option value="">Bitte wählen…</option>`;
+  select.innerHTML = `<option value="">Please select…</option>`;
 
   const usable = allBookings.filter(b =>
     b.status !== "canceled" && b.status !== "deleted"
@@ -5285,10 +5243,10 @@ function renderIntakeBookingSelect() {
 
   for (const b of usable) {
     const date = b.start_at
-      ? new Date(b.start_at).toLocaleDateString("de-DE")
+      ? new Date(b.start_at).toLocaleDateString("en-US")
       : "";
 
-    const customer = b.customer_name || "Unbekannter Kunde";
+    const customer = b.customer_name || "Unknown Customer";
     const vehicle = b.car || "";
 
     const opt = document.createElement("option");
@@ -5314,7 +5272,7 @@ function renderPhotoSlots(container, slots, kind) {
     const btn = document.createElement("button");
     btn.type = "button";
     btn.className = "btn btn-secondary btn-small intake-upload-btn";
-    btn.textContent = "Foto +";
+    btn.textContent = "Photo +";
     btn.style.marginLeft = "10px";
 
     const fileInput = document.createElement("input");
@@ -5333,18 +5291,16 @@ function renderPhotoSlots(container, slots, kind) {
     note.className = "field-input";
     note.style.marginTop = "5px";
     note.style.width = "100%";
-    note.placeholder = "Notiz (optional)";
+    note.placeholder = "Note (optional)";
 
-    // WIEDERHERSTELLEN (Fix für verschwundene Bilder)
     const currentObj = kind === "exterior" ? intakeState.exterior : intakeState.interior;
-    // Slot initialisieren falls leer
     if (!currentObj[slot.key]) currentObj[slot.key] = { path: "", public_url: "", note: "" };
     
     const entry = currentObj[slot.key];
     if (entry.public_url) {
-        img.src = entry.public_url;
-        img.style.display = "block";
-        btn.textContent = "Ändern";
+      img.src = entry.public_url;
+      img.style.display = "block";
+      btn.textContent = "Change";
     }
     if (entry.note) note.value = entry.note;
 
@@ -5355,7 +5311,7 @@ function renderPhotoSlots(container, slots, kind) {
       if (!file) return;
 
       try {
-        btn.textContent = "Lade...";
+        btn.textContent = "Loading...";
         btn.disabled = true;
         
         const jpegBlob = await compressImageToJpegBlob(file);
@@ -5369,22 +5325,20 @@ function renderPhotoSlots(container, slots, kind) {
         img.src = publicUrl;
         img.style.display = "block";
         
-        // SOFORT SPEICHERN
         currentObj[slot.key].public_url = publicUrl;
         currentObj[slot.key].path = path;
         
-        btn.textContent = "Ändern";
+        btn.textContent = "Change";
       } catch (e) {
         console.error(e);
-        btn.textContent = "Fehler";
+        btn.textContent = "Error";
       } finally {
         btn.disabled = false;
       }
     });
 
     note.addEventListener("input", () => {
-        // Notiz SOFORT speichern
-        currentObj[slot.key].note = note.value;
+      currentObj[slot.key].note = note.value;
     });
 
     wrap.appendChild(head);
@@ -5403,7 +5357,7 @@ function getChecklistPayload() {
       note: String(intakeQDamagesNote?.value || "").trim(),
     },
     smell: {
-      value: String(intakeQSmell?.value || "no"), // intake-q-odors
+      value: String(intakeQSmell?.value || "no"),
       note: String(intakeQSmellNote?.value || "").trim(),
     },
     valuables: {
@@ -5441,7 +5395,6 @@ function setupSignaturePad() {
   const canvas = document.getElementById("intake-signature-canvas");
   if (!canvas) return;
   
-  // Wenn Canvas unsichtbar ist, abbrechen
   if (canvas.offsetWidth === 0) return;
 
   const ctx = canvas.getContext("2d");
@@ -5462,12 +5415,10 @@ function setupSignaturePad() {
   const isDark = document.body.classList.contains('theme-dark');
   ctx.strokeStyle = isDark ? "#ffffff" : "rgba(17,24,39,0.95)";
   
-  // Canvas leeren
   if (canvas.width > 0 && canvas.height > 0) {
       ctx.clearRect(0, 0, canvas.width / ratio, canvas.height / ratio);
   }
 
-  // A) WIEDERHERSTELLEN (Falls schon unterschrieben wurde)
   if (intakeState.signature && intakeState.signature.jpeg_base64) {
       const img = new Image();
       img.onload = () => {
@@ -5487,22 +5438,20 @@ function setupSignaturePad() {
     return { x: clientX - r.left, y: clientY - r.top };
   };
 
-  // B) HELPER: SOFORT SPEICHERN (Das hat gefehlt!)
   const saveToState = () => {
-      // Temporäres Canvas mit weißem Hintergrund für JPG
       const w = canvas.width;
       const h = canvas.height;
       const tmp = document.createElement("canvas");
       tmp.width = w; tmp.height = h;
       const tctx = tmp.getContext("2d");
       tctx.fillStyle = "#ffffff";
-      tctx.fillRect(0,0,w,h);
+      tctx.fillRect(0, 0, w, h);
       tctx.drawImage(canvas, 0, 0);
       
       const dataUrl = tmp.toDataURL("image/jpeg", 0.8); 
       const b64 = dataUrl.split(",")[1];
       
-      if(!intakeState.signature) intakeState.signature = {};
+      if (!intakeState.signature) intakeState.signature = {};
       intakeState.signature.jpeg_base64 = b64;
   };
 
@@ -5524,9 +5473,9 @@ function setupSignaturePad() {
   };
 
   const end = (e) => {
-      if(drawing) {
+      if (drawing) {
           drawing = false;
-          saveToState(); // <--- HIER SPEICHERN WIR JETZT SOFORT!
+          saveToState();
       }
   };
 
@@ -5540,7 +5489,6 @@ function setupSignaturePad() {
 
 function hasSignaturePixels() {
   if (!intakeSignatureCanvas) return false;
-  // Sicherheitscheck
   if (intakeSignatureCanvas.width === 0 || intakeSignatureCanvas.height === 0) return false;
 
   const ctx = intakeSignatureCanvas.getContext("2d");
@@ -5561,14 +5509,11 @@ async function signatureToJpegBase64() {
   if (!intakeSignatureCanvas) return "";
   const canvas = intakeSignatureCanvas;
 
-  // FIX: Definiere eine Standard-Zielgröße (z.B. max 600px Breite)
-  // Das verhindert, dass Retina-Displays das PDF sprengen.
   const maxWidth = 600; 
   const scale = maxWidth / canvas.width;
   
   const out = document.createElement("canvas");
   
-  // Wenn der Original-Canvas kleiner als maxWidth ist, behalte Originalgröße
   if (canvas.width > maxWidth) {
     out.width = maxWidth;
     out.height = canvas.height * scale;
@@ -5581,10 +5526,9 @@ async function signatureToJpegBase64() {
   ctx.fillStyle = "#FFFFFF";
   ctx.fillRect(0, 0, out.width, out.height);
 
-  // Zeichne das Bild skaliert auf den neuen Canvas
   ctx.drawImage(canvas, 0, 0, out.width, out.height);
 
-  const blob = await new Promise((resolve) => out.toBlob(resolve, "image/jpeg", 0.8)); // 0.8 reicht oft völlig
+  const blob = await new Promise((resolve) => out.toBlob(resolve, "image/jpeg", 0.8));
   if (!blob) return "";
 
   const arr = await blob.arrayBuffer();
@@ -5594,22 +5538,16 @@ async function signatureToJpegBase64() {
   return btoa(bin);
 }
 
-// Globale Variable für die Suche merken
 let allLoadedProtocols = [];
-
-// Variable für Bookings-Cache, damit Namen zuordnen kann
 let bookingsCache = {}; 
 
 async function loadOrdersTab() {
   if (!currentUser) return;
 
-  // DOM Elemente aus deinem HTML
   const searchInp = document.getElementById("intake-booking-search");
   const dropdown = document.getElementById("intake-booking-select");
   const startError = document.getElementById("intake-start-error");
 
-  // 1. Bookings laden (Nur EINMAL laden für Cache UND Dropdown)
-  // Wir holen '*', damit wir alle Infos für Dropdown und Cache haben
   const { data: bookings, error: bErr } = await supabaseClient
     .from("bookings")
     .select("*") 
@@ -5618,73 +5556,58 @@ async function loadOrdersTab() {
     .limit(200);
 
   if (bErr) {
-     if (startError) startError.textContent = "Fehler beim Laden der Aufträge.";
+     if (startError) startError.textContent = "Error loading orders.";
   } else {
      if (startError) startError.textContent = "";
      
-     // A) Globalen Cache aufbauen (für die Namens-Zuordnung in der Liste unten)
      bookingsCache = {};
      if (bookings) {
          bookings.forEach(b => { bookingsCache[b.id] = b; });
      }
 
-     // B) Globale Liste für die Suche speichern
      allBookings = bookings || [];
 
-     // C) Dropdown Logik mit Suche
      if (dropdown) {
-        // Hilfsfunktion: Dropdown Optionen bauen basierend auf Suchtext
         const renderBookingOptions = (filterText = "") => {
              const lower = filterText.toLowerCase();
              
-             // Filtern
              const filtered = allBookings.filter(b => {
                  if (!filterText) return true;
-                 // Suche in Name, Auto und Datum
                  const searchStr = `${b.customer_name || ''} ${b.car || ''} ${b.start_at || ''}`.toLowerCase();
                  return searchStr.includes(lower);
              });
 
-             // HTML bauen
              const optionsHTML = filtered.map(b => {
-                 // Datum formatieren
                  let datePrefix = "";
                  if (b.start_at) {
                      const d = new Date(b.start_at);
-                     datePrefix = d.toLocaleDateString("de-DE", { day: "2-digit", month: "2-digit", year: "2-digit" }) + ": ";
+                     datePrefix = d.toLocaleDateString("en-US", { day: "2-digit", month: "2-digit", year: "2-digit" }) + ": ";
                  }
                  
-                 // Titel bauen (Fallback falls formatBookingTitle fehlt)
-                 const title = (typeof formatBookingTitle === 'function') ? formatBookingTitle(b) : (b.customer_name || "Unbekannt");
+                 const title = (typeof formatBookingTitle === 'function') ? formatBookingTitle(b) : (b.customer_name || "Unknown");
                  
                  return `<option value="${b.id}">${datePrefix}${escapeHtml(title)}</option>`;
              }).join("");
 
-             dropdown.innerHTML = `<option value="">Bitte wählen…</option>` + optionsHTML;
+             dropdown.innerHTML = `<option value="">Please select…</option>` + optionsHTML;
         };
 
-        // Initial einmal rendern (alle anzeigen)
         renderBookingOptions();
 
-        // Event Listener auf das Suchfeld legen
         if (searchInp) {
-            // Alten Listener entfernen durch Klonen (Trick, um Doppel-Events zu vermeiden)
             const newSearchInp = searchInp.cloneNode(true);
             searchInp.parentNode.replaceChild(newSearchInp, searchInp);
             
-            // Neuen Listener setzen: Bei Eingabe Dropdown filtern
             newSearchInp.oninput = (e) => renderBookingOptions(e.target.value);
-            // Fokus behalten ist bei Text-Input automatisch
         }
      }
   }
 
-  // 2. Suchfeld initialisieren (falls noch nicht da)
   if (ordersProtocolsList && !document.getElementById("protocol-search-input")) {
       const searchContainer = document.createElement("div");
       searchContainer.style.marginBottom = "15px";
       searchContainer.innerHTML = `
-        <input type="text" id="protocol-search-input" placeholder="Suchen nach Name, Fahrzeug oder Datum..." class="field-input" style="width:100%;">
+        <input type="text" id="protocol-search-input" placeholder="Search by name, vehicle, or date..." class="field-input" style="width:100%;">
       `;
       ordersProtocolsList.parentNode.insertBefore(searchContainer, ordersProtocolsList);
       document.getElementById("protocol-search-input").addEventListener("input", (e) => {
@@ -5692,9 +5615,8 @@ async function loadOrdersTab() {
       });
   }
 
-  // 3. Protokolle laden
   if (!ordersProtocolsList) return;
-  ordersProtocolsList.innerHTML = '<p class="form-hint">Lade Protokolle...</p>';
+  ordersProtocolsList.innerHTML = '<p class="form-hint">Loading protocols...</p>';
 
   const { data: protos, error: pErr } = await supabaseClient
     .from("intake_protocols")
@@ -5704,12 +5626,12 @@ async function loadOrdersTab() {
     .limit(100);
 
   if (pErr) {
-    ordersProtocolsList.innerHTML = "<p>Fehler beim Laden.</p>";
+    ordersProtocolsList.innerHTML = "<p>Error loading.</p>";
     return;
   }
 
   if (!protos || protos.length === 0) {
-    ordersProtocolsList.innerHTML = "<p>Noch keine Annahmeprotokolle erstellt.</p>";
+    ordersProtocolsList.innerHTML = "<p>No intake protocols created yet.</p>";
     allLoadedProtocols = [];
     return;
   }
@@ -5723,7 +5645,7 @@ function renderProtocolList(protocols) {
   ordersProtocolsList.innerHTML = "";
 
   if (protocols.length === 0) {
-      ordersProtocolsList.innerHTML = "<p style='color:#666; font-size:0.9em;'>Keine Protokolle gefunden.</p>";
+      ordersProtocolsList.innerHTML = "<p style='color:#666; font-size:0.9em;'>No protocols found.</p>";
       return;
   }
 
@@ -5731,23 +5653,18 @@ function renderProtocolList(protocols) {
     const row = document.createElement("div");
     row.className = "list-item";
     
-    // -- NAMEN FINDEN --
-    // 1. Schau im Booking-Cache nach (über booking_id)
-    let customerName = "Unbekannt";
-    let vehicleStr = "Fahrzeug";
+    let customerName = "Unknown";
+    let vehicleStr = "Vehicle";
     let emailStr = "";
 
     const linkedBooking = bookingsCache[p.booking_id];
     
     if (linkedBooking) {
-        // Name aus Booking Tabelle bevorzugen
-        customerName = linkedBooking.customer_name || linkedBooking.customer_email || "Kunde ohne Name";
-        vehicleStr = linkedBooking.car || "Fahrzeug";
+        customerName = linkedBooking.customer_name || linkedBooking.customer_email || "Customer without name";
+        vehicleStr = linkedBooking.car || "Vehicle";
         emailStr = linkedBooking.customer_email || "";
     } else {
-        // Fallback auf Daten im Protokoll selbst
-        customerName = p.customer_name || p.customer_email || "Kunde (Gelöscht?)";
-        // Fallback Fahrzeug aus JSON
+        customerName = p.customer_name || p.customer_email || "Customer (Deleted?)";
         if (p.vehicle && typeof p.vehicle === 'object') {
              const mm = p.vehicle.make_model || "";
              const plate = p.vehicle.plate || "";
@@ -5755,44 +5672,38 @@ function renderProtocolList(protocols) {
         }
     }
 
-    // Datum
     const dateObj = new Date(p.created_at);
-    const dateStr = dateObj.toLocaleDateString("de-DE", {day: "2-digit", month: "2-digit", year: "numeric", hour: "2-digit", minute:"2-digit"});
+    const dateStr = dateObj.toLocaleDateString("en-US", { day: "2-digit", month: "2-digit", year: "numeric", hour: "2-digit", minute: "2-digit" });
 
-    // Titelzeile
     const title = document.createElement("div");
     title.className = "list-item-title";
     title.style.fontWeight = "bold";
-    title.textContent = `Protokoll: ${customerName}`;
+    title.textContent = `Protocol: ${customerName}`;
 
-    // Metazeile
     const meta = document.createElement("div");
     meta.className = "list-item-meta";
     meta.textContent = `${vehicleStr} · ${dateStr}`;
 
-    // PDF Button
     const actions = document.createElement("div");
     actions.style.marginTop = "8px";
 
     if (p.pdf_path) {
       const btnPdf = document.createElement("a");
       btnPdf.className = "btn btn-secondary btn-small";
-      btnPdf.textContent = "PDF öffnen";
+      btnPdf.textContent = "Open PDF";
       btnPdf.target = "_blank";
       const { data } = supabaseClient.storage.from("intake").getPublicUrl(p.pdf_path);
       btnPdf.href = data.publicUrl;
       actions.appendChild(btnPdf);
     } else {
-      // Wenn Pfad fehlt, aber Protokoll da ist -> oft Fehler im Worker-Rücklauf
       const span = document.createElement("span");
       span.style.fontSize = "12px";
       span.style.color = "#999";
-      // Falls das Protokoll älter als 5 Min ist und immer noch kein PDF hat:
       const ageMinutes = (new Date() - dateObj) / 1000 / 60;
       if (ageMinutes > 5) {
-          span.textContent = "(PDF nicht verfügbar)";
+          span.textContent = "(PDF not available)";
       } else {
-          span.textContent = "PDF wird erstellt...";
+          span.textContent = "Creating PDF...";
       }
       actions.appendChild(span);
     }
@@ -5804,8 +5715,7 @@ function renderProtocolList(protocols) {
     ordersProtocolsList.appendChild(row);
   });
 }
-// Filterfunktion
-// Verbesserte Filterfunktion (Schritt 3)
+
 function filterProtocols(searchTerm) {
     if (!searchTerm) {
         renderProtocolList(allLoadedProtocols);
@@ -5814,41 +5724,33 @@ function filterProtocols(searchTerm) {
     const lower = searchTerm.toLowerCase().trim();
     
     const filtered = allLoadedProtocols.filter(p => {
-        // 1. Name ermitteln (Fallback auf Cache, falls im Protokoll leer)
         let nameToSearch = p.customer_name || "";
         
-        // Falls im Protokoll kein Name steht, schauen wir im globalen Booking-Cache nach
         if (!nameToSearch && p.booking_id && typeof bookingsCache !== 'undefined') {
             const linkedBooking = bookingsCache[p.booking_id];
             if (linkedBooking) nameToSearch = linkedBooking.customer_name || "";
         }
 
-        // 2. Fahrzeug-String behandeln
-        // Da 'vehicle' jetzt ein JSON-String in der DB ist (durch Step 1 & 2),
-        // können wir ihn einfach direkt durchsuchen.
         let vehicleStr = "";
         if (p.vehicle) {
             if (typeof p.vehicle === 'string') {
                 vehicleStr = p.vehicle;
             } else if (typeof p.vehicle === 'object') {
-                // Falls es doch mal als Objekt kommt
                 vehicleStr = JSON.stringify(p.vehicle);
             }
         }
 
         const email = (p.customer_email || "").toLowerCase();
         
-        // Datum formatieren für Suche (z.B. "17.01.2026")
         const dateObj = new Date(p.created_at);
-        const dateStr = dateObj.toLocaleDateString("de-DE", {
+        const dateStr = dateObj.toLocaleDateString("en-US", {
             day: "2-digit", month: "2-digit", year: "numeric"
         });
 
-        // Alles zu einem langen Such-String zusammenfügen
         const combinedData = [
             nameToSearch,
             email,
-            vehicleStr, // Findet z.B. "Audi" im JSON-String '{"brand":"Audi"...}'
+            vehicleStr,
             dateStr,
             p.booking_id || ""
         ].join(" ").toLowerCase();
@@ -5867,37 +5769,31 @@ function intakeFail(step, msg) {
 }
 
 function validateIntakeBeforeSubmit() {
-  // Step 1
-  if (!String(intakeDocDate?.value || "").trim()) intakeFail(1, "Datum fehlt.");
+  if (!String(intakeDocDate?.value || "").trim()) intakeFail(1, "Date missing.");
   
-  // Step 2
-  if (!String(intakeVehicleMakeModel?.value || "").trim()) intakeFail(2, "Fahrzeug (Marke & Modell) fehlt.");
-  if (!String(intakeVehiclePlate?.value || "").trim()) intakeFail(2, "Kennzeichen fehlt.");
+  if (!String(intakeVehicleMakeModel?.value || "").trim()) intakeFail(2, "Vehicle (Make & Model) missing.");
+  if (!String(intakeVehiclePlate?.value || "").trim()) intakeFail(2, "License plate missing.");
 
-  // Step 3
   const vDamages = String(intakeQDamages?.value || "");
   const vOdors = String(intakeQSmell?.value || "");
   const vVal = String(intakeQValuables?.value || "");
 
-  if (!vDamages) intakeFail(3, "Bitte bei 'Sichtbare Schäden' Ja/Nein auswählen.");
-  if (!vOdors) intakeFail(3, "Bitte bei 'Gerüche' Ja/Nein auswählen.");
-  if (!vVal) intakeFail(3, "Bitte bei 'Wertgegenstände' Ja/Nein auswählen.");
+  if (!vDamages) intakeFail(3, "Please select Yes/No for 'Visible damages'.");
+  if (!vOdors) intakeFail(3, "Please select Yes/No for 'Odors'.");
+  if (!vVal) intakeFail(3, "Please select Yes/No for 'Valuables'.");
   
-  if (!String(intakeState.fuel_level || "").trim()) intakeFail(3, "Bitte Tankstand auswählen.");
+  if (!String(intakeState.fuel_level || "").trim()) intakeFail(3, "Please select fuel level.");
 
-  // Step 6 Legal & Sig
-  // Alle 3 Checkboxen müssen an sein
-  if (!intakeLegalHandover?.checked) intakeFail(6, "Bitte 'Übergabe im dokumentierten Zustand' bestätigen.");
-  if (!intakeLegalNote?.checked) intakeFail(6, "Bitte bestätigen, dass Verschmutzungen Schäden verdecken können.");
-  if (!intakeLegalAgb?.checked) intakeFail(6, "Bitte AGB akzeptieren.");
+  if (!intakeLegalHandover?.checked) intakeFail(6, "Please confirm 'handover in documented condition'.");
+  if (!intakeLegalNote?.checked) intakeFail(6, "Please confirm that dirt may hide damages.");
+  if (!intakeLegalAgb?.checked) intakeFail(6, "Please accept Terms & Conditions.");
 
-  if (!intakeState.signature.jpeg_base64) intakeFail(6, "Unterschrift fehlt.");
+  if (!intakeState.signature.jpeg_base64) intakeFail(6, "Signature missing.");
 
-  // Email
   const sendEmailValue = String(intakeSendEmail?.value || "no").toLowerCase();
   if (sendEmailValue === "yes") {
     const mail = String(intakeCustomerEmail?.value || "").trim();
-    if (!mail) intakeFail(6, "E-Mail Adresse fehlt.");
+    if (!mail) intakeFail(6, "Email address missing.");
   }
 }
 
@@ -5905,12 +5801,10 @@ async function saveIntakeProtocol() {
   const errEl = document.getElementById("intake-final-error");
   if (errEl) errEl.textContent = "";
 
-  // 1. Unterschrift JETZT aus dem Canvas holen
   if (typeof signatureToJpegBase64 === "function") {
       intakeState.signature.jpeg_base64 = await signatureToJpegBase64();
   }
 
-  // 2. Validierung
   try {
       validateIntakeBeforeSubmit();
   } catch (e) {
@@ -5921,7 +5815,6 @@ async function saveIntakeProtocol() {
       return; 
   }
 
-  // Inputs lesen
   intakeState.doc_date = String(intakeDocDate?.value || "").trim();
   intakeState.doc_time = String(document.getElementById("intake-doc-time")?.value || "").trim();
   intakeState.customer_note = String(intakeCustomerNote?.value || "").trim();
@@ -5950,23 +5843,20 @@ async function saveIntakeProtocol() {
   intakeState.send_email = sendEmailValue === "yes";
   intakeState.customer_email = String(intakeCustomerEmail?.value || "").trim();
 
-  // --- ANIMATION START ---
   const btn = document.getElementById("intake-finish");
   let animInterval = null;
   if (btn) {
       btn.disabled = true;
       let dots = 0;
-      btn.textContent = "Speichere";
+      btn.textContent = "Saving";
       animInterval = setInterval(() => {
           dots = (dots + 1) % 4;
-          btn.textContent = "Speichere" + ".".repeat(dots);
-          if (intakeStatus) intakeStatus.textContent = "Verarbeite Daten" + ".".repeat(dots);
+          btn.textContent = "Saving" + ".".repeat(dots);
+          if (intakeStatus) intakeStatus.textContent = "Processing data" + ".".repeat(dots);
       }, 500);
   }
-  // -----------------------
 
   try {
-      // 3. PDF bauen
       const pdfBytes = await buildIntakePdf(intakeState);
       
       const pdfBase64 = await new Promise((resolve) => {
@@ -5980,8 +5870,7 @@ async function saveIntakeProtocol() {
           reader.readAsDataURL(blob);
       });
 
-      // 4. Client-Side Upload
-      if (intakeStatus) intakeStatus.textContent = "Lade PDF hoch...";
+      if (intakeStatus) intakeStatus.textContent = "Uploading PDF...";
       
       const uid = currentUser?.id;
       const bid = intakeState.booking_id;
@@ -5997,8 +5886,7 @@ async function saveIntakeProtocol() {
           console.warn("Client Upload Failed, Worker Fallback.", uploadErr);
       }
 
-      // 5. Worker aufrufen
-      if (intakeStatus) intakeStatus.textContent = "Speichere Protokoll...";
+      if (intakeStatus) intakeStatus.textContent = "Saving protocol...";
 
       const payload = {
         detailer_id: currentUser.id,
@@ -6035,10 +5923,10 @@ async function saveIntakeProtocol() {
       const data = await res.json().catch(() => null);
 
       if (!res.ok || !data?.ok) {
-        throw new Error(data?.error || "Fehler beim Speichern (Worker).");
+        throw new Error(data?.error || "Error saving (Worker).");
       }
       
-      // Update Pfad falls Worker es nicht getan hat
+      // Update path if Worker didn't do it
       if (!uploadErr && data.id) {
            await supabaseClient
             .from("intake_protocols")
@@ -6046,20 +5934,20 @@ async function saveIntakeProtocol() {
             .eq("id", data.id);
       }
 
-      if (intakeStatus) intakeStatus.textContent = "Fertig!";
+      if (intakeStatus) intakeStatus.textContent = "Done!";
       closeIntakeModal();
       await loadOrdersTab();
 
   } catch (err) {
       console.error("Intake save failed:", err);
-      const msg = err.message || "Fehler";
+      const msg = err.message || "Error";
       if (intakeStatus) intakeStatus.textContent = msg;
       if (errEl) errEl.textContent = msg;
   } finally {
       if (animInterval) clearInterval(animInterval);
       if (btn) {
         btn.disabled = false;
-        btn.textContent = "Abschließen";
+        btn.textContent = "Finish";
       }
   }
 }
@@ -6092,24 +5980,24 @@ if (intakeSendEmail && intakeEmailRow) {
     });
   }
 
-  const intakeSignatureApply = document.getElementById("intake-signature-apply"); // ID aus deinem HTML prüfen!
+  const intakeSignatureApply = document.getElementById("intake-signature-apply");
   if (intakeSignatureApply) {
       intakeSignatureApply.addEventListener("click", (e) => {
           e.preventDefault();
-          e.stopPropagation(); // Verhindert Submit
+          e.stopPropagation(); // Prevents Submit
           
           if (typeof hasSignaturePixels === "function" && hasSignaturePixels()) {
-             // Visuelles Feedback
-             intakeSignatureApply.textContent = "Unterschrift erfasst ✓";
-             intakeSignatureApply.classList.remove("btn-secondary");
-             intakeSignatureApply.classList.add("btn-primary");
-             setTimeout(() => {
-                 intakeSignatureApply.textContent = "Übernehmen";
-                 intakeSignatureApply.classList.remove("btn-primary");
-                 intakeSignatureApply.classList.add("btn-secondary");
-             }, 2000);
+              // Visual Feedback
+              intakeSignatureApply.textContent = "Signature captured ✓";
+              intakeSignatureApply.classList.remove("btn-secondary");
+              intakeSignatureApply.classList.add("btn-primary");
+              setTimeout(() => {
+                  intakeSignatureApply.textContent = "Apply";
+                  intakeSignatureApply.classList.remove("btn-primary");
+                  intakeSignatureApply.classList.add("btn-secondary");
+              }, 2000);
           } else {
-             alert("Bitte erst unterschreiben.");
+              alert("Please sign first.");
           }
       });
   }
@@ -6133,7 +6021,7 @@ if (intakeSendEmail && intakeEmailRow) {
         const btn = document.getElementById("intake-finish");
         if (btn) {
           btn.disabled = true;
-          btn.textContent = "Speichern...";
+          btn.textContent = "Saving...";
         }
         await saveIntakeProtocol();
 }
@@ -6141,9 +6029,9 @@ catch (err) {
   console.error("Intake save failed:", err);
 
   const msg =
-    (err && err.message) ? String(err.message) : "Unbekannter Fehler beim Abschließen";
+    (err && err.message) ? String(err.message) : "Unknown error while finishing";
 
-  if (intakeStatus) intakeStatus.textContent = `Fehler: ${msg}`;
+  if (intakeStatus) intakeStatus.textContent = `Error: ${msg}`;
 
   const errEl = document.getElementById("intake-final-error");
   if (errEl) errEl.textContent = msg;
@@ -6152,7 +6040,7 @@ finally {
   const btn = document.getElementById("intake-finish");
   if (btn) {
     btn.disabled = false;
-    btn.textContent = "Abschließen";
+    btn.textContent = "Finish";
   }
 }
     });
@@ -6168,7 +6056,6 @@ finally {
 
   if (ordersNewIntakeButton) {
     ordersNewIntakeButton.addEventListener("click", async () => {
-      // Convenience: Wenn genau 1 offener Auftrag existiert, direkt starten.
       if (!currentUser) return;
       const { data: bookings } = await supabaseClient
         .from("bookings")
@@ -6195,7 +6082,6 @@ if (intakeOpenButton) {
 
 wireIntakeEvents();
 
-// Hilfsfunktion (falls noch nicht vorhanden)
 const toBase64 = file => new Promise((resolve, reject) => {
     const reader = new FileReader();
     reader.readAsDataURL(file);
@@ -6210,7 +6096,6 @@ function renderIntakePhotoPoints(containerId, points, scope) {
   container.innerHTML = ""; // Reset UI
 
   points.forEach((label, index) => {
-    // 1. UI Elemente erstellen
     const wrapper = document.createElement("div");
     wrapper.className = "glass"; 
     wrapper.style.padding = "10px";
@@ -6220,84 +6105,70 @@ function renderIntakePhotoPoints(containerId, points, scope) {
     title.textContent = label;
     wrapper.appendChild(title);
 
-    // File Input
     const fileInput = document.createElement("input");
     fileInput.type = "file";
     fileInput.accept = "image/*";
     fileInput.className = "field-input";
     fileInput.style.marginTop = "5px";
 
-    // Status Anzeige (Ob Bild schon da ist)
     const statusTxt = document.createElement("span");
     statusTxt.style.fontSize = "12px";
     statusTxt.style.marginLeft = "10px";
     
-    // Notiz Input
     const noteInput = document.createElement("textarea");
     noteInput.className = "field-input";
     noteInput.rows = 2;
-    noteInput.placeholder = "Notiz (optional)";
+    noteInput.placeholder = "Note (optional)";
     noteInput.style.marginTop = "5px";
 
-    // 2. WIEDERHERSTELLEN aus State (Falls User zurück navigiert hat)
-    // scope ist 'exterior' oder 'interior'
     const savedItem = intakeState[scope][index];
     
     if (savedItem && savedItem.base64) {
-        statusTxt.textContent = "Gespeichert";
+        statusTxt.textContent = "Saved";
         statusTxt.style.color = "green";
     }
     if (savedItem && savedItem.note) {
         noteInput.value = savedItem.note;
     }
 
-    // 3. EVENT LISTENER (Sofort speichern)
-    
-    // Bild speichern
 fileInput.addEventListener("change", async (e) => {
     const file = e.target.files[0];
     if (file) {
-        statusTxt.textContent = "Lädt hoch...";
+        statusTxt.textContent = "Uploading...";
         statusTxt.style.color = "orange";
         try {
-            // 1. Komprimieren
             const compressedBlob = await compressImage(file);
             
-            // 2. Sofort-Upload in den Supabase Storage (Pfad bauen)
             const uid = currentUser?.id;
             const bid = intakeState.booking_id || "draft";
             const ts = Date.now();
             const fileName = `${scope}_${index}_${ts}.jpg`;
             const path = `${uid}/${bid}/${fileName}`;
 
-            // Nutze deine vorhandene upload-Funktion oder diesen Shortcut:
             const { error: uploadError } = await supabaseClient.storage
                 .from("intake")
                 .upload(path, compressedBlob);
 
             if (uploadError) throw uploadError;
 
-            // 3. Öffentliche URL holen
             const { data: urlData } = supabaseClient.storage.from("intake").getPublicUrl(path);
             const publicUrl = urlData.publicUrl;
 
-            // 4. NUR die URL und den Pfad im State speichern (NICHT das ganze Bild!)
             if (!intakeState[scope][index]) intakeState[scope][index] = { label: label };
             
             intakeState[scope][index].base64 = publicUrl;
             intakeState[scope][index].url = publicUrl;
             intakeState[scope][index].path = path;
             
-            statusTxt.textContent = "Gespeichert";
+            statusTxt.textContent = "Saved";
             statusTxt.style.color = "green";
         } catch (err) {
             console.error("Upload failed:", err);
-            statusTxt.textContent = "Fehler!";
+            statusTxt.textContent = "Error!";
             statusTxt.style.color = "red";
         }
     }
 });
-    // Notiz speichern
     noteInput.addEventListener("input", (e) => {
         if (!intakeState[scope][index]) intakeState[scope][index] = { label: label };
         intakeState[scope][index].note = e.target.value;
@@ -6318,7 +6189,7 @@ function buildReviewMessage(booking) {
       : "");
 
   const linkPart = link ? ` ${link}` : "";
-  return `Ich würde mich sehr über eine positive Bewertung freuen. Link dazu:${linkPart}`;
+  return `I would be very happy to receive a positive review. Link here:${linkPart}`;
 }
 
 function openReviewModal(booking) {
@@ -6359,10 +6230,10 @@ function setupReviewModalHandlers() {
       try {
         if (navigator.clipboard && txt) {
           await navigator.clipboard.writeText(txt);
-          alert("Text in die Zwischenablage kopiert.");
+          alert("Text copied to clipboard.");
         }
       } catch (err) {
-        console.error("Clipboard Fehler:", err);
+        console.error("Clipboard Error:", err);
       }
     });
   }
@@ -6412,19 +6283,17 @@ async function buildIntakePdf(intake) {
   const font = await pdf.embedFont(StandardFonts.Helvetica);
   const fontBold = await pdf.embedFont(StandardFonts.HelveticaBold);
 
-  // --- DEFINITIONEN DER LABELS (Damit sie immer da stehen) ---
   const EXT_LABELS = [
-    "Vorne Links", "Vorne Rechts", "Motorhaube", 
-    "Windschutzscheibe", "Fahrzeugseite Links", 
-    "Fahrzeugseite Rechts", "Dach", "Heck"
+    "Front Left", "Front Right", "Hood", 
+    "Windshield", "Vehicle Side Left", 
+    "Vehicle Side Right", "Roof", "Rear"
   ];
   const INT_LABELS = [
-    "Amaturenbrett links", "Armaturenbrett rechts", 
-    "Fahrersitz", "Beifahrersitz", 
-    "Rückbank", "Kofferraum"
+    "Dashboard Left", "Dashboard Right", 
+    "Driver Seat", "Passenger Seat", 
+    "Rear Seat", "Trunk"
   ];
 
-  // --- SEITE 1: ÜBERSICHT ---
   let page = pdf.addPage([595, 842]); 
   const { width, height } = page.getSize();
   const colorPrimary = rgb(0.1, 0.15, 0.25);
@@ -6434,19 +6303,16 @@ async function buildIntakePdf(intake) {
 
   let y = height;
 
-  // Header
   page.drawRectangle({ x: 0, y: height - 100, width: width, height: 100, color: colorPrimary });
-  page.drawText("ANNAHMEPROTOKOLL", { x: 50, y: height - 55, size: 24, font: fontBold, color: rgb(1, 1, 1) });
+  page.drawText("INTAKE PROTOCOL", { x: 50, y: height - 55, size: 24, font: fontBold, color: rgb(1, 1, 1) });
 
   const dateStr = intake.doc_date 
-    ? new Date(intake.doc_date).toLocaleDateString("de-DE") 
-    : new Date().toLocaleDateString("de-DE");
+    ? new Date(intake.doc_date).toLocaleDateString("en-US") 
+    : new Date().toLocaleDateString("en-US");
 
-  // NEU: Zeit anhängen falls vorhanden
-  const timeStr = intake.doc_time ? `, ${intake.doc_time} Uhr` : "";
+  const timeStr = intake.doc_time ? `, ${intake.doc_time}` : "";
 
-  // x angepasst 
-  page.drawText(`Datum: ${dateStr}${timeStr}`, { 
+  page.drawText(`Date: ${dateStr}${timeStr}`, { 
       x: width - 200, 
       y: height - 55, 
       size: 12, 
@@ -6456,7 +6322,6 @@ async function buildIntakePdf(intake) {
 
   y = height - 140;
 
-  // Helpers
   const drawLabelValue = (label, value, xPos, yPos) => {
       page.drawText(label, { x: xPos, y: yPos, size: 9, font: fontBold, color: colorLightText });
       page.drawText(value || "-", { x: xPos, y: yPos - 14, size: 11, font, color: colorText });
@@ -6466,36 +6331,33 @@ async function buildIntakePdf(intake) {
       page.drawLine({ start: { x: 50, y: yPos - 5 }, end: { x: width - 50, y: yPos - 5 }, thickness: 1, color: rgb(0.9, 0.9, 0.9) });
   };
 
-  // 1. KUNDE & FAHRZEUG
-  drawSectionTitle("Fahrzeug & Kunde", y);
+  drawSectionTitle("Vehicle & Customer", y);
   y -= 30;
   page.drawRectangle({ x: 50, y: y - 90, width: width - 100, height: 100, color: colorBg, opacity: 0.5 });
   
   const v = intake.vehicle || {};
-  const customerName = intake.customer_name || intake.customer_email || "Gast";
-  drawLabelValue("Kunde", customerName, 70, y - 25);
-  drawLabelValue("Fahrzeug", v.make_model, 250, y - 25);
-  drawLabelValue("Kennzeichen", v.plate, 430, y - 25);
-  drawLabelValue("FIN / VIN", v.vin, 70, y - 70);
-  drawLabelValue("Kilometerstand", v.mileage ? `${v.mileage} km` : "-", 250, y - 70);
+  const customerName = intake.customer_name || intake.customer_email || "Guest";
+  drawLabelValue("Customer", customerName, 70, y - 25);
+  drawLabelValue("Vehicle", v.make_model, 250, y - 25);
+  drawLabelValue("License Plate", v.plate, 430, y - 25);
+  drawLabelValue("VIN", v.vin, 70, y - 70);
+  drawLabelValue("Mileage", v.mileage ? `${v.mileage} mi` : "-", 250, y - 70);
   let fuelStr = intake.fuel_level || "-";
   if (fuelStr !== "-" && !fuelStr.includes("%") && /^\d+$/.test(fuelStr)) fuelStr += "%";
-  drawLabelValue("Tankfüllstand", fuelStr, 430, y - 70);
+  drawLabelValue("Fuel Level", fuelStr, 430, y - 70);
   y -= 130;
 
-  // 2. CHECKLISTE (Angepasst: Status rechts, Notiz unten drunter)
-  drawSectionTitle("Zustands-Checkliste", y);
+  drawSectionTitle("Condition Checklist", y);
   y -= 25;
   const cl = intake.checklist || {};
   const checkItems = [
-      { l: "Sichtbare Schäden", v: cl.damages },
-      { l: "Gerüche (Rauch/Tier)", v: cl.smell },
-      { l: "Wertgegenstände", v: cl.valuables },
+      { l: "Visible Damages", v: cl.damages },
+      { l: "Odors (Smoke/Pet)", v: cl.smell },
+      { l: "Valuables", v: cl.valuables },
   ];
   
-  // Header Zeile
-  page.drawText("Punkt", { x: 60, y, size: 9, font: fontBold, color: colorLightText });
-  page.drawText("Status", { x: 450, y, size: 9, font: fontBold, color: colorLightText }); // Status weit rechts
+  page.drawText("Item", { x: 60, y, size: 9, font: fontBold, color: colorLightText });
+  page.drawText("Status", { x: 450, y, size: 9, font: fontBold, color: colorLightText }); 
   
   y -= 25; 
 
@@ -6504,18 +6366,17 @@ async function buildIntakePdf(intake) {
       let val = item.v?.value || "-";
       let displayVal = val;
       let valColor = colorText;
-      if(val === "yes") { displayVal = "JA"; valColor = rgb(0.8, 0, 0); }
-      if(val === "no") { displayVal = "Nein"; valColor = rgb(0, 0.5, 0); }
+      if(val === "yes") { displayVal = "YES"; valColor = rgb(0.8, 0, 0); }
+      if(val === "no") { displayVal = "No"; valColor = rgb(0, 0.5, 0); }
       
       page.drawText(item.l, { x: 60, y: y + 2, size: 10, font, color: colorText });
       page.drawText(displayVal, { x: 450, y: y + 2, size: 10, font: fontBold, color: valColor });
       y -= 20;
   });
 
-  // Zusatznotiz der Checkliste (falls vorhanden)
   if (cl.notes) {
       y -= 10;
-      page.drawText("Notiz zur Checkliste:", { x: 60, y, size: 9, font: fontBold, color: colorLightText });
+      page.drawText("Checklist note:", { x: 60, y, size: 9, font: fontBold, color: colorLightText });
       y -= 12;
       page.drawText(cl.notes, { x: 60, y, size: 10, font, color: colorText, maxWidth: 480 });
       y -= 15;
@@ -6523,9 +6384,8 @@ async function buildIntakePdf(intake) {
   
   y -= 20;
 
-  // Allgemeine Kunden-Notizen (Step 1)
   if (intake.customer_note) {
-      page.drawText("Weitere Anmerkungen:", { x: 50, y, size: 10, font: fontBold });
+      page.drawText("Further remarks:", { x: 50, y, size: 10, font: fontBold });
       y -= 15;
       const noteText = intake.customer_note;
       page.drawText(noteText, { x: 50, y, size: 10, font, maxWidth: 500, lineHeight: 14, color: colorText });
@@ -6533,14 +6393,13 @@ async function buildIntakePdf(intake) {
   }
   y -= 20;
 
-  // 3. RECHTLICHES & UNTERSCHRIFT
   if (y < 250) { page = pdf.addPage([595, 842]); y = 750; }
-  drawSectionTitle("Rechtliche Hinweise & Übergabe", y);
+  drawSectionTitle("Legal Notices & Handover", y);
   y -= 30;
   const legalText = [
-      intake.legal?.handover ? "[x] Übergabe im dokumentierten Zustand bestätigt." : "[ ] Übergabe bestätigt.",
-      intake.legal?.note ? "[x] Verschmutzungen können Schäden verdecken." : "[ ] Verschmutzungshinweis akzeptiert.",
-      intake.legal?.agb ? "[x] AGB und Datenschutz akzeptiert." : "[ ] AGB akzeptiert."
+      intake.legal?.handover ? "[x] Handover in documented condition confirmed." : "[ ] Handover confirmed.",
+      intake.legal?.note ? "[x] Dirt may cover damages." : "[ ] Dirt notice accepted.",
+      intake.legal?.agb ? "[x] Terms and Privacy Policy accepted." : "[ ] Terms accepted."
   ];
   legalText.forEach(line => {
       page.drawText(line, { x: 50, y, size: 9, font, color: colorLightText });
@@ -6548,16 +6407,13 @@ async function buildIntakePdf(intake) {
   });
   y -= 40;
 
-// --- UNTERSCHRIFT IM GRID-STYLE ---
 const sigBase64 = intake.signature?.jpeg_base64 || intake.signature_jpeg_base64;
 
-// Wir definieren eine Box wie im Foto-Grid
 const boxW = 230; 
 const boxH = 150; 
 const boxX = 50;  
 const boxY = y - boxH - 10; 
 
-// 1. Den Kasten zeichnen (Identisch zu addPhotoPage)
 page.drawRectangle({
     x: boxX, 
     y: boxY, 
@@ -6568,8 +6424,7 @@ page.drawRectangle({
     borderWidth: 0.25, 
 });
 
-// 2. Label oben in der Box
-page.drawText("UNTERSCHRIFT KUNDE", {
+page.drawText("CUSTOMER SIGNATURE", {
     x: boxX + 5, 
     y: boxY + boxH - 15, 
     size: 9, 
@@ -6577,19 +6432,16 @@ page.drawText("UNTERSCHRIFT KUNDE", {
     color: rgb(0.3, 0.3, 0.3),
 });
 
-// 3. Bild in die Box einpassen
 if (sigBase64) {
     try {
         const sigData = sigBase64.split(',')[1] || sigBase64;
         const sigBytes = Uint8Array.from(atob(sigData), c => c.charCodeAt(0));
         const sigImage = await pdf.embedJpg(sigBytes);
 
-        // FIX: Wir nutzen die Box-Maße als Limit für scaleToFit
         const dims = sigImage.scaleToFit(boxW - 20, boxH - 40); 
 
-        // Mittig in der Box platzieren
         const centerX = boxX + (boxW / 2) - (dims.width / 2);
-        const centerY = boxY + (boxH / 2) - (dims.height / 2) - 5; // -5 für optischen Ausgleich zum Label
+        const centerY = boxY + (boxH / 2) - (dims.height / 2) - 5; 
 
         page.drawImage(sigImage, {
             x: centerX,
@@ -6599,27 +6451,22 @@ if (sigBase64) {
         });
     } catch (e) {
         console.error("Sig Error:", e);
-        page.drawText("Fehler beim Laden", { x: boxX + 10, y: boxY + 40, size: 9, font, color: rgb(1, 0, 0) });
+        page.drawText("Loading error", { x: boxX + 10, y: boxY + 40, size: 9, font, color: rgb(1, 0, 0) });
     }
 } else {
-    // Falls keine Unterschrift da ist
-    page.drawText("Nicht digital erfasst", { x: boxX + 10, y: boxY + 40, size: 9, font, color: rgb(0.5, 0.5, 0.5) });
+    page.drawText("Not digitally captured", { x: boxX + 10, y: boxY + 40, size: 9, font, color: rgb(0.5, 0.5, 0.5) });
 }
 
-// Y-Position für nachfolgenden Inhalt aktualisieren
 y = boxY - 30;
   
-  // --- SEITE 2: AUSSEN (GRID 8 Felder) ---
-  await addPhotoPage(pdf, font, fontBold, "Außenbereich (Exterior)", intake.exterior, EXT_LABELS);
+  await addPhotoPage(pdf, font, fontBold, "Exterior", intake.exterior, EXT_LABELS);
 
-  // --- SEITE 3: INNEN (GRID 6 Felder) ---
-  await addPhotoPage(pdf, font, fontBold, "Innenraum (Interior)", intake.interior, INT_LABELS);
+  await addPhotoPage(pdf, font, fontBold, "Interior", intake.interior, INT_LABELS);
 
-  // Footer
   const pages = pdf.getPages();
   pages.forEach(p => {
       const { width } = p.getSize();
-      p.drawText("Erstellt mit DetailHQ", { x: width / 2 - 40, y: 20, size: 8, font: font, color: rgb(0.7, 0.7, 0.7) });
+      p.drawText("Created with DetailHQ", { x: width / 2 - 40, y: 20, size: 8, font: font, color: rgb(0.7, 0.7, 0.7) });
   });
 
   return await pdf.save();
@@ -6630,7 +6477,6 @@ async function addPhotoPage(pdf, font, fontBold, title, photoArray, labelDefinit
     
     const { rgb } = await import("https://cdn.skypack.dev/pdf-lib@1.17.1");
 
-    // --- 1. PARALLELER DOWNLOAD (Der Speed-Fix) ---
     const loadedImages = await Promise.all(photoArray.map(async (item) => {
         if (!item || (!item.base64 && !item.url)) return null;
         try {
@@ -6657,19 +6503,16 @@ async function addPhotoPage(pdf, font, fontBold, title, photoArray, labelDefinit
     let page = pdf.addPage([595, 842]);
     const { width, height } = page.getSize();
     
-    // Header
     let y = height - 50;
     page.drawText(title.toUpperCase(), { x: 50, y, size: 14, font: fontBold, color: rgb(0.1, 0.15, 0.25) });
     y -= 15;
 
-    // --- GRID KONFIGURATION ---
     const colCount = 2;
     const boxW = 230; 
-    const boxH = 175; // Etwas höher für mehr Text-Platz
+    const boxH = 175; 
     const gapX = 35; 
-    const gapY = 15;  // Kleinerer Abstand zwischen Boxen
+    const gapY = 15;  
     
-    // Hilfsfunktion: Text in Zeilen umbrechen
     const breakText = (text, maxWidth, fontSize, fontObj) => {
         if (!text) return [];
         const words = text.split(' ');
@@ -6694,11 +6537,9 @@ async function addPhotoPage(pdf, font, fontBold, title, photoArray, labelDefinit
         const row = Math.floor(i / colCount);
         const col = i % colCount;
 
-        // Basis-Koordinaten (Box unten links)
         const boxX = 50 + (col * (boxW + gapX));
         const boxY = y - (row * (boxH + gapY)) - boxH; 
 
-        // 1. Kasten Zeichnen
         page.drawRectangle({
             x: boxX, y: boxY, width: boxW, height: boxH,
             color: rgb(0.98, 0.98, 0.98), 
@@ -6706,13 +6547,11 @@ async function addPhotoPage(pdf, font, fontBold, title, photoArray, labelDefinit
             borderWidth: 0.25, 
         });
 
-        // 2. Label (Ganz oben im Kasten)
         const labelText = labelDefinitions[i];
         page.drawText(labelText, {
             x: boxX + 5, y: boxY + boxH - 15, size: 9, font: fontBold, color: rgb(0.3, 0.3, 0.3),
         });
 
-        // --- 3. Bild verarbeiten (Nutzt die Daten aus dem parallelen Download) ---
         const loadedImg = loadedImages[i];
         const item = photoArray[i];
 
@@ -6741,13 +6580,13 @@ async function addPhotoPage(pdf, font, fontBold, title, photoArray, labelDefinit
                 });
 
             } catch (err) {
-                console.error("Bildfehler bei " + labelText + ":", err);
-                page.drawText("Bild konnte nicht geladen werden", { x: boxX + 10, y: boxY + 100, size: 8, font, color: rgb(0.8,0,0) });
+                console.error("Image error at " + labelText + ":", err);
+                page.drawText("Image could not be loaded", { x: boxX + 10, y: boxY + 100, size: 8, font, color: rgb(0.8,0,0) });
             }
         } else if (loadedImg && loadedImg.error) {
-             page.drawText("Downloadfehler", { x: boxX + 10, y: boxY + 100, size: 9, font, color: rgb(0.8, 0, 0) });
+             page.drawText("Download error", { x: boxX + 10, y: boxY + 100, size: 9, font, color: rgb(0.8, 0, 0) });
         } else {
-            page.drawText("Kein Foto", {
+            page.drawText("No photo", {
                 x: boxX + (boxW / 2) - 20, 
                 y: boxY + 100, 
                 size: 9, 
@@ -6756,7 +6595,6 @@ async function addPhotoPage(pdf, font, fontBold, title, photoArray, labelDefinit
             });
         }
 
-        // 4. Notiz (Ganz unten, mit Zeilenumbruch)
         if (item && item.note) {
             const fontSize = 8;
             const lines = breakText(item.note, boxW - 10, fontSize, font);
@@ -6802,7 +6640,6 @@ function setupBookingDetailHandlers() {
     }
   });
 
-  // Änderungen speichern
   if (bookingDetailSaveButton) {
     bookingDetailSaveButton.addEventListener("click", async () => {
       if (!currentUser || !supabaseClient || !currentDetailBooking) return;
@@ -6811,26 +6648,22 @@ function setupBookingDetailHandlers() {
         notes: bookingDetailNotes ? bookingDetailNotes.value.trim() : null,
       };
 
-      // Auftragsstatus
       let jobStatus = currentDetailBooking.job_status || "planned";
       if (bookingDetailJobStatusSelect) {
         jobStatus = bookingDetailJobStatusSelect.value || "planned";
       }
       patch.job_status = jobStatus;
 
-      // Zahlungsstatus
       let paymentStatus = currentDetailBooking.payment_status || "open";
       if (bookingDetailPaymentStatusSelect) {
         paymentStatus = bookingDetailPaymentStatusSelect.value || "open";
       }
       patch.payment_status = paymentStatus;
 
-      // Basis für Items
       let items = Array.isArray(currentDetailBooking.items)
         ? [...currentDetailBooking.items]
         : [];
 
-      // Alte Service-/Klassen-/Payment-Items rauswerfen
       items = items.filter(
         (it) =>
           it &&
@@ -6841,9 +6674,6 @@ function setupBookingDetailHandlers() {
           it.role !== "payment_final_override"
       );
 
-      // ==============================
-      // Services + Preis & Dauer neu berechnen
-      // ==============================
       const getServiceById = (id) =>
         (services || []).find((s) => String(s.id) === String(id));
 
@@ -6851,7 +6681,6 @@ function setupBookingDetailHandlers() {
       let totalMinutes = 0;
       let mainServiceName = null;
 
-      // Paket (Detail-Select)
       let mainServiceId = null;
       if (bookingDetailMainServiceSelect) {
         const v = bookingDetailMainServiceSelect.value;
@@ -6880,7 +6709,6 @@ function setupBookingDetailHandlers() {
         }
       }
 
-      // Einzelleistungen (Detail-Multi-Select aus dem Hidden-Select)
       const singleIds = [];
       if (bookingDetailSinglesList) {
         for (const opt of bookingDetailSinglesList.options) {
@@ -6911,9 +6739,6 @@ function setupBookingDetailHandlers() {
         totalMinutes += baseDur;
       });
 
-      // ==============================
-      // Fahrzeugklasse + Preis-Delta
-      // ==============================
       let vehicleClassId = null;
       let vehicleClassName = null;
       let classPriceDeltaCents = 0;
@@ -6940,9 +6765,6 @@ function setupBookingDetailHandlers() {
         });
       }
 
-      // ==============================
-      // Rabatt
-      // ==============================
       let discType = "none";
       let discVal = 0;
 
@@ -6977,21 +6799,14 @@ function setupBookingDetailHandlers() {
       patch.discount_value = discVal;
       patch.discount_amount_cents = discountAmountCents;
 
-      // ==============================
-      // Gesamtpreis & Dauer
-      // ==============================
       const totalPriceCentsRaw =
         totalBasePriceCents + classPriceDeltaCents - discountAmountCents;
       const totalPriceCents = Math.max(0, totalPriceCentsRaw);
       patch.total_price = totalPriceCents / 100;
       patch.duration_minutes = totalMinutes;
 
-      // service_name für Übersicht / Kalender
-      patch.service_name = mainServiceName || "Auftrag";
+      patch.service_name = mainServiceName || "Order";
 
-      // ==============================
-      // Payment-Meta
-      // ==============================
       const partialCents = parseEuroInputToCents(
         bookingDetailPartialAmountInput
       );
@@ -7015,9 +6830,6 @@ function setupBookingDetailHandlers() {
         }
       }
 
-      // ==============================
-      // Termin
-      // ==============================
       if (bookingDetailDateInput && bookingDetailDateInput.value) {
         const dateStr = bookingDetailDateInput.value;
         const timeStr =
@@ -7029,13 +6841,11 @@ function setupBookingDetailHandlers() {
         }
       }
 
-      // Fahrzeug
       if (bookingDetailCarInput) {
         const carVal = bookingDetailCarInput.value.trim();
         patch.car = carVal || null;
       }
 
-      // Kunde
       if (bookingDetailCustomerNameInput) {
         const v = bookingDetailCustomerNameInput.value.trim();
         patch.customer_name = v || null;
@@ -7053,7 +6863,6 @@ function setupBookingDetailHandlers() {
         patch.customer_address = v || null;
       }
 
-      // Items anhängen
       patch.items = items;
 
       const { error } = await supabaseClient
@@ -7072,11 +6881,10 @@ function setupBookingDetailHandlers() {
     });
   }
 
-  // Auftrag löschen
   if (bookingDetailDeleteButton) {
     bookingDetailDeleteButton.addEventListener("click", async () => {
       if (!currentUser || !supabaseClient || !currentDetailBooking) return;
-      const ok = confirm("Diesen Auftrag wirklich löschen?");
+      const ok = confirm("Really delete this order?");
       if (!ok) return;
 
       const { error } = await supabaseClient
@@ -7106,7 +6914,7 @@ async function compressImage(file) {
       img.src = event.target.result;
       img.onload = () => {
         const canvas = document.createElement('canvas');
-        const MAX_WIDTH = 1200; // Reicht völlig für Protokolle
+        const MAX_WIDTH = 1200; 
         let width = img.width;
         let height = img.height;
 
@@ -7126,7 +6934,6 @@ async function compressImage(file) {
         const ctx = canvas.getContext('2d');
         ctx.drawImage(img, 0, 0, width, height);
         
-        // Wandelt das Bild in ein kleineres JPEG um (Qualität 0.7)
         canvas.toBlob((blob) => {
           resolve(blob);
         }, 'image/jpeg', 0.7);
@@ -7165,7 +6972,7 @@ async function refreshAppData({ silent } = {}) {
   try {
     if (!silent) showBar();
 
-    // Reihenfolge ist wichtig: erst Stammdaten, dann Kalender/Bookings
+    // Order is important: master data first, then calendar/bookings
     await ensureProfile();
     await persistAffiliateRefToProfileIfMissing?.();
     await loadProfileIntoForm?.();
@@ -7217,7 +7024,7 @@ function ensurePtrBar() {
 
   const txt = document.createElement("div");
   txt.id = "ptr-text";
-  txt.textContent = "Aktualisiere…";
+  txt.textContent = "Updating…";
   txt.style.fontSize = "12px";
   txt.style.fontWeight = "500";
   txt.style.color = "rgba(15, 23, 42, 0.8)";
@@ -7282,7 +7089,7 @@ function setupPullToRefresh() {
     (e) => {
       if (window.__detailhqRefreshing) return;
 
-      // PTR nur wenn ganz oben (egal ob main oder body scrollt)
+      // PTR only if at the very top (regardless of whether main or body scrolls)
       if (getScrollTop() > 0) return;
 
       const t = e.touches && e.touches[0];
@@ -7303,7 +7110,7 @@ function setupPullToRefresh() {
       if (!pulling) return;
       if (window.__detailhqRefreshing) return;
 
-      // sobald nicht mehr oben -> abbrechen und normal scrollen lassen
+      // cancel and allow normal scrolling as soon as not at the top
       if (getScrollTop() > 0) {
         pulling = false;
         locked = false;
@@ -7317,15 +7124,15 @@ function setupPullToRefresh() {
       const dy = t.clientY - startY;
       const dx = t.clientX - startX;
 
-      // nur "ziehen nach unten"
+      // only "pull down"
       if (dy <= 0) return;
 
-      // horizontale swipes ignorieren
+      // ignore horizontal swipes
       if (Math.abs(dx) > Math.abs(dy)) return;
 
       lastDy = dy;
 
-      // erst ab slop übernehmen wir die gesture
+      // accept gesture only after slop
       if (!locked && dy >= slop) locked = true;
 
       if (!locked) return;
