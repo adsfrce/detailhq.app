@@ -253,6 +253,16 @@ body {
   box-shadow: 0 6px 18px rgba(37, 99, 235, 0.4);
 }
 
+.btn-primary-alt {
+  background: #2563eb;
+  color: white;
+  margin-top: 4px;
+}
+
+.btn-primary-alt:active {
+  transform: translateY(1px) scale(0.98);
+}
+
 .btn-secondary {
   background: var(--accent-soft);
   color: var(--accent-strong);
@@ -1649,12 +1659,13 @@ mask-image: linear-gradient(
 .settings-subnav-btn {
   appearance: none;
   border: 1px solid rgba(0, 0, 0, 0.08);
-  background: rgba(255, 255, 255, 0.7);
+  background: var(--bg-elevated-soft);
   backdrop-filter: blur(10px);
   -webkit-backdrop-filter: blur(10px);
   border-radius: 16px;
   padding: 14px 14px;
   text-align: left;
+  color: var(--text);
   cursor: pointer;
   transition: transform 120ms ease, border-color 120ms ease, background 120ms ease;
 }
@@ -1662,7 +1673,7 @@ mask-image: linear-gradient(
 .settings-subnav-btn:hover {
   transform: translateY(-1px);
   border-color: rgba(0, 0, 0, 0.12);
-  background: rgba(255, 255, 255, 0.85);
+  background: var(--bg-elevated);
 }
 
 .settings-subnav-btn:active {
@@ -1798,7 +1809,8 @@ mask-image: linear-gradient(
   padding: 10px 12px;
   border: 1px solid rgba(0,0,0,0.08);
   border-radius: 14px;
-  background: rgba(255,255,255,0.6);
+  background: var(--bg-elevated-soft);
+  color: var(--text);
   cursor: pointer;
   font-weight: 500;
 }
@@ -1847,4 +1859,313 @@ mask-image: linear-gradient(
     width: 100% !important;
     max-width: 100% !important;
   }
+}
+
+
+/* ================================
+   ANNAHMEPROTOKOLL (Intake)
+   ================================ */
+
+.intake-checklist {
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+}
+
+.intake-check-row {
+  display: grid;
+  grid-template-columns: 1fr;
+  gap: 6px;
+  padding: 10px;
+  border-radius: 16px;
+  border: 1px solid var(--border-subtle);
+  background: var(--bg-elevated-soft);
+}
+
+.intake-photo-list {
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+}
+
+.intake-photo-item {
+  padding: 10px;
+  border-radius: 16px;
+  border: 1px solid var(--border-subtle);
+  background: var(--bg-elevated-soft);
+}
+
+.intake-photo-head {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 10px;
+}
+
+.intake-photo-title {
+  font-weight: 700;
+  font-size: 12px;
+}
+
+.intake-photo-preview {
+  width: 100%;
+  height: 160px;
+  border-radius: 14px;
+  border: 1px solid var(--border-subtle);
+  background: rgba(0,0,0,0.08);
+  object-fit: cover;
+  margin-top: 10px;
+}
+
+.intake-upload-row {
+  display: flex;
+  gap: 8px;
+  margin-top: 10px;
+  align-items: center;
+}
+
+.intake-upload-row input[type="file"] {
+  display: none;
+}
+
+.intake-upload-btn {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+}
+
+.intake-signature-wrap {
+  padding: 10px;
+  border-radius: 16px;
+}
+
+#intake-signature-canvas {
+  width: 100%;
+  height: 180px;
+  display: block;
+  border-radius: 14px;
+  background: rgba(255,255,255,0.03);
+  border: 1px dashed rgba(148, 163, 184, 0.35);
+  touch-action: none;
+}
+
+.checkbox-row {
+  display: flex;
+  align-items: flex-start;
+  gap: 10px;
+  font-size: 12px;
+  color: var(--text-soft);
+  margin-top: 10px;
+}
+
+.checkbox-row input {
+  margin-top: 2px;
+}
+
+.intake-signature-wrap {
+  position: relative;
+  z-index: 5;
+}
+
+#intake-signature-canvas {
+  position: relative;
+  z-index: 6;
+  pointer-events: auto;
+  cursor: crosshair;
+}
+
+.fuel-level-group {
+  display: flex !important;
+  gap: 8px;
+  margin-top: 6px;
+}
+
+.fuel-level-option {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  padding: 6px 10px;
+  border-radius: 999px;
+  border: 1px solid var(--border-subtle);
+  background: var(--bg-elevated-soft);
+  cursor: pointer;
+}
+
+.fuel-level-option.active {
+  background: var(--accent-soft);
+  color: var(--accent-strong);
+}
+
+.pill-group {
+  display: flex;
+  gap: 6px;
+}
+
+.pill-group .pill {
+  flex: 1;
+  border-radius: 999px;
+  padding: 8px 0;
+  border: 1px solid var(--border-subtle);
+  background: var(--bg-elevated-soft);
+  color: var(--text-soft);
+  font-size: 13px;
+  cursor: pointer;
+}
+
+.pill-group .pill.active {
+  background: var(--accent-soft);
+  color: var(--accent-strong);
+  font-weight: 600;
+  box-shadow: 0 8px 18px rgba(37,99,235,0.25);
+}
+
+
+.profile-modal-backdrop {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100dvh; /* Begrenzt das gesamte Feld auf den sichtbaren Bereich */
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.profile-modal-card {
+  max-height: 95dvh; /* Verhindert, dass die Karte oben/unten rausrutscht */
+  display: flex;
+  flex-direction: column;
+}
+
+#intake-form {
+  overflow-y: auto; /* Erlaubt das Scrollen innerhalb der Karte */
+}
+
+/* Dynamischer Fix für das Intake-Modal - Theme-gerecht */
+#intake-form .intake-check-row, 
+#intake-form .intake-photo-item,
+#intake-form .glass {
+  background: var(--bg-elevated-soft) !important; /* Nutzt jetzt die Theme-Farbe */
+  background-image: none !important;
+  box-shadow: none !important;
+  backdrop-filter: none !important;
+  -webkit-backdrop-filter: none !important;
+  color: var(--text); /* Textfarbe sicherstellen */
+}
+
+/* Die Kartenränder im Dark Mode subtiler machen */
+#intake-form .intake-check-row, 
+#intake-form .intake-photo-item {
+  border: 1px solid var(--border-subtle) !important;
+}
+
+/* Korrektur für das Datum-Feld (booking-datetime-row) */
+.booking-datetime-row {
+  background: var(--bg-elevated-soft) !important; /* Variable statt festem Weiß */
+  border: 1px solid var(--border-subtle) !important;
+  border-radius: 16px;
+  overflow: hidden;
+}
+
+/* Fix für Inputs innerhalb der booking-datetime-row im Dark Mode */
+.booking-datetime-row input, 
+.booking-datetime-row select {
+  color: var(--text) !important;
+}
+
+/* ============================================================
+   DARK MODE & UI FIXES (Ersetze den Block am Ende deiner Datei)
+   ============================================================ */
+
+/* 1. Sub-Navigation (Service / Business Buttons) */
+.settings-subnav-btn {
+    appearance: none;
+    border: 1px solid var(--border-subtle);
+    background: var(--bg-elevated-soft); /* Variable statt hartem Weiß */
+    backdrop-filter: blur(10px);
+    -webkit-backdrop-filter: blur(10px);
+    border-radius: 16px;
+    padding: 14px;
+    text-align: left;
+    color: var(--text); /* Erzwingt die Theme-Textfarbe */
+    cursor: pointer;
+    transition: all 120ms ease;
+}
+
+.settings-subnav-btn:hover {
+    background: var(--bg-elevated);
+    border-color: var(--accent-soft);
+}
+
+/* 2. Annahmeprotokoll (Intake) - Korrektur der Hintergründe */
+#intake-form .intake-check-row, 
+#intake-form .intake-photo-item,
+#intake-form .glass {
+    background: var(--bg-elevated) !important; /* Nutzt jetzt die Dark-Mode Variable */
+    background-image: none !important;
+    box-shadow: none !important;
+    backdrop-filter: none !important;
+    -webkit-backdrop-filter: none !important;
+    border: 1px solid var(--border-subtle) !important;
+    color: var(--text) !important;
+}
+
+/* 3. Promo-Codes & Gutschein-Liste (JS-Override) */
+/* Da dein JS inline-styles (rgba(255,255,255,0.6)) setzt, müssen wir hier gegensteuern */
+#promo-list > div, 
+#gift-list > div,
+.intake-photo-item {
+    background: var(--bg-elevated-soft) !important;
+    border: 1px solid var(--border-subtle) !important;
+    color: var(--text) !important;
+}
+
+/* 4. Ghost-Buttons Sichtbarkeit (Deaktivieren/Löschen) */
+.btn-ghost {
+    background: rgba(148, 163, 184, 0.1); /* Leichter Hintergrund für bessere Sichtbarkeit */
+    color: var(--text); /* Hellerer Text im Dark Mode */
+    border: 1px solid var(--border-subtle);
+}
+
+.btn-ghost:hover {
+    background: rgba(148, 163, 184, 0.2);
+    border-color: var(--text-soft);
+}
+
+/* Spezieller Fix für die Löschen-Buttons in der Liste */
+[data-promo-delete], [data-gift-delete] {
+    color: var(--danger) !important;
+    border-color: rgba(239, 68, 68, 0.3) !important;
+}
+
+/* 5. Datum-Pill im Intake (Fix für den weißen Balken) */
+.booking-datetime-row {
+    background: var(--bg-elevated-soft) !important;
+    border: 1px solid var(--border-subtle) !important;
+}
+
+.booking-datetime-row input {
+    color: var(--text) !important;
+}
+
+/* 7. Fix für die Titel im Settings Hub (Service & Business Buttons) */
+.settings-switch-title {
+    color: var(--text) !important; /* Macht "Service" und "Business" weiß */
+}
+
+.settings-switch-sub {
+    color: var(--text-soft) !important; /* Macht die Unterzeile hellgrau */
+}
+
+/* 8. Fix für Sub-Nav Titel (innerhalb der Kacheln) */
+.settings-subnav-title {
+    color: var(--text) !important;
+}
+
+/* 9. Dropdown-Toggles (z.B. "Fahrzeugklassen anpassen") */
+.settings-dropdown-toggle {
+    background: var(--bg-elevated-soft) !important;
+    color: var(--text) !important;
+    border: 1px solid var(--border-subtle) !important;
 }
