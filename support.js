@@ -101,7 +101,7 @@ async function sendSupportTicket(session) {
   submitBtn.textContent = "Sende...";
 
   try {
-    const API_BASE = "https://api.detailhq.de";
+    const API_BASE = "https://api.detailhq.app";
 
 const res = await fetch(`${API_BASE}/support/ticket`, {
       method: "POST",
